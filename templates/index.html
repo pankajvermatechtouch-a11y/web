@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instagram Media Downloader</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span>Media Vault</span>
+      </div>
+      <div class="platforms">
+        <button class="platform active" type="button">
+          <span class="icon ig"></span>
+          Instagram
+        </button>
+      </div>
+      <div class="status">Public posts only</div>
+    </header>
+
+    <nav class="media-tabs" aria-label="Media types">
+      <button class="tab active" type="button" data-type="video">
+        <span class="tab-icon icon-video" aria-hidden="true"></span>
+        Video
+      </button>
+      <button class="tab" type="button" data-type="reels">
+        <span class="tab-icon icon-reels" aria-hidden="true"></span>
+        Reels
+      </button>
+      <button class="tab" type="button" data-type="photo">
+        <span class="tab-icon icon-photo" aria-hidden="true"></span>
+        Photo
+      </button>
+    </nav>
+
+    <main class="content">
+      <section class="card">
+        <p class="kicker">Download all Instagram stuff here</p>
+        <h1 id="headline">Instagram Video Downloader</h1>
+        <p class="sub">Paste a public post or reel link. Private accounts will show a privacy alert.</p>
+
+        {% if error and not private_error %}
+          <div class="alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="/download" class="search" id="downloadForm">
+          <input type="hidden" name="media_type" id="mediaType" value="video">
+          <label class="search-field">
+            <span class="link-icon" aria-hidden="true"></span>
+            <input
+              type="text"
+              name="media_url"
+              id="targetInput"
+              placeholder="Paste Instagram post or reel link"
+              autocomplete="off"
+              required
+            >
+          </label>
+          <button class="chip" type="button" id="pasteBtn">Paste</button>
+          <button class="chip ghost" type="button" id="clearBtn">Clear</button>
+          <button class="cta" type="submit">
+            <span class="loader" aria-hidden="true"></span>
+            Search
+          </button>
+        </form>
+
+      </section>
+    </main>
+  </div>
+
+  <div class="modal{% if private_error %} show{% endif %}" id="privateModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <h2 id="modalTitle">Private Account</h2>
+      <p>This Instagram account is private. Media cannot be downloaded.</p>
+      <button class="cta" type="button" id="closeModal">OK</button>
+    </div>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab:not(.disabled)');
+    const mediaType = document.getElementById('mediaType');
+    const headline = document.getElementById('headline');
+    const typeLabels = {
+      video: 'Instagram Video Downloader',
+      reels: 'Instagram Reels Downloader',
+      photo: 'Instagram Photo Downloader',
+    };
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const type = tab.dataset.type;
+        mediaType.value = type;
+        headline.textContent = typeLabels[type] || 'Instagram Downloader';
+      });
+    });
+
+    const pasteBtn = document.getElementById('pasteBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const targetInput = document.getElementById('targetInput');
+    const form = document.getElementById('downloadForm');
+    const loader = form.querySelector('.loader');
+
+    pasteBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) targetInput.value = text.trim();
+      } catch (err) {
+        alert('Clipboard access blocked. Paste manually.');
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      targetInput.value = '';
+      targetInput.focus();
+    });
+
+    form.addEventListener('submit', () => {
+      loader.classList.add('spin');
+    });
+
+    const modal = document.getElementById('privateModal');
+    const closeModal = document.getElementById('closeModal');
+    if (modal.classList.contains('show')) {
+      closeModal.addEventListener('click', () => modal.classList.remove('show'));
+    }
+  </script>
+</body>
+</html>
