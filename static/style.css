@@ -327,12 +327,27 @@ h1 {
   gap: 10px;
 }
 
+.media-frame {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 16 / 9;
+}
+
+.media-card[data-mode="reels"] .media-frame {
+  aspect-ratio: 9 / 16;
+}
+
+.media-card[data-mode="photo"] .media-frame {
+  aspect-ratio: 4 / 5;
+  background: #f1f1f1;
+}
+
 .media-preview {
   width: 100%;
-  border-radius: 12px;
-  background: #000;
-  max-height: 360px;
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .download-btn {
