@@ -100,33 +100,56 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/download-file", methods=["GET"])
-def download_file():
-    media_url = (request.args.get("url") or "").strip()
-    base_name = (request.args.get("name") or "media").strip()
-
+def stream_media(media_url: str, *, as_attachment: bool) -> Response:
     if not media_url or not is_allowed_media_url(media_url):
         return abort(400, "Invalid media URL")
 
+    range_header = request.headers.get("Range")
+    headers = {}
+    if range_header:
+        headers["Range"] = range_header
+
     try:
-        upstream = requests.get(media_url, stream=True, timeout=20, allow_redirects=False)
+        upstream = requests.get(media_url, stream=True, timeout=20, allow_redirects=False, headers=headers)
         upstream.raise_for_status()
     except requests.RequestException:
         return abort(502, "Failed to fetch media")
 
     content_type = upstream.headers.get("Content-Type", "application/octet-stream")
-    extension = guess_extension(content_type)
-    filename = safe_segment(base_name) + extension
+    base_name = (request.args.get("name") or "media").strip()
+    filename = safe_segment(base_name) + guess_extension(content_type)
 
-    headers = {
+    response_headers = {
         "Content-Type": content_type,
-        "Content-Disposition": f'attachment; filename="{filename}"',
     }
 
+    if as_attachment:
+        response_headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+    else:
+        response_headers["Content-Disposition"] = "inline"
+
+    for header_name in ("Content-Length", "Content-Range", "Accept-Ranges"):
+        if header_name in upstream.headers:
+            response_headers[header_name] = upstream.headers[header_name]
+
+    status_code = upstream.status_code
     return Response(
         stream_with_context(upstream.iter_content(chunk_size=8192)),
-        headers=headers,
+        headers=response_headers,
+        status=status_code,
     )
+
+
+@app.route("/download-file", methods=["GET"])
+def download_file():
+    media_url = (request.args.get("url") or "").strip()
+    return stream_media(media_url, as_attachment=True)
+
+
+@app.route("/media-proxy", methods=["GET"])
+def media_proxy():
+    media_url = (request.args.get("url") or "").strip()
+    return stream_media(media_url, as_attachment=False)
 
 
 @app.route("/download", methods=["POST"])
@@ -208,7 +231,7 @@ def download():
         if not items:
             return render_template("index.html", error="No media found for that selection.")
 
-        return render_template("index.html", items=items)
+        return render_template("index.html", items=items, selected_type=media_type)
 
     except LoginException:
         return render_template(
