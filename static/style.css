@@ -82,18 +82,12 @@ body {
   box-shadow: inset 0 0 0 1px var(--border);
 }
 
-.platform:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
 .icon {
   width: 14px;
   height: 14px;
   border-radius: 4px;
   background: var(--accent);
 }
-
 
 .status {
   font-size: 12px;
@@ -130,11 +124,6 @@ body {
   color: var(--accent);
 }
 
-.tab.disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
 .tab-icon {
   width: 18px;
   height: 18px;
@@ -167,7 +156,6 @@ body {
   background: var(--accent);
   border-radius: 50%;
 }
-
 
 .content {
   display: flex;
@@ -314,6 +302,50 @@ h1 {
   }
 }
 
+.results {
+  margin-top: 28px;
+  text-align: left;
+}
+
+.results h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.media-card {
+  background: #f8f9fb;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.media-preview {
+  width: 100%;
+  border-radius: 12px;
+  background: #000;
+  max-height: 360px;
+  object-fit: cover;
+}
+
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
 
 .modal {
   position: fixed;
