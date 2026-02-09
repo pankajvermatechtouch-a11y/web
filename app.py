@@ -46,7 +46,10 @@ def make_loader(output_dir: Path, *, download_pictures: bool, download_videos: b
     return loader
 
 
-MEDIA_URL_RE = re.compile(r"(?:https?://)?(?:www\\.)?instagram\\.com/(p|reel|reels|tv)/([^/?#]+)/?")
+MEDIA_URL_RE = re.compile(
+    r"(?:https?://)?(?:www\\.)?instagram\\.com/(p|reel|reels|tv)/([^/?#]+)/?",
+    re.IGNORECASE,
+)
 
 
 def parse_media_url(raw: str) -> Optional[Tuple[str, str]]:
@@ -90,7 +93,7 @@ def index():
 
 @app.route("/download", methods=["POST"])
 def download():
-    media_url = (request.form.get("media_url") or "").strip()
+    media_url = (request.form.get("media_url") or request.form.get("target_input") or "").strip()
     media_type = (request.form.get("media_type") or "video").strip()
 
     parsed = parse_media_url(media_url)
