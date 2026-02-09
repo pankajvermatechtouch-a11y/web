@@ -73,12 +73,14 @@
             <h2>Results</h2>
             <div class="media-grid">
               {% for item in items %}
-                <div class="media-card">
-                  {% if item.type == "video" %}
-                    <video class="media-preview" controls playsinline src="{{ item.url }}"></video>
-                  {% else %}
-                    <img class="media-preview" src="{{ item.url }}" alt="Instagram media">
-                  {% endif %}
+                <div class="media-card" data-mode="{{ selected_type or '' }}">
+                  <div class="media-frame">
+                    {% if item.type == "video" %}
+                      <video class="media-preview media-video" controls playsinline src="{{ url_for('media_proxy', url=item.url) }}"></video>
+                    {% else %}
+                      <img class="media-preview media-image" src="{{ url_for('media_proxy', url=item.url) }}" alt="Instagram media">
+                    {% endif %}
+                  </div>
                   <a class="download-btn" href="{{ url_for('download_file', url=item.url, name=item.name) }}">Download</a>
                 </div>
               {% endfor %}
