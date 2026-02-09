@@ -68,6 +68,23 @@
           </button>
         </form>
 
+        {% if items %}
+          <div class="results">
+            <h2>Results</h2>
+            <div class="media-grid">
+              {% for item in items %}
+                <div class="media-card">
+                  {% if item.type == "video" %}
+                    <video class="media-preview" controls playsinline src="{{ item.url }}"></video>
+                  {% else %}
+                    <img class="media-preview" src="{{ item.url }}" alt="Instagram media">
+                  {% endif %}
+                  <a class="download-btn" href="{{ url_for('download_file', url=item.url, name=item.name) }}">Download</a>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
       </section>
     </main>
   </div>
