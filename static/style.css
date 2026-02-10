@@ -412,8 +412,16 @@ h1 {
   margin: 0 auto;
 }
 
+.media-card[data-mode="video"] {
+  max-width: 380px;
+}
+
 .media-card[data-mode="reels"] {
   max-width: 380px;
+}
+
+.media-grid[data-mode="video"] {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
 .media-grid[data-mode="reels"] {
@@ -425,6 +433,10 @@ h1 {
   overflow: hidden;
   background: #000;
   aspect-ratio: 16 / 9;
+}
+
+.media-card[data-mode="video"] .media-frame {
+  aspect-ratio: 9 / 16;
 }
 
 .media-card[data-mode="reels"] .media-frame {
