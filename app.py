@@ -8,849 +8,748 @@ from __future__ import annotations
 
 import re
 from typing import Dict, List, Optional, Tuple
-from urllib.parse import urlparse
+from urllib.parse import quote
 
 import requests
-from flask import Flask, Response, abort, redirect, render_template, request, stream_with_context, url_for
+from flask import (
+    Flask,
+    Response,
+    abort,
+    redirect,
+    render_template,
+    request,
+    stream_with_context,
+)
 
 try:
     import instaloader
     from instaloader.exceptions import ConnectionException, LoginException
 except ModuleNotFoundError as exc:  # pragma: no cover
-    raise SystemExit("Missing dependency: instaloader. Install with 'pip install -r requirements.txt'.") from exc
+    raise SystemExit(
+        "Missing dependency: instaloader. Install with 'pip install -r requirements.txt'."
+    ) from exc
 
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
+
+DEFAULT_LANG = "en"
+LANG_ORDER = [
+    "en",
+    "ar",
+    "bn",
+    "zh",
+    "fr",
+    "de",
+    "hi",
+    "hu",
+    "id",
+    "it",
+    "ja",
+    "ko",
+    "pl",
+    "pt",
+    "ru",
+    "es",
+    "sw",
+    "te",
+    "th",
+    "tr",
+    "uk",
+]
+
+LANGS = {
+    "en": {"label": "English", "dir": "ltr"},
+    "ar": {"label": "العربية", "dir": "rtl"},
+    "bn": {"label": "বাংলা", "dir": "ltr"},
+    "zh": {"label": "中文", "dir": "ltr"},
+    "fr": {"label": "Français", "dir": "ltr"},
+    "de": {"label": "Deutsch", "dir": "ltr"},
+    "hi": {"label": "हिन्दी", "dir": "ltr"},
+    "hu": {"label": "Magyar", "dir": "ltr"},
+    "id": {"label": "Bahasa Indonesia", "dir": "ltr"},
+    "it": {"label": "Italiano", "dir": "ltr"},
+    "ja": {"label": "日本語", "dir": "ltr"},
+    "ko": {"label": "한국어", "dir": "ltr"},
+    "pl": {"label": "Polski", "dir": "ltr"},
+    "pt": {"label": "Português", "dir": "ltr"},
+    "ru": {"label": "Русский", "dir": "ltr"},
+    "es": {"label": "Español", "dir": "ltr"},
+    "sw": {"label": "Kiswahili", "dir": "ltr"},
+    "te": {"label": "తెలుగు", "dir": "ltr"},
+    "th": {"label": "ไทย", "dir": "ltr"},
+    "tr": {"label": "Türkçe", "dir": "ltr"},
+    "uk": {"label": "Українська", "dir": "ltr"},
+}
+
+STRINGS: Dict[str, Dict[str, object]] = {
+    "en": {
+        "title": "Instagram Media Downloader",
+        "brand": "Media Vault",
+        "status_public": "Public posts only",
+        "tab_video": "Video",
+        "tab_reels": "Reels",
+        "tab_photo": "Photo",
+        "kicker": "Download all Instagram stuff here",
+        "headline_video": "Instagram Video Downloader",
+        "headline_reels": "Instagram Reels Downloader",
+        "headline_photo": "Instagram Photo Downloader",
+        "subhead": "Paste a public post or reel link. Private accounts will show a privacy alert.",
+        "placeholder": "Paste Instagram post or reel link",
+        "paste": "Paste",
+        "clear": "Clear",
+        "search": "Search",
+        "results": "Results",
+        "download": "Download",
+        "error_invalid_url": "Please paste a valid Instagram post or reel link.",
+        "modal_private_title": "Private Account",
+        "modal_private_msg": "This Instagram account is private. Media cannot be downloaded.",
+        "modal_mismatch_title": "Wrong Media Type",
+        "modal_mismatch_image": "This link is an image. Please select the Photo tab.",
+        "modal_mismatch_video": "This link is a video. Please select Video or Reels.",
+        "modal_mismatch_reel": "This link is not a reel. Please select Video.",
+        "seo_heading": "Fast Instagram Media Downloader",
+        "seo_paragraphs": [
+            "Download Instagram photos, videos, and reels from public posts in seconds. Paste a link, preview the media, and save it in original quality with one click.",
+            "This tool is built for creators, marketers, and researchers who need quick access to public media for inspiration, planning, or personal archiving.",
+            "Private accounts are not supported and will show a privacy alert. Respect copyright and only download content you own or have permission to use.",
+        ],
+        "meta_description": "Free Instagram media downloader for public posts. Paste a link to download photos, videos, and reels with previews in original quality.",
+        "meta_keywords": "instagram downloader, instagram video downloader, instagram photo downloader, reels downloader, ig downloader, download instagram media",
+        "contact": "Contact us",
+        "about": "About us",
+        "privacy": "Privacy policy",
+        "preview_alt": "Instagram media preview",
+        "footer_disclaimer": (
+            "This website is intended for educational and personal use only. All videos, photos, and "
+            "media remain the property of their respective owners. We do not claim any rights over "
+            "the content downloaded through this tool. All copyrights and trademarks belong to their "
+            "rightful owners. Instagram and the Instagram logo are trademarks of Meta Platforms, Inc."
+        ),
+        "copyright": "© {year} Media Vault. All rights reserved.",
+        "page_about_title": "About Us",
+        "page_about_body": "Media Vault helps you download public Instagram media for personal and educational use. We do not host content and we respect creators' rights.",
+        "page_contact_title": "Contact Us",
+        "page_contact_body": "For support or takedown requests, email us at support@example.com.",
+        "page_privacy_title": "Privacy Policy",
+        "page_privacy_body": "We do not store downloaded content. Your requests are processed to fetch public media only.",
+        "language_label": "Language",
+    },
+    "ar": {
+        "title": "أداة تنزيل وسائط إنستغرام",
+        "status_public": "المشاركات العامة فقط",
+        "tab_video": "فيديو",
+        "tab_reels": "ريلز",
+        "tab_photo": "صور",
+        "kicker": "حمّل كل محتوى إنستغرام هنا",
+        "headline_video": "أداة تنزيل فيديو إنستغرام",
+        "headline_reels": "أداة تنزيل ريلز إنستغرام",
+        "headline_photo": "أداة تنزيل صور إنستغرام",
+        "subhead": "الصق رابط منشور أو ريلز عام. الحسابات الخاصة ستظهر تنبيهًا بالخصوصية.",
+        "placeholder": "الصق رابط منشور أو ريلز من إنستغرام",
+        "paste": "لصق",
+        "clear": "مسح",
+        "search": "بحث",
+        "results": "النتائج",
+        "download": "تنزيل",
+        "seo_heading": "أداة سريعة لتنزيل وسائط إنستغرام",
+        "seo_paragraphs": [
+            "حمّل صور وفيديوهات وريـلز إنستغرام من المنشورات العامة خلال ثوانٍ. الصق الرابط، شاهد المعاينة، ثم احفظ بالجودة الأصلية.",
+            "مفيد للمبدعين والمسوقين والباحثين الذين يحتاجون إلى وصول سريع للمحتوى العام.",
+            "الحسابات الخاصة غير مدعومة وسيظهر تنبيه بالخصوصية. احترم حقوق النشر ولا تنزّل إلا المحتوى المصرّح به.",
+        ],
+        "meta_description": "أداة مجانية لتنزيل وسائط إنستغرام من المنشورات العامة. الصق الرابط لتنزيل الصور والفيديوهات والريلز مع المعاينة.",
+        "contact": "اتصل بنا",
+        "about": "من نحن",
+        "privacy": "سياسة الخصوصية",
+        "language_label": "اللغة",
+    },
+    "bn": {
+        "title": "ইনস্টাগ্রাম মিডিয়া ডাউনলোডার",
+        "status_public": "শুধু পাবলিক পোস্ট",
+        "tab_video": "ভিডিও",
+        "tab_reels": "রিলস",
+        "tab_photo": "ছবি",
+        "kicker": "এখানেই সব ইনস্টাগ্রাম কনটেন্ট ডাউনলোড করুন",
+        "headline_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার",
+        "headline_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার",
+        "headline_photo": "ইনস্টাগ্রাম ছবি ডাউনলোডার",
+        "subhead": "পাবলিক পোস্ট বা রিল লিঙ্ক পেস্ট করুন। প্রাইভেট অ্যাকাউন্টে প্রাইভেসি সতর্কতা দেখাবে।",
+        "placeholder": "ইনস্টাগ্রাম পোস্ট বা রিল লিঙ্ক পেস্ট করুন",
+        "paste": "পেস্ট",
+        "clear": "ক্লিয়ার",
+        "search": "সার্চ",
+        "results": "ফলাফল",
+        "download": "ডাউনলোড",
+        "seo_heading": "দ্রুত ইনস্টাগ্রাম মিডিয়া ডাউনলোডার",
+        "seo_paragraphs": [
+            "পাবলিক ইনস্টাগ্রাম পোস্ট থেকে ছবি, ভিডিও ও রিলস দ্রুত ডাউনলোড করুন। লিঙ্ক পেস্ট করুন, প্রিভিউ দেখুন, এক ক্লিকে সেভ করুন।",
+            "ক্রিয়েটর, মার্কেটার ও গবেষকদের জন্য দ্রুত পাবলিক মিডিয়া অ্যাক্সেস।",
+            "প্রাইভেট অ্যাকাউন্ট সমর্থিত নয়। কপিরাইট সম্মান করুন এবং অনুমতি থাকলেই ডাউনলোড করুন।",
+        ],
+        "meta_description": "পাবলিক ইনস্টাগ্রাম পোস্টের জন্য ফ্রি মিডিয়া ডাউনলোডার। লিঙ্ক পেস্ট করে ছবি, ভিডিও ও রিলস ডাউনলোড করুন।",
+        "contact": "যোগাযোগ",
+        "about": "আমাদের সম্পর্কে",
+        "privacy": "গোপনীয়তা নীতি",
+        "language_label": "ভাষা",
+    },
+    "zh": {
+        "title": "Instagram 媒体下载器",
+        "status_public": "仅公开帖子",
+        "tab_video": "视频",
+        "tab_reels": "短片",
+        "tab_photo": "照片",
+        "kicker": "在这里下载所有 Instagram 内容",
+        "headline_video": "Instagram 视频下载器",
+        "headline_reels": "Instagram Reels 下载器",
+        "headline_photo": "Instagram 照片下载器",
+        "subhead": "粘贴公开帖子或短片链接。私密账号会显示隐私提示。",
+        "placeholder": "粘贴 Instagram 帖子或短片链接",
+        "paste": "粘贴",
+        "clear": "清除",
+        "search": "搜索",
+        "results": "结果",
+        "download": "下载",
+        "seo_heading": "快速 Instagram 媒体下载器",
+        "seo_paragraphs": [
+            "从公开帖子快速下载 Instagram 照片、视频和 Reels。粘贴链接即可预览并保存原始质量。",
+            "适合创作者、营销人员和研究者获取公开媒体用于灵感和整理。",
+            "不支持私密账号。请尊重版权，仅下载你拥有或获授权的内容。",
+        ],
+        "meta_description": "公开 Instagram 帖子的免费媒体下载器。粘贴链接即可下载照片、视频和 Reels。",
+        "contact": "联系我们",
+        "about": "关于我们",
+        "privacy": "隐私政策",
+        "language_label": "语言",
+    },
+    "fr": {
+        "title": "Téléchargeur de médias Instagram",
+        "status_public": "Publications publiques uniquement",
+        "tab_video": "Vidéo",
+        "tab_reels": "Reels",
+        "tab_photo": "Photo",
+        "kicker": "Téléchargez tout le contenu Instagram ici",
+        "headline_video": "Téléchargeur vidéo Instagram",
+        "headline_reels": "Téléchargeur Reels Instagram",
+        "headline_photo": "Téléchargeur photo Instagram",
+        "subhead": "Collez un lien de post ou reel public. Les comptes privés affichent une alerte.",
+        "placeholder": "Collez un lien de post ou reel Instagram",
+        "paste": "Coller",
+        "clear": "Effacer",
+        "search": "Rechercher",
+        "results": "Résultats",
+        "download": "Télécharger",
+        "seo_heading": "Téléchargeur Instagram rapide",
+        "seo_paragraphs": [
+            "Téléchargez rapidement photos, vidéos et reels depuis des posts publics. Collez le lien, prévisualisez, puis enregistrez en qualité originale.",
+            "Conçu pour les créateurs, marketeurs et chercheurs qui ont besoin d’un accès rapide aux médias publics.",
+            "Les comptes privés ne sont pas pris en charge. Respectez le droit d’auteur et téléchargez uniquement avec permission.",
+        ],
+        "meta_description": "Téléchargeur gratuit de médias Instagram pour posts publics. Collez un lien pour télécharger photos, vidéos et reels.",
+        "contact": "Contact",
+        "about": "À propos",
+        "privacy": "Politique de confidentialité",
+        "language_label": "Langue",
+    },
+    "de": {
+        "title": "Instagram Medien-Downloader",
+        "status_public": "Nur öffentliche Beiträge",
+        "tab_video": "Video",
+        "tab_reels": "Reels",
+        "tab_photo": "Foto",
+        "kicker": "Alle Instagram-Inhalte hier herunterladen",
+        "headline_video": "Instagram Video Downloader",
+        "headline_reels": "Instagram Reels Downloader",
+        "headline_photo": "Instagram Foto Downloader",
+        "subhead": "Füge einen öffentlichen Post- oder Reel-Link ein. Private Konten zeigen eine Warnung.",
+        "placeholder": "Instagram Post- oder Reel-Link einfügen",
+        "paste": "Einfügen",
+        "clear": "Löschen",
+        "search": "Suchen",
+        "results": "Ergebnisse",
+        "download": "Download",
+        "seo_heading": "Schneller Instagram Medien-Downloader",
+        "seo_paragraphs": [
+            "Lade Instagram Fotos, Videos und Reels aus öffentlichen Beiträgen in Sekunden herunter. Link einfügen, Vorschau ansehen, speichern.",
+            "Ideal für Creator, Marketer und Researcher mit Bedarf an schnellen Medien-Zugriffen.",
+            "Private Konten werden nicht unterstützt. Urheberrecht beachten und nur mit Erlaubnis herunterladen.",
+        ],
+        "meta_description": "Kostenloser Instagram Medien-Downloader für öffentliche Posts. Link einfügen und Fotos, Videos, Reels herunterladen.",
+        "contact": "Kontakt",
+        "about": "Über uns",
+        "privacy": "Datenschutz",
+        "language_label": "Sprache",
+    },
+    "hi": {
+        "title": "इंस्टाग्राम मीडिया डाउनलोडर",
+        "status_public": "केवल सार्वजनिक पोस्ट",
+        "tab_video": "वीडियो",
+        "tab_reels": "रील्स",
+        "tab_photo": "फोटो",
+        "kicker": "यहाँ सभी इंस्टाग्राम कंटेंट डाउनलोड करें",
+        "headline_video": "इंस्टाग्राम वीडियो डाउनलोडर",
+        "headline_reels": "इंस्टाग्राम रील्स डाउनलोडर",
+        "headline_photo": "इंस्टाग्राम फोटो डाउनलोडर",
+        "subhead": "किसी सार्वजनिक पोस्ट या रील का लिंक पेस्ट करें। प्राइवेट अकाउंट पर प्राइवेसी अलर्ट दिखेगा।",
+        "placeholder": "इंस्टाग्राम पोस्ट या रील लिंक पेस्ट करें",
+        "paste": "पेस्ट",
+        "clear": "क्लियर",
+        "search": "सर्च",
+        "results": "परिणाम",
+        "download": "डाउनलोड",
+        "seo_heading": "तेज़ इंस्टाग्राम मीडिया डाउनलोडर",
+        "seo_paragraphs": [
+            "सार्वजनिक पोस्ट से फोटो, वीडियो और रील्स तुरंत डाउनलोड करें। लिंक पेस्ट करें, प्रिव्यू देखें और सेव करें।",
+            "क्रिएटर्स, मार्केटर्स और रिसर्च के लिए तेज़ और आसान टूल।",
+            "प्राइवेट अकाउंट सपोर्टेड नहीं हैं। केवल अनुमति वाले कंटेंट डाउनलोड करें।",
+        ],
+        "meta_description": "सार्वजनिक इंस्टाग्राम पोस्ट के लिए फ्री मीडिया डाउनलोडर। लिंक पेस्ट करके फोटो, वीडियो और रील्स डाउनलोड करें।",
+        "contact": "संपर्क करें",
+        "about": "हमारे बारे में",
+        "privacy": "प्राइवेसी पॉलिसी",
+        "language_label": "भाषा",
+    },
+    "hu": {
+        "title": "Instagram média letöltő",
+        "status_public": "Csak nyilvános posztok",
+        "tab_video": "Videó",
+        "tab_reels": "Reels",
+        "tab_photo": "Fotó",
+        "kicker": "Tölts le minden Instagram tartalmat itt",
+        "headline_video": "Instagram videó letöltő",
+        "headline_reels": "Instagram Reels letöltő",
+        "headline_photo": "Instagram fotó letöltő",
+        "subhead": "Illessz be egy nyilvános poszt vagy reels linket. Privát fióknál figyelmeztetés jelenik meg.",
+        "placeholder": "Instagram poszt vagy reels link beillesztése",
+        "paste": "Beillesztés",
+        "clear": "Törlés",
+        "search": "Keresés",
+        "results": "Eredmények",
+        "download": "Letöltés",
+        "seo_heading": "Gyors Instagram média letöltő",
+        "seo_paragraphs": [
+            "Nyilvános posztokból gyorsan tölts le fotókat, videókat és reelseket. Link beillesztése, előnézet, mentés.",
+            "Ideális alkotóknak, marketingeseknek és kutatóknak.",
+            "Privát fiókok nem támogatottak. Tartsd tiszteletben a szerzői jogokat.",
+        ],
+        "meta_description": "Ingyenes Instagram média letöltő nyilvános posztokhoz. Link beillesztése és letöltés.",
+        "contact": "Kapcsolat",
+        "about": "Rólunk",
+        "privacy": "Adatvédelem",
+        "language_label": "Nyelv",
+    },
+    "id": {
+        "title": "Pengunduh Media Instagram",
+        "status_public": "Hanya posting publik",
+        "tab_video": "Video",
+        "tab_reels": "Reels",
+        "tab_photo": "Foto",
+        "kicker": "Unduh semua konten Instagram di sini",
+        "headline_video": "Pengunduh Video Instagram",
+        "headline_reels": "Pengunduh Reels Instagram",
+        "headline_photo": "Pengunduh Foto Instagram",
+        "subhead": "Tempel tautan posting atau reels publik. Akun privat akan menampilkan peringatan.",
+        "placeholder": "Tempel tautan post atau reels Instagram",
+        "paste": "Tempel",
+        "clear": "Hapus",
+        "search": "Cari",
+        "results": "Hasil",
+        "download": "Unduh",
+        "seo_heading": "Pengunduh Media Instagram Cepat",
+        "seo_paragraphs": [
+            "Unduh foto, video, dan reels dari posting publik dengan cepat. Tempel tautan, pratinjau, lalu simpan.",
+            "Cocok untuk kreator, marketer, dan peneliti.",
+            "Akun privat tidak didukung. Hormati hak cipta dan unduh dengan izin.",
+        ],
+        "meta_description": "Pengunduh media Instagram gratis untuk posting publik. Tempel tautan untuk mengunduh foto, video, dan reels.",
+        "contact": "Hubungi kami",
+        "about": "Tentang kami",
+        "privacy": "Kebijakan privasi",
+        "language_label": "Bahasa",
+    },
+    "it": {
+        "title": "Downloader media Instagram",
+        "status_public": "Solo post pubblici",
+        "tab_video": "Video",
+        "tab_reels": "Reels",
+        "tab_photo": "Foto",
+        "kicker": "Scarica tutti i contenuti Instagram qui",
+        "headline_video": "Downloader video Instagram",
+        "headline_reels": "Downloader Reels Instagram",
+        "headline_photo": "Downloader foto Instagram",
+        "subhead": "Incolla un link di post o reel pubblico. Gli account privati mostrano un avviso.",
+        "placeholder": "Incolla link post o reel Instagram",
+        "paste": "Incolla",
+        "clear": "Pulisci",
+        "search": "Cerca",
+        "results": "Risultati",
+        "download": "Scarica",
+        "seo_heading": "Downloader Instagram veloce",
+        "seo_paragraphs": [
+            "Scarica foto, video e reels da post pubblici in pochi secondi. Incolla il link, guarda l’anteprima e salva.",
+            "Perfetto per creator, marketer e ricercatori.",
+            "Account privati non supportati. Rispetta il copyright.",
+        ],
+        "meta_description": "Downloader gratuito di media Instagram per post pubblici. Incolla un link per scaricare foto, video e reels.",
+        "contact": "Contatti",
+        "about": "Chi siamo",
+        "privacy": "Privacy",
+        "language_label": "Lingua",
+    },
+    "ja": {
+        "title": "Instagram メディアダウンローダー",
+        "status_public": "公開投稿のみ",
+        "tab_video": "動画",
+        "tab_reels": "リール",
+        "tab_photo": "写真",
+        "kicker": "ここでInstagramのすべてをダウンロード",
+        "headline_video": "Instagram 動画ダウンローダー",
+        "headline_reels": "Instagram リールダウンローダー",
+        "headline_photo": "Instagram 写真ダウンローダー",
+        "subhead": "公開投稿またはリールのリンクを貼り付けてください。非公開アカウントは警告が表示されます。",
+        "placeholder": "Instagram投稿またはリールのリンクを貼り付け",
+        "paste": "貼り付け",
+        "clear": "クリア",
+        "search": "検索",
+        "results": "結果",
+        "download": "ダウンロード",
+        "seo_heading": "高速 Instagram メディアダウンローダー",
+        "seo_paragraphs": [
+            "公開投稿から写真・動画・リールを素早くダウンロード。リンクを貼り付けてプレビューし保存。",
+            "クリエイターやマーケター、研究者向けの便利なツール。",
+            "非公開アカウントは非対応。著作権を尊重してください。",
+        ],
+        "meta_description": "公開Instagram投稿用の無料メディアダウンローダー。リンクを貼り付けて写真・動画・リールをダウンロード。",
+        "contact": "お問い合わせ",
+        "about": "私たちについて",
+        "privacy": "プライバシーポリシー",
+        "language_label": "言語",
+    },
+    "ko": {
+        "title": "인스타그램 미디어 다운로더",
+        "status_public": "공개 게시물만",
+        "tab_video": "동영상",
+        "tab_reels": "릴스",
+        "tab_photo": "사진",
+        "kicker": "여기에서 모든 인스타그램 콘텐츠 다운로드",
+        "headline_video": "인스타그램 동영상 다운로더",
+        "headline_reels": "인스타그램 릴스 다운로더",
+        "headline_photo": "인스타그램 사진 다운로더",
+        "subhead": "공개 पोस्ट 또는 릴스 링크를 붙여넣으세요. 비공개 계정은 경고가 표시됩니다.",
+        "placeholder": "인스타그램 게시물 또는 릴스 링크 붙여넣기",
+        "paste": "붙여넣기",
+        "clear": "지우기",
+        "search": "검색",
+        "results": "결과",
+        "download": "다운로드",
+        "seo_heading": "빠른 인스타그램 미디어 다운로더",
+        "seo_paragraphs": [
+            "공개 게시물에서 사진, 동영상, 릴스를 빠르게 다운로드하세요. 링크를 붙여넣고 미리보기 후 저장.",
+            "크리에이터와 마케터, 연구자를 위한 도구입니다.",
+            "비공개 계정은 지원되지 않습니다. 저작권을 احترام하세요.",
+        ],
+        "meta_description": "공개 인스타그램 게시물용 무료 미디어 다운로더. 링크를 붙여넣어 사진, 동영상, 릴스를 다운로드하세요.",
+        "contact": "문의하기",
+        "about": "회사 소개",
+        "privacy": "개인정보처리방침",
+        "language_label": "언어",
+    },
+    "pl": {
+        "title": "Pobieranie mediów z Instagram",
+        "status_public": "Tylko publiczne posty",
+        "tab_video": "Wideo",
+        "tab_reels": "Reels",
+        "tab_photo": "Zdjęcie",
+        "kicker": "Pobierz wszystkie treści z Instagram tutaj",
+        "headline_video": "Pobieranie wideo z Instagram",
+        "headline_reels": "Pobieranie Reels z Instagram",
+        "headline_photo": "Pobieranie zdjęć z Instagram",
+        "subhead": "Wklej link do publicznego posta lub reels. Prywatne konta pokażą alert.",
+        "placeholder": "Wklej link do posta lub reels z Instagram",
+        "paste": "Wklej",
+        "clear": "Wyczyść",
+        "search": "Szukaj",
+        "results": "Wyniki",
+        "download": "Pobierz",
+        "seo_heading": "Szybki downloader Instagram",
+        "seo_paragraphs": [
+            "Pobieraj zdjęcia, wideo i reels z publicznych postów w kilka sekund. Wklej link, zobacz podgląd i zapisz.",
+            "Dla twórców, marketerów i badaczy.",
+            "Prywatne konta nie są obsługiwane. Szanuj prawa autorskie.",
+        ],
+        "meta_description": "Darmowy downloader mediów Instagram dla publicznych postów. Wklej link i pobierz zdjęcia, wideo, reels.",
+        "contact": "Kontakt",
+        "about": "O nas",
+        "privacy": "Polityka prywatności",
+        "language_label": "Język",
+    },
+    "pt": {
+        "title": "Baixador de mídia do Instagram",
+        "status_public": "Somente posts públicos",
+        "tab_video": "Vídeo",
+        "tab_reels": "Reels",
+        "tab_photo": "Foto",
+        "kicker": "Baixe todo o conteúdo do Instagram aqui",
+        "headline_video": "Baixador de vídeos do Instagram",
+        "headline_reels": "Baixador de Reels do Instagram",
+        "headline_photo": "Baixador de fotos do Instagram",
+        "subhead": "Cole um link de post ou reel público. Contas privadas exibem alerta.",
+        "placeholder": "Cole o link do post ou reel do Instagram",
+        "paste": "Colar",
+        "clear": "Limpar",
+        "search": "Buscar",
+        "results": "Resultados",
+        "download": "Baixar",
+        "seo_heading": "Baixador rápido do Instagram",
+        "seo_paragraphs": [
+            "Baixe fotos, vídeos e reels de posts públicos em segundos. Cole o link, visualize e salve.",
+            "Ideal para criadores, profissionais de marketing e pesquisadores.",
+            "Contas privadas não são suportadas. Respeite direitos autorais.",
+        ],
+        "meta_description": "Baixador grátis de mídia do Instagram para posts públicos. Cole um link para baixar fotos, vídeos e reels.",
+        "contact": "Contato",
+        "about": "Sobre nós",
+        "privacy": "Política de privacidade",
+        "language_label": "Idioma",
+    },
+    "ru": {
+        "title": "Загрузчик медиа Instagram",
+        "status_public": "Только публичные посты",
+        "tab_video": "Видео",
+        "tab_reels": "Reels",
+        "tab_photo": "Фото",
+        "kicker": "Скачивайте весь контент Instagram здесь",
+        "headline_video": "Загрузчик видео Instagram",
+        "headline_reels": "Загрузчик Reels Instagram",
+        "headline_photo": "Загрузчик фото Instagram",
+        "subhead": "Вставьте ссылку на публичный пост или reels. Для приватных аккаунтов покажется предупреждение.",
+        "placeholder": "Вставьте ссылку на пост или reels Instagram",
+        "paste": "Вставить",
+        "clear": "Очистить",
+        "search": "Поиск",
+        "results": "Результаты",
+        "download": "Скачать",
+        "seo_heading": "Быстрый загрузчик Instagram",
+        "seo_paragraphs": [
+            "Скачивайте фото, видео и reels из публичных постов за секунды. Вставьте ссылку, просмотрите и сохраните.",
+            "Подходит для создателей, маркетологов и исследователей.",
+            "Приватные аккаунты не поддерживаются. Уважайте авторские права.",
+        ],
+        "meta_description": "Бесплатный загрузчик медиа Instagram для публичных постов. Вставьте ссылку и скачайте фото, видео, reels.",
+        "contact": "Контакты",
+        "about": "О нас",
+        "privacy": "Политика конфиденциальности",
+        "language_label": "Язык",
+    },
+    "es": {
+        "title": "Descargador de medios de Instagram",
+        "status_public": "Solo publicaciones públicas",
+        "tab_video": "Video",
+        "tab_reels": "Reels",
+        "tab_photo": "Foto",
+        "kicker": "Descarga todo el contenido de Instagram aquí",
+        "headline_video": "Descargador de videos de Instagram",
+        "headline_reels": "Descargador de Reels de Instagram",
+        "headline_photo": "Descargador de fotos de Instagram",
+        "subhead": "Pega un enlace de publicación o reel público. Las cuentas privadas mostrarán una alerta.",
+        "placeholder": "Pega el enlace de un post o reel de Instagram",
+        "paste": "Pegar",
+        "clear": "Limpiar",
+        "search": "Buscar",
+        "results": "Resultados",
+        "download": "Descargar",
+        "seo_heading": "Descargador rápido de Instagram",
+        "seo_paragraphs": [
+            "Descarga fotos, videos y reels de publicaciones públicas en segundos. Pega el enlace, previsualiza y guarda.",
+            "Ideal para creadores, marketers e investigadores.",
+            "Las cuentas privadas no están soportadas. Respeta los derechos de autor.",
+        ],
+        "meta_description": "Descargador gratuito de medios de Instagram para publicaciones públicas. Pega un enlace para descargar fotos, videos y reels.",
+        "contact": "Contacto",
+        "about": "Acerca de",
+        "privacy": "Política de privacidad",
+        "language_label": "Idioma",
+    },
+    "sw": {
+        "title": "Kipakua Media za Instagram",
+        "status_public": "Machapisho ya umma tu",
+        "tab_video": "Video",
+        "tab_reels": "Reels",
+        "tab_photo": "Picha",
+        "kicker": "Pakua maudhui yote ya Instagram hapa",
+        "headline_video": "Kipakua Video za Instagram",
+        "headline_reels": "Kipakua Reels za Instagram",
+        "headline_photo": "Kipakua Picha za Instagram",
+        "subhead": "Bandika kiungo cha post au reel ya umma. Akaunti binafsi zitaonyesha tahadhari.",
+        "placeholder": "Bandika kiungo cha post au reel ya Instagram",
+        "paste": "Bandika",
+        "clear": "Futa",
+        "search": "Tafuta",
+        "results": "Matokeo",
+        "download": "Pakua",
+        "seo_heading": "Kipakua cha Haraka cha Instagram",
+        "seo_paragraphs": [
+            "Pakua picha, video na reels kutoka machapisho ya umma kwa sekunde chache. Bandika kiungo, ona muonekano, hifadhi.",
+            "Kwa wabunifu, wauzaji na watafiti wanaohitaji ufikiaji wa haraka.",
+            "Akaunti binafsi hazisaidiwi. Heshimu hakimiliki.",
+        ],
+        "meta_description": "Kipakua cha bure cha media za Instagram kwa machapisho ya umma. Bandika kiungo kupakua picha, video na reels.",
+        "contact": "Wasiliana nasi",
+        "about": "Kuhusu sisi",
+        "privacy": "Sera ya faragha",
+        "language_label": "Lugha",
+    },
+    "te": {
+        "title": "ఇన్‌స్టాగ్రామ్ మీడియా డౌన్‌లోడర్",
+        "status_public": "పబ్లిక్ పోస్టులు మాత్రమే",
+        "tab_video": "వీడియో",
+        "tab_reels": "రీల్స్",
+        "tab_photo": "ఫోటో",
+        "kicker": "ఇక్కడ అన్ని ఇన్‌స్టాగ్రామ్ కంటెంట్ డౌన్‌లోడ్ చేయండి",
+        "headline_video": "ఇన్‌స్టాగ్రామ్ వీడియో డౌన్‌లోడర్",
+        "headline_reels": "ఇన్‌స్టాగ్రామ్ రీల్స్ డౌన్‌లోడర్",
+        "headline_photo": "ఇన్‌స్టాగ్రామ్ ఫోటో డౌన్‌లోడర్",
+        "subhead": "పబ్లిక్ పోస్ట్ లేదా రీల్ లింక్‌ను పేస్ట్ చేయండి. ప్రైవేట్ అకౌంట్లకు ప్రైవసీ అలర్ట్ కనిపిస్తుంది.",
+        "placeholder": "ఇన్‌స్టాగ్రామ్ పోస్ట్ లేదా రీల్ లింక్‌ను పేస్ట్ చేయండి",
+        "paste": "పేస్ట్",
+        "clear": "క్లియర్",
+        "search": "సెర్చ్",
+        "results": "ఫలితాలు",
+        "download": "డౌన్‌లోడ్",
+        "seo_heading": "త్వరిత ఇన్‌స్టాగ్రామ్ మీడియా డౌన్‌లోడర్",
+        "seo_paragraphs": [
+            "పబ్లిక్ పోస్టుల నుంచి ఫోటోలు, వీడియోలు, రీల్స్‌ను త్వరగా డౌన్‌లోడ్ చేయండి. లింక్ పేస్ట్ చేసి ప్రివ్యూ చూడండి.",
+            "క్రియేటర్లు, మార్కెటర్లు, పరిశోధకులకు ఉపయోగకరం.",
+            "ప్రైవేట్ అకౌంట్లు సపోర్ట్ చేయవు. కాపీరైట్‌ను గౌరవించండి.",
+        ],
+        "meta_description": "పబ్లిక్ ఇన్‌స్టాగ్రామ్ పోస్టుల కోసం ఫ్రీ మీడియా డౌన్‌లోడర్. లింక్ పేస్ట్ చేసి ఫోటోలు, వీడియోలు, రీల్స్ డౌన్‌లోడ్ చేయండి.",
+        "contact": "సంప్రదించండి",
+        "about": "మా గురించి",
+        "privacy": "గోప్యతా విధానం",
+        "language_label": "భాష",
+    },
+    "th": {
+        "title": "ตัวดาวน์โหลดสื่อ Instagram",
+        "status_public": "เฉพาะโพสต์สาธารณะ",
+        "tab_video": "วิดีโอ",
+        "tab_reels": "รีลส์",
+        "tab_photo": "รูปภาพ",
+        "kicker": "ดาวน์โหลดทุกอย่างจาก Instagram ได้ที่นี่",
+        "headline_video": "ตัวดาวน์โหลดวิดีโอ Instagram",
+        "headline_reels": "ตัวดาวน์โหลด Reels Instagram",
+        "headline_photo": "ตัวดาวน์โหลดรูปภาพ Instagram",
+        "subhead": "วางลิงก์โพสต์หรือรีลส์สาธารณะ บัญชีส่วนตัวจะแสดงการแจ้งเตือนความเป็นส่วนตัว",
+        "placeholder": "วางลิงก์โพสต์หรือรีลส์ Instagram",
+        "paste": "วาง",
+        "clear": "ล้าง",
+        "search": "ค้นหา",
+        "results": "ผลลัพธ์",
+        "download": "ดาวน์โหลด",
+        "seo_heading": "ตัวดาวน์โหลด Instagram ที่รวดเร็ว",
+        "seo_paragraphs": [
+            "ดาวน์โหลดรูปภาพ วิดีโอ และรีลส์จากโพสต์สาธารณะได้อย่างรวดเร็ว วางลิงก์ ดูตัวอย่าง และบันทึก",
+            "เหมาะสำหรับครีเอเตอร์ นักการตลาด และนักวิจัย",
+            "ไม่รองรับบัญชีส่วนตัว กรุณาเคารพลิขสิทธิ์",
+        ],
+        "meta_description": "ตัวดาวน์โหลดสื่อ Instagram ฟรีสำหรับโพสต์สาธารณะ วางลิงก์เพื่อดาวน์โหลดรูปภาพ วิดีโอ และรีลส์",
+        "contact": "ติดต่อเรา",
+        "about": "เกี่ยวกับเรา",
+        "privacy": "นโยบายความเป็นส่วนตัว",
+        "language_label": "ภาษา",
+    },
+    "tr": {
+        "title": "Instagram Medya İndirici",
+        "status_public": "Yalnızca herkese açık gönderiler",
+        "tab_video": "Video",
+        "tab_reels": "Reels",
+        "tab_photo": "Fotoğraf",
+        "kicker": "Tüm Instagram içeriklerini buradan indir",
+        "headline_video": "Instagram Video İndirici",
+        "headline_reels": "Instagram Reels İndirici",
+        "headline_photo": "Instagram Fotoğraf İndirici",
+        "subhead": "Herkese açık bir gönderi veya reels bağlantısı yapıştırın. Özel hesaplarda uyarı gösterilir.",
+        "placeholder": "Instagram gönderi veya reels bağlantısı yapıştırın",
+        "paste": "Yapıştır",
+        "clear": "Temizle",
+        "search": "Ara",
+        "results": "Sonuçlar",
+        "download": "İndir",
+        "seo_heading": "Hızlı Instagram Medya İndirici",
+        "seo_paragraphs": [
+            "Herkese açık gönderilerden fotoğraf, video ve reels’i saniyeler içinde indirin. Bağlantıyı yapıştırın, önizleyin, kaydedin.",
+            "İçerik üreticileri ve pazarlamacılar için hızlı erişim sağlar.",
+            "Özel hesaplar desteklenmez. Telif haklarına saygı gösterin.",
+        ],
+        "meta_description": "Herkese açık Instagram gönderileri için ücretsiz medya indirici. Bağlantı yapıştırarak fotoğraf, video ve reels indirin.",
+        "contact": "Bize ulaşın",
+        "about": "Hakkımızda",
+        "privacy": "Gizlilik Politikası",
+        "language_label": "Dil",
+    },
+    "uk": {
+        "title": "Завантажувач медіа Instagram",
+        "status_public": "Лише публічні пости",
+        "tab_video": "Відео",
+        "tab_reels": "Reels",
+        "tab_photo": "Фото",
+        "kicker": "Завантажуйте весь контент Instagram тут",
+        "headline_video": "Завантажувач відео Instagram",
+        "headline_reels": "Завантажувач Reels Instagram",
+        "headline_photo": "Завантажувач фото Instagram",
+        "subhead": "Вставте посилання на публічний пост або reels. Приватні акаунти покажуть попередження.",
+        "placeholder": "Вставте посилання на пост або reels Instagram",
+        "paste": "Вставити",
+        "clear": "Очистити",
+        "search": "Пошук",
+        "results": "Результати",
+        "download": "Завантажити",
+        "seo_heading": "Швидкий завантажувач Instagram",
+        "seo_paragraphs": [
+            "Завантажуйте фото, відео та reels з публічних постів за секунди. Вставте посилання, перегляньте і збережіть.",
+            "Для творців, маркетологів та дослідників.",
+            "Приватні акаунти не підтримуються. Поважайте авторські права.",
+        ],
+        "meta_description": "Безкоштовний завантажувач медіа Instagram для публічних постів. Вставте посилання та завантажте фото, відео, reels.",
+        "contact": "Контакти",
+        "about": "Про нас",
+        "privacy": "Політика конфіденційності",
+        "language_label": "Мова",
+    },
+}
+
+# If a language has only partial translations, fall back to English for the rest.
+def build_strings(lang: str) -> Dict[str, object]:
+    base = STRINGS[DEFAULT_LANG].copy()
+    base.update(STRINGS.get(lang, {}))
+    return base
+
 
 MEDIA_URL_RE = re.compile(
     r"(?:https?://)?(?:www\.)?instagram\.com/(p|reel|reels|tv)/([^/?#]+)/?",
     re.IGNORECASE,
 )
 
-ALLOWED_HOST_SUFFIXES = ("cdninstagram.com", "fbcdn.net", "instagram.com")
 
-BASE_TRANSLATIONS: Dict[str, str] = {
-    "label": "English",
-    "dir": "ltr",
-    "title": "Instagram Media Downloader",
-    "meta_description": "Download Instagram videos, reels, and photos from public posts. Paste a link and get clean previews with direct downloads.",
-    "meta_keywords": "instagram downloader, instagram video downloader, instagram reels downloader, instagram photo downloader, download instagram",
-    "brand": "Media Vault",
-    "status": "Public posts only",
-    "tab_video": "Video",
-    "tab_reels": "Reels",
-    "tab_photo": "Photo",
-    "kicker": "Download all Instagram stuff here",
-    "headline_video": "Instagram Video Downloader",
-    "headline_reels": "Instagram Reels Downloader",
-    "headline_photo": "Instagram Photo Downloader",
-    "sub": "Paste a public post or reel link. Private accounts will show a privacy alert.",
-    "placeholder": "Paste Instagram post or reel link",
-    "paste": "Paste",
-    "clear": "Clear",
-    "search": "Search",
-    "results": "Results",
-    "download": "Download",
-    "error_invalid_link": "Please paste a valid Instagram post or reel link.",
-    "error_not_reel": "This link is not a reel.",
-    "error_no_media": "No media found for that selection.",
-    "modal_private_title": "Private Account",
-    "modal_private_body": "This Instagram account is private. Media cannot be downloaded.",
-    "modal_mismatch_title": "Wrong Media Type",
-    "modal_mismatch_video": "This link is an image. Please select the Photo tab.",
-    "modal_mismatch_photo": "This link is a video. Please select the Video or Reels tab.",
-    "seo_title": "Fast Instagram Media Downloader for Public Posts",
-    "seo_p1": "Use this Instagram downloader to save public videos, reels, and photos directly from post links. It is simple, fast, and works without login.",
-    "seo_p2": "Paste a link, preview the media, and download each item individually. Carousels show every photo or video with its own download button.",
-    "seo_list_title": "Features",
-    "seo_list_1": "Supports public Instagram posts, reels, and photos",
-    "seo_list_2": "Clean previews and one-click downloads",
-    "seo_list_3": "Handles carousels with multiple items",
-    "seo_list_4": "Privacy-aware: private accounts show a warning",
-    "footer_contact": "Contact Us",
-    "footer_about": "About Us",
-    "footer_privacy": "Privacy Policy",
-    "footer_disclaimer": "This website is intended for educational and personal use only. All videos, photos, and media remain the property of their respective owners. We do not claim any rights over the content downloaded through this tool. All copyrights and trademarks belong to their rightful owners. Instagram and the Instagram logo are trademarks of Meta Platforms, Inc.",
-    "footer_copy": "Copyright © 2026 Media Vault. All rights reserved.",
-    "page_about_title": "About Us",
-    "page_about_body": "Media Vault provides a simple way to preview and download public Instagram media for personal use. We focus on speed, clarity, and responsible use.",
-    "page_contact_title": "Contact Us",
-    "page_contact_body": "For support or inquiries, please email: support@example.com",
-    "page_privacy_title": "Privacy Policy",
-    "page_privacy_body": "We do not store the media you download. Requests are processed in real time and no user data is sold or shared.",
-}
-
-LANG_OVERRIDES: Dict[str, Dict[str, str]] = {
-    "en": {},
-    "ar": {
-        "label": "العربية",
-        "dir": "rtl",
-        "title": "أداة تنزيل محتوى إنستغرام",
-        "meta_description": "حمّل فيديوهات وريـلز وصور إنستغرام من المنشورات العامة. الصق الرابط وشاهد المعاينة ثم نزّل.",
-        "status": "منشورات عامة فقط",
-        "tab_video": "فيديو",
-        "tab_reels": "ريلز",
-        "tab_photo": "صور",
-        "kicker": "حمّل كل محتوى إنستغرام هنا",
-        "headline_video": "تحميل فيديو إنستغرام",
-        "headline_reels": "تحميل ريلز إنستغرام",
-        "headline_photo": "تحميل صور إنستغرام",
-        "sub": "الصق رابط منشور عام أو ريلز. الحسابات الخاصة ستظهر تنبيهاً.",
-        "placeholder": "الصق رابط منشور أو ريلز إنستغرام",
-        "paste": "لصق",
-        "clear": "مسح",
-        "search": "بحث",
-        "results": "النتائج",
-        "download": "تنزيل",
-        "error_invalid_link": "يرجى لصق رابط إنستغرام صالح.",
-        "error_not_reel": "هذا الرابط ليس ريلز.",
-        "error_no_media": "لم يتم العثور على وسائط لهذا الاختيار.",
-        "modal_private_title": "حساب خاص",
-        "modal_private_body": "هذا الحساب خاص ولا يمكن تنزيل المحتوى.",
-        "modal_mismatch_title": "نوع غير صحيح",
-        "modal_mismatch_video": "هذا الرابط لصورة. الرجاء اختيار تبويب الصور.",
-        "modal_mismatch_photo": "هذا الرابط لفيديو. الرجاء اختيار تبويب الفيديو أو الريلز.",
-        "footer_contact": "اتصل بنا",
-        "footer_about": "من نحن",
-        "footer_privacy": "سياسة الخصوصية",
-        "page_about_title": "من نحن",
-        "page_about_body": "Media Vault يوفر طريقة بسيطة لمعاينة وتنزيل محتوى إنستغرام العام للاستخدام الشخصي.",
-        "page_contact_title": "اتصل بنا",
-        "page_contact_body": "للدعم أو الاستفسارات: support@example.com",
-        "page_privacy_title": "سياسة الخصوصية",
-        "page_privacy_body": "لا نقوم بتخزين الوسائط التي يتم تنزيلها. تتم معالجة الطلبات في الوقت الحقيقي.",
-    },
-    "bn": {
-        "label": "বাংলা",
-        "title": "ইনস্টাগ্রাম মিডিয়া ডাউনলোডার",
-        "meta_description": "পাবলিক পোস্ট থেকে ইনস্টাগ্রাম ভিডিও, রিল এবং ছবি ডাউনলোড করুন। লিংক পেস্ট করে প্রিভিউ ও ডাউনলোড করুন।",
-        "status": "শুধু পাবলিক পোস্ট",
-        "tab_video": "ভিডিও",
-        "tab_reels": "রিলস",
-        "tab_photo": "ফটো",
-        "kicker": "সব ইনস্টাগ্রাম কন্টেন্ট এখানে ডাউনলোড করুন",
-        "headline_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার",
-        "headline_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার",
-        "headline_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার",
-        "sub": "পাবলিক পোস্ট বা রিল লিংক পেস্ট করুন। প্রাইভেট অ্যাকাউন্টে সতর্কতা দেখাবে।",
-        "placeholder": "ইনস্টাগ্রাম পোস্ট বা রিল লিংক পেস্ট করুন",
-        "paste": "পেস্ট",
-        "clear": "মুছুন",
-        "search": "সার্চ",
-        "results": "ফলাফল",
-        "download": "ডাউনলোড",
-        "error_invalid_link": "দয়া করে একটি বৈধ ইনস্টাগ্রাম লিংক পেস্ট করুন।",
-        "error_not_reel": "এই লিংকটি রিল নয়।",
-        "error_no_media": "এই নির্বাচনের জন্য কোনো মিডিয়া পাওয়া যায়নি।",
-        "modal_private_title": "প্রাইভেট অ্যাকাউন্ট",
-        "modal_private_body": "এই ইনস্টাগ্রাম অ্যাকাউন্টটি প্রাইভেট। মিডিয়া ডাউনলোড করা যাবে না।",
-        "modal_mismatch_title": "ভুল মিডিয়া টাইপ",
-        "modal_mismatch_video": "এই লিংকটি ছবি। অনুগ্রহ করে ফটো ট্যাব নির্বাচন করুন।",
-        "modal_mismatch_photo": "এই লিংকটি ভিডিও। ভিডিও বা রিলস ট্যাব নির্বাচন করুন।",
-        "footer_contact": "যোগাযোগ",
-        "footer_about": "আমাদের সম্পর্কে",
-        "footer_privacy": "প্রাইভেসি পলিসি",
-        "page_about_title": "আমাদের সম্পর্কে",
-        "page_about_body": "Media Vault পাবলিক ইনস্টাগ্রাম মিডিয়া প্রিভিউ ও ডাউনলোডের সহজ উপায় দেয়।",
-        "page_contact_title": "যোগাযোগ",
-        "page_contact_body": "সাপোর্ট: support@example.com",
-        "page_privacy_title": "প্রাইভেসি পলিসি",
-        "page_privacy_body": "আমরা কোনো মিডিয়া সংরক্ষণ করি না। অনুরোধ রিয়েল-টাইমে প্রসেস হয়।",
-    },
-    "zh": {
-        "label": "中文",
-        "title": "Instagram 媒体下载器",
-        "meta_description": "从公开帖子下载 Instagram 视频、Reels 和照片。粘贴链接即可预览并下载。",
-        "status": "仅限公开帖子",
-        "tab_video": "视频",
-        "tab_reels": "Reels",
-        "tab_photo": "照片",
-        "kicker": "在这里下载所有 Instagram 内容",
-        "headline_video": "Instagram 视频下载器",
-        "headline_reels": "Instagram Reels 下载器",
-        "headline_photo": "Instagram 照片下载器",
-        "sub": "粘贴公开帖子或 Reels 链接。私密账号会显示提示。",
-        "placeholder": "粘贴 Instagram 帖子或 Reels 链接",
-        "paste": "粘贴",
-        "clear": "清除",
-        "search": "搜索",
-        "results": "结果",
-        "download": "下载",
-        "error_invalid_link": "请粘贴有效的 Instagram 链接。",
-        "error_not_reel": "该链接不是 Reels。",
-        "error_no_media": "未找到可用媒体。",
-        "modal_private_title": "私密账号",
-        "modal_private_body": "该账号为私密账号，无法下载媒体。",
-        "modal_mismatch_title": "类型不匹配",
-        "modal_mismatch_video": "该链接是图片，请选择照片标签。",
-        "modal_mismatch_photo": "该链接是视频，请选择视频或 Reels 标签。",
-        "footer_contact": "联系我们",
-        "footer_about": "关于我们",
-        "footer_privacy": "隐私政策",
-        "page_about_title": "关于我们",
-        "page_about_body": "Media Vault 提供简单的公开 Instagram 媒体预览与下载方式。",
-        "page_contact_title": "联系我们",
-        "page_contact_body": "支持邮箱：support@example.com",
-        "page_privacy_title": "隐私政策",
-        "page_privacy_body": "我们不存储下载的媒体。请求实时处理。",
-    },
-    "fr": {
-        "label": "Français",
-        "title": "Téléchargeur Instagram",
-        "meta_description": "Téléchargez des vidéos, Reels et photos Instagram depuis des posts publics. Collez le lien pour télécharger.",
-        "status": "Posts publics uniquement",
-        "tab_video": "Vidéo",
-        "tab_reels": "Reels",
-        "tab_photo": "Photo",
-        "kicker": "Téléchargez du contenu Instagram ici",
-        "headline_video": "Téléchargeur Vidéo Instagram",
-        "headline_reels": "Téléchargeur Reels Instagram",
-        "headline_photo": "Téléchargeur Photo Instagram",
-        "sub": "Collez un lien de post public ou de Reel.",
-        "placeholder": "Collez le lien Instagram",
-        "paste": "Coller",
-        "clear": "Effacer",
-        "search": "Rechercher",
-        "results": "Résultats",
-        "download": "Télécharger",
-        "error_invalid_link": "Veuillez coller un lien Instagram valide.",
-        "error_not_reel": "Ce lien n’est pas un Reel.",
-        "error_no_media": "Aucun média trouvé pour cette sélection.",
-        "modal_private_title": "Compte privé",
-        "modal_private_body": "Ce compte Instagram est privé. Téléchargement impossible.",
-        "modal_mismatch_title": "Mauvais type",
-        "modal_mismatch_video": "Ce lien est une image. Choisissez l’onglet Photo.",
-        "modal_mismatch_photo": "Ce lien est une vidéo. Choisissez Vidéo ou Reels.",
-        "footer_contact": "Contact",
-        "footer_about": "À propos",
-        "footer_privacy": "Confidentialité",
-        "page_about_title": "À propos",
-        "page_about_body": "Media Vault permet de prévisualiser et télécharger du contenu public Instagram.",
-        "page_contact_title": "Contact",
-        "page_contact_body": "Support : support@example.com",
-        "page_privacy_title": "Confidentialité",
-        "page_privacy_body": "Nous ne stockons pas les médias téléchargés.",
-    },
-    "de": {
-        "label": "Deutsch",
-        "title": "Instagram Medien-Downloader",
-        "meta_description": "Lade Instagram-Videos, Reels und Fotos aus öffentlichen Beiträgen herunter. Link einfügen und herunterladen.",
-        "status": "Nur öffentliche Beiträge",
-        "tab_video": "Video",
-        "tab_reels": "Reels",
-        "tab_photo": "Foto",
-        "kicker": "Instagram-Inhalte hier herunterladen",
-        "headline_video": "Instagram Video Downloader",
-        "headline_reels": "Instagram Reels Downloader",
-        "headline_photo": "Instagram Foto Downloader",
-        "sub": "Füge einen öffentlichen Post- oder Reel-Link ein.",
-        "placeholder": "Instagram-Link einfügen",
-        "paste": "Einfügen",
-        "clear": "Löschen",
-        "search": "Suchen",
-        "results": "Ergebnisse",
-        "download": "Download",
-        "error_invalid_link": "Bitte einen gültigen Instagram-Link einfügen.",
-        "error_not_reel": "Dieser Link ist kein Reel.",
-        "error_no_media": "Keine Medien für diese Auswahl gefunden.",
-        "modal_private_title": "Privates Konto",
-        "modal_private_body": "Dieses Konto ist privat. Medien können nicht heruntergeladen werden.",
-        "modal_mismatch_title": "Falscher Typ",
-        "modal_mismatch_video": "Dieser Link ist ein Bild. Foto-Tab wählen.",
-        "modal_mismatch_photo": "Dieser Link ist ein Video. Video oder Reels wählen.",
-        "footer_contact": "Kontakt",
-        "footer_about": "Über uns",
-        "footer_privacy": "Datenschutz",
-        "page_about_title": "Über uns",
-        "page_about_body": "Media Vault hilft beim Anzeigen und Herunterladen öffentlicher Instagram-Medien.",
-        "page_contact_title": "Kontakt",
-        "page_contact_body": "Support: support@example.com",
-        "page_privacy_title": "Datenschutz",
-        "page_privacy_body": "Wir speichern keine heruntergeladenen Medien.",
-    },
-    "hi": {
-        "label": "हिन्दी",
-        "title": "इंस्टाग्राम मीडिया डाउनलोडर",
-        "meta_description": "पब्लिक पोस्ट से इंस्टाग्राम वीडियो, रील्स और फोटो डाउनलोड करें। लिंक पेस्ट करें और डाउनलोड करें।",
-        "status": "केवल सार्वजनिक पोस्ट",
-        "tab_video": "वीडियो",
-        "tab_reels": "रील्स",
-        "tab_photo": "फ़ोटो",
-        "kicker": "यहाँ इंस्टाग्राम कंटेंट डाउनलोड करें",
-        "headline_video": "इंस्टाग्राम वीडियो डाउनलोडर",
-        "headline_reels": "इंस्टाग्राम रील्स डाउनलोडर",
-        "headline_photo": "इंस्टाग्राम फ़ोटो डाउनलोडर",
-        "sub": "पब्लिक पोस्ट या रील का लिंक पेस्ट करें।",
-        "placeholder": "इंस्टाग्राम लिंक पेस्ट करें",
-        "paste": "पेस्ट",
-        "clear": "हटाएँ",
-        "search": "खोजें",
-        "results": "परिणाम",
-        "download": "डाउनलोड",
-        "error_invalid_link": "कृपया वैध इंस्टाग्राम लिंक पेस्ट करें।",
-        "error_not_reel": "यह लिंक रील नहीं है।",
-        "error_no_media": "इस चयन के लिए कोई मीडिया नहीं मिला।",
-        "modal_private_title": "प्राइवेट अकाउंट",
-        "modal_private_body": "यह अकाउंट प्राइवेट है। मीडिया डाउनलोड नहीं किया जा सकता।",
-        "modal_mismatch_title": "गलत मीडिया प्रकार",
-        "modal_mismatch_video": "यह लिंक इमेज है। कृपया फ़ोटो टैब चुनें।",
-        "modal_mismatch_photo": "यह लिंक वीडियो है। वीडियो या रील्स टैब चुनें।",
-        "footer_contact": "संपर्क करें",
-        "footer_about": "हमारे बारे में",
-        "footer_privacy": "गोपनीयता नीति",
-        "page_about_title": "हमारे बारे में",
-        "page_about_body": "Media Vault पब्लिक इंस्टाग्राम मीडिया देखने और डाउनलोड करने का आसान तरीका देता है।",
-        "page_contact_title": "संपर्क करें",
-        "page_contact_body": "सपोर्ट: support@example.com",
-        "page_privacy_title": "गोपनीयता नीति",
-        "page_privacy_body": "हम डाउनलोड की गई मीडिया स्टोर नहीं करते।",
-    },
-    "hu": {
-        "label": "Magyar",
-        "title": "Instagram letöltő",
-        "meta_description": "Tölts le Instagram videókat, Reels-eket és fotókat nyilvános posztokból. Illeszd be a linket és töltsd le.",
-        "status": "Csak nyilvános posztok",
-        "tab_video": "Videó",
-        "tab_reels": "Reels",
-        "tab_photo": "Fotó",
-        "kicker": "Instagram tartalmak letöltése itt",
-        "headline_video": "Instagram videó letöltő",
-        "headline_reels": "Instagram Reels letöltő",
-        "headline_photo": "Instagram fotó letöltő",
-        "sub": "Illessz be egy nyilvános poszt vagy Reels linket.",
-        "placeholder": "Illeszd be az Instagram linket",
-        "paste": "Beillesztés",
-        "clear": "Törlés",
-        "search": "Keresés",
-        "results": "Eredmények",
-        "download": "Letöltés",
-        "error_invalid_link": "Kérjük, illessz be egy érvényes Instagram linket.",
-        "error_not_reel": "Ez a link nem Reels.",
-        "error_no_media": "Nincs média ehhez a választáshoz.",
-        "modal_private_title": "Privát fiók",
-        "modal_private_body": "Ez a fiók privát. A média nem tölthető le.",
-        "modal_mismatch_title": "Rossz típus",
-        "modal_mismatch_video": "Ez a link kép. Válaszd a Fotó fület.",
-        "modal_mismatch_photo": "Ez a link videó. Válaszd a Videó vagy Reels fület.",
-        "footer_contact": "Kapcsolat",
-        "footer_about": "Rólunk",
-        "footer_privacy": "Adatvédelem",
-        "page_about_title": "Rólunk",
-        "page_about_body": "A Media Vault segít a nyilvános Instagram médiák megtekintésében és letöltésében.",
-        "page_contact_title": "Kapcsolat",
-        "page_contact_body": "Támogatás: support@example.com",
-        "page_privacy_title": "Adatvédelem",
-        "page_privacy_body": "Nem tároljuk a letöltött médiát.",
-    },
-    "id": {
-        "label": "Bahasa Indonesia",
-        "title": "Pengunduh Media Instagram",
-        "meta_description": "Unduh video, Reels, dan foto Instagram dari posting publik. Tempel tautan lalu unduh.",
-        "status": "Hanya posting publik",
-        "tab_video": "Video",
-        "tab_reels": "Reels",
-        "tab_photo": "Foto",
-        "kicker": "Unduh konten Instagram di sini",
-        "headline_video": "Pengunduh Video Instagram",
-        "headline_reels": "Pengunduh Reels Instagram",
-        "headline_photo": "Pengunduh Foto Instagram",
-        "sub": "Tempel tautan posting atau Reels publik.",
-        "placeholder": "Tempel tautan Instagram",
-        "paste": "Tempel",
-        "clear": "Hapus",
-        "search": "Cari",
-        "results": "Hasil",
-        "download": "Unduh",
-        "error_invalid_link": "Tempel tautan Instagram yang valid.",
-        "error_not_reel": "Tautan ini bukan Reels.",
-        "error_no_media": "Tidak ada media untuk pilihan ini.",
-        "modal_private_title": "Akun Privat",
-        "modal_private_body": "Akun ini privat. Media tidak dapat diunduh.",
-        "modal_mismatch_title": "Tipe salah",
-        "modal_mismatch_video": "Tautan ini adalah gambar. Pilih tab Foto.",
-        "modal_mismatch_photo": "Tautan ini adalah video. Pilih tab Video atau Reels.",
-        "footer_contact": "Kontak",
-        "footer_about": "Tentang",
-        "footer_privacy": "Kebijakan Privasi",
-        "page_about_title": "Tentang",
-        "page_about_body": "Media Vault membantu pratinjau dan unduh media Instagram publik.",
-        "page_contact_title": "Kontak",
-        "page_contact_body": "Dukungan: support@example.com",
-        "page_privacy_title": "Kebijakan Privasi",
-        "page_privacy_body": "Kami tidak menyimpan media yang diunduh.",
-    },
-    "it": {
-        "label": "Italiano",
-        "title": "Downloader Instagram",
-        "meta_description": "Scarica video, Reels e foto Instagram da post pubblici. Incolla il link e scarica.",
-        "status": "Solo post pubblici",
-        "tab_video": "Video",
-        "tab_reels": "Reels",
-        "tab_photo": "Foto",
-        "kicker": "Scarica contenuti Instagram qui",
-        "headline_video": "Downloader Video Instagram",
-        "headline_reels": "Downloader Reels Instagram",
-        "headline_photo": "Downloader Foto Instagram",
-        "sub": "Incolla il link di un post o Reel pubblico.",
-        "placeholder": "Incolla il link Instagram",
-        "paste": "Incolla",
-        "clear": "Cancella",
-        "search": "Cerca",
-        "results": "Risultati",
-        "download": "Scarica",
-        "error_invalid_link": "Incolla un link Instagram valido.",
-        "error_not_reel": "Questo link non è un Reel.",
-        "error_no_media": "Nessun media trovato per questa selezione.",
-        "modal_private_title": "Account privato",
-        "modal_private_body": "Questo account è privato. Non è possibile scaricare i media.",
-        "modal_mismatch_title": "Tipo errato",
-        "modal_mismatch_video": "Questo link è un'immagine. Seleziona Foto.",
-        "modal_mismatch_photo": "Questo link è un video. Seleziona Video o Reels.",
-        "footer_contact": "Contatti",
-        "footer_about": "Chi siamo",
-        "footer_privacy": "Privacy",
-        "page_about_title": "Chi siamo",
-        "page_about_body": "Media Vault aiuta a visualizzare e scaricare media Instagram pubblici.",
-        "page_contact_title": "Contatti",
-        "page_contact_body": "Supporto: support@example.com",
-        "page_privacy_title": "Privacy",
-        "page_privacy_body": "Non memorizziamo i media scaricati.",
-    },
-    "ja": {
-        "label": "日本語",
-        "title": "Instagram メディアダウンローダー",
-        "meta_description": "公開投稿から Instagram の動画、Reels、写真をダウンロード。リンクを貼り付けて取得。",
-        "status": "公開投稿のみ",
-        "tab_video": "動画",
-        "tab_reels": "リール",
-        "tab_photo": "写真",
-        "kicker": "Instagram コンテンツをここでダウンロード",
-        "headline_video": "Instagram 動画ダウンローダー",
-        "headline_reels": "Instagram リールダウンローダー",
-        "headline_photo": "Instagram 写真ダウンローダー",
-        "sub": "公開投稿またはリールのリンクを貼り付けてください。",
-        "placeholder": "Instagram のリンクを貼り付け",
-        "paste": "貼り付け",
-        "clear": "クリア",
-        "search": "検索",
-        "results": "結果",
-        "download": "ダウンロード",
-        "error_invalid_link": "有効な Instagram リンクを貼り付けてください。",
-        "error_not_reel": "このリンクはリールではありません。",
-        "error_no_media": "選択したメディアが見つかりません。",
-        "modal_private_title": "非公開アカウント",
-        "modal_private_body": "このアカウントは非公開です。ダウンロードできません。",
-        "modal_mismatch_title": "種類が違います",
-        "modal_mismatch_video": "このリンクは画像です。写真タブを選択してください。",
-        "modal_mismatch_photo": "このリンクは動画です。動画またはリールタブを選択してください。",
-        "footer_contact": "お問い合わせ",
-        "footer_about": "私たちについて",
-        "footer_privacy": "プライバシーポリシー",
-        "page_about_title": "私たちについて",
-        "page_about_body": "Media Vault は公開 Instagram メディアのプレビューとダウンロードを提供します。",
-        "page_contact_title": "お問い合わせ",
-        "page_contact_body": "サポート: support@example.com",
-        "page_privacy_title": "プライバシーポリシー",
-        "page_privacy_body": "ダウンロードしたメディアは保存しません。",
-    },
-    "ko": {
-        "label": "한국어",
-        "title": "인스타그램 미디어 다운로더",
-        "meta_description": "공개 게시물에서 Instagram 동영상, Reels, 사진을 다운로드하세요. 링크를 붙여넣고 다운로드.",
-        "status": "공개 게시물만",
-        "tab_video": "동영상",
-        "tab_reels": "릴스",
-        "tab_photo": "사진",
-        "kicker": "인스타그램 콘텐츠를 여기서 다운로드",
-        "headline_video": "인스타그램 동영상 다운로더",
-        "headline_reels": "인스타그램 릴스 다운로더",
-        "headline_photo": "인스타그램 사진 다운로더",
-        "sub": "공개 게시물 또는 릴스 링크를 붙여넣으세요.",
-        "placeholder": "인스타그램 링크 붙여넣기",
-        "paste": "붙여넣기",
-        "clear": "지우기",
-        "search": "검색",
-        "results": "결과",
-        "download": "다운로드",
-        "error_invalid_link": "유효한 인스타그램 링크를 붙여넣으세요.",
-        "error_not_reel": "이 링크는 릴스가 아닙니다.",
-        "error_no_media": "선택한 미디어를 찾을 수 없습니다.",
-        "modal_private_title": "비공개 계정",
-        "modal_private_body": "이 계정은 비공개입니다. 다운로드할 수 없습니다.",
-        "modal_mismatch_title": "유형 불일치",
-        "modal_mismatch_video": "이 링크는 이미지입니다. 사진 탭을 선택하세요.",
-        "modal_mismatch_photo": "이 링크는 동영상입니다. 동영상 또는 릴스 탭을 선택하세요.",
-        "footer_contact": "문의하기",
-        "footer_about": "소개",
-        "footer_privacy": "개인정보 처리방침",
-        "page_about_title": "소개",
-        "page_about_body": "Media Vault는 공개 Instagram 미디어 미리보기와 다운로드를 제공합니다.",
-        "page_contact_title": "문의하기",
-        "page_contact_body": "지원: support@example.com",
-        "page_privacy_title": "개인정보 처리방침",
-        "page_privacy_body": "다운로드한 미디어를 저장하지 않습니다.",
-    },
-    "pl": {
-        "label": "Polski",
-        "title": "Pobieracz Instagrama",
-        "meta_description": "Pobieraj filmy, Reels i zdjęcia z publicznych postów Instagram. Wklej link i pobierz.",
-        "status": "Tylko publiczne posty",
-        "tab_video": "Wideo",
-        "tab_reels": "Reels",
-        "tab_photo": "Zdjęcie",
-        "kicker": "Pobieraj treści z Instagrama tutaj",
-        "headline_video": "Pobieracz wideo z Instagrama",
-        "headline_reels": "Pobieracz Reels z Instagrama",
-        "headline_photo": "Pobieracz zdjęć z Instagrama",
-        "sub": "Wklej link do publicznego posta lub Reels.",
-        "placeholder": "Wklej link z Instagrama",
-        "paste": "Wklej",
-        "clear": "Wyczyść",
-        "search": "Szukaj",
-        "results": "Wyniki",
-        "download": "Pobierz",
-        "error_invalid_link": "Wklej prawidłowy link Instagram.",
-        "error_not_reel": "To nie jest Reels.",
-        "error_no_media": "Nie znaleziono mediów dla tego wyboru.",
-        "modal_private_title": "Prywatne konto",
-        "modal_private_body": "To konto jest prywatne. Nie można pobrać mediów.",
-        "modal_mismatch_title": "Nieprawidłowy typ",
-        "modal_mismatch_video": "To jest obraz. Wybierz Zdjęcie.",
-        "modal_mismatch_photo": "To jest wideo. Wybierz Wideo lub Reels.",
-        "footer_contact": "Kontakt",
-        "footer_about": "O nas",
-        "footer_privacy": "Polityka prywatności",
-        "page_about_title": "O nas",
-        "page_about_body": "Media Vault ułatwia podgląd i pobieranie publicznych mediów z Instagrama.",
-        "page_contact_title": "Kontakt",
-        "page_contact_body": "Wsparcie: support@example.com",
-        "page_privacy_title": "Polityka prywatności",
-        "page_privacy_body": "Nie przechowujemy pobranych mediów.",
-    },
-    "pt": {
-        "label": "Português",
-        "title": "Baixador de Instagram",
-        "meta_description": "Baixe vídeos, Reels e fotos do Instagram de posts públicos. Cole o link e faça o download.",
-        "status": "Apenas posts públicos",
-        "tab_video": "Vídeo",
-        "tab_reels": "Reels",
-        "tab_photo": "Foto",
-        "kicker": "Baixe conteúdos do Instagram aqui",
-        "headline_video": "Baixador de Vídeos do Instagram",
-        "headline_reels": "Baixador de Reels do Instagram",
-        "headline_photo": "Baixador de Fotos do Instagram",
-        "sub": "Cole o link de um post ou Reel público.",
-        "placeholder": "Cole o link do Instagram",
-        "paste": "Colar",
-        "clear": "Limpar",
-        "search": "Buscar",
-        "results": "Resultados",
-        "download": "Baixar",
-        "error_invalid_link": "Cole um link válido do Instagram.",
-        "error_not_reel": "Este link não é um Reel.",
-        "error_no_media": "Nenhuma mídia encontrada para esta seleção.",
-        "modal_private_title": "Conta privada",
-        "modal_private_body": "Esta conta é privada. Não é possível baixar mídia.",
-        "modal_mismatch_title": "Tipo incorreto",
-        "modal_mismatch_video": "Este link é uma imagem. Selecione Foto.",
-        "modal_mismatch_photo": "Este link é um vídeo. Selecione Vídeo ou Reels.",
-        "footer_contact": "Contato",
-        "footer_about": "Sobre nós",
-        "footer_privacy": "Política de Privacidade",
-        "page_about_title": "Sobre nós",
-        "page_about_body": "Media Vault ajuda a visualizar e baixar mídia pública do Instagram.",
-        "page_contact_title": "Contato",
-        "page_contact_body": "Suporte: support@example.com",
-        "page_privacy_title": "Política de Privacidade",
-        "page_privacy_body": "Não armazenamos a mídia baixada.",
-    },
-    "ru": {
-        "label": "Русский",
-        "title": "Загрузчик Instagram",
-        "meta_description": "Скачивайте видео, Reels и фото из публичных постов Instagram. Вставьте ссылку и скачайте.",
-        "status": "Только публичные посты",
-        "tab_video": "Видео",
-        "tab_reels": "Reels",
-        "tab_photo": "Фото",
-        "kicker": "Скачивайте контент Instagram здесь",
-        "headline_video": "Загрузчик видео Instagram",
-        "headline_reels": "Загрузчик Reels Instagram",
-        "headline_photo": "Загрузчик фото Instagram",
-        "sub": "Вставьте ссылку на публичный пост или Reels.",
-        "placeholder": "Вставьте ссылку Instagram",
-        "paste": "Вставить",
-        "clear": "Очистить",
-        "search": "Поиск",
-        "results": "Результаты",
-        "download": "Скачать",
-        "error_invalid_link": "Вставьте корректную ссылку Instagram.",
-        "error_not_reel": "Эта ссылка не является Reels.",
-        "error_no_media": "Медиа для выбора не найдено.",
-        "modal_private_title": "Закрытый аккаунт",
-        "modal_private_body": "Этот аккаунт закрыт. Нельзя скачать медиа.",
-        "modal_mismatch_title": "Неверный тип",
-        "modal_mismatch_video": "Ссылка ведет на изображение. Выберите Фото.",
-        "modal_mismatch_photo": "Ссылка ведет на видео. Выберите Видео или Reels.",
-        "footer_contact": "Контакты",
-        "footer_about": "О нас",
-        "footer_privacy": "Политика конфиденциальности",
-        "page_about_title": "О нас",
-        "page_about_body": "Media Vault помогает просматривать и скачивать публичные медиа Instagram.",
-        "page_contact_title": "Контакты",
-        "page_contact_body": "Поддержка: support@example.com",
-        "page_privacy_title": "Политика конфиденциальности",
-        "page_privacy_body": "Мы не храним скачанные медиа.",
-    },
-    "es": {
-        "label": "Español",
-        "title": "Descargador de Instagram",
-        "meta_description": "Descarga videos, reels y fotos de Instagram desde publicaciones públicas. Pega el enlace y descarga.",
-        "status": "Solo publicaciones públicas",
-        "tab_video": "Video",
-        "tab_reels": "Reels",
-        "tab_photo": "Foto",
-        "kicker": "Descarga contenido de Instagram aquí",
-        "headline_video": "Descargador de Videos de Instagram",
-        "headline_reels": "Descargador de Reels de Instagram",
-        "headline_photo": "Descargador de Fotos de Instagram",
-        "sub": "Pega el enlace de un post o reel público.",
-        "placeholder": "Pega el enlace de Instagram",
-        "paste": "Pegar",
-        "clear": "Borrar",
-        "search": "Buscar",
-        "results": "Resultados",
-        "download": "Descargar",
-        "error_invalid_link": "Pega un enlace válido de Instagram.",
-        "error_not_reel": "Este enlace no es un reel.",
-        "error_no_media": "No se encontró contenido para esa opción.",
-        "modal_private_title": "Cuenta privada",
-        "modal_private_body": "Esta cuenta es privada. No se puede descargar contenido.",
-        "modal_mismatch_title": "Tipo incorrecto",
-        "modal_mismatch_video": "Este enlace es una imagen. Selecciona Foto.",
-        "modal_mismatch_photo": "Este enlace es un video. Selecciona Video o Reels.",
-        "footer_contact": "Contacto",
-        "footer_about": "Acerca de",
-        "footer_privacy": "Privacidad",
-        "page_about_title": "Acerca de",
-        "page_about_body": "Media Vault ayuda a previsualizar y descargar contenido público de Instagram.",
-        "page_contact_title": "Contacto",
-        "page_contact_body": "Soporte: support@example.com",
-        "page_privacy_title": "Privacidad",
-        "page_privacy_body": "No almacenamos el contenido descargado.",
-    },
-    "sw": {
-        "label": "Kiswahili",
-        "title": "Kipakua Media za Instagram",
-        "meta_description": "Pakua video, Reels na picha za Instagram kutoka machapisho ya umma. Bandika kiungo kisha pakua.",
-        "status": "Machapisho ya umma tu",
-        "tab_video": "Video",
-        "tab_reels": "Reels",
-        "tab_photo": "Picha",
-        "kicker": "Pakua maudhui ya Instagram hapa",
-        "headline_video": "Kipakua Video za Instagram",
-        "headline_reels": "Kipakua Reels za Instagram",
-        "headline_photo": "Kipakua Picha za Instagram",
-        "sub": "Bandika kiungo cha chapisho au Reel ya umma.",
-        "placeholder": "Bandika kiungo cha Instagram",
-        "paste": "Bandika",
-        "clear": "Futa",
-        "search": "Tafuta",
-        "results": "Matokeo",
-        "download": "Pakua",
-        "error_invalid_link": "Tafadhali bandika kiungo halali cha Instagram.",
-        "error_not_reel": "Kiungo hiki si Reel.",
-        "error_no_media": "Hakuna media kwa chaguo hili.",
-        "modal_private_title": "Akaunti ya Faragha",
-        "modal_private_body": "Akaunti hii ni ya faragha. Media haiwezi kupakuliwa.",
-        "modal_mismatch_title": "Aina Isiyolingana",
-        "modal_mismatch_video": "Kiungo hiki ni picha. Chagua kichupo cha Picha.",
-        "modal_mismatch_photo": "Kiungo hiki ni video. Chagua Video au Reels.",
-        "footer_contact": "Wasiliana",
-        "footer_about": "Kuhusu",
-        "footer_privacy": "Sera ya Faragha",
-        "page_about_title": "Kuhusu",
-        "page_about_body": "Media Vault husaidia kutazama na kupakua media za umma za Instagram.",
-        "page_contact_title": "Wasiliana",
-        "page_contact_body": "Msaada: support@example.com",
-        "page_privacy_title": "Sera ya Faragha",
-        "page_privacy_body": "Hatuifadhi media zilizopakuliwa.",
-    },
-    "te": {
-        "label": "తెలుగు",
-        "title": "ఇన్‌స్టాగ్రామ్ మీడియా డౌన్‌లోడర్",
-        "meta_description": "పబ్లిక్ పోస్టుల నుండి ఇన్‌స్టాగ్రామ్ వీడియోలు, రీల్స్, ఫోటోలు డౌన్‌లోడ్ చేయండి. లింక్ పేస్ట్ చేసి డౌన్‌లోడ్ చేయండి.",
-        "status": "పబ్లిక్ పోస్టులు మాత్రమే",
-        "tab_video": "వీడియో",
-        "tab_reels": "రీల్స్",
-        "tab_photo": "ఫోటో",
-        "kicker": "ఇన్‌స్టాగ్రామ్ కంటెంట్ ఇక్కడ డౌన్‌లోడ్ చేయండి",
-        "headline_video": "ఇన్‌స్టాగ్రామ్ వీడియో డౌన్‌లోడర్",
-        "headline_reels": "ఇన్‌స్టాగ్రామ్ రీల్స్ డౌన్‌లోడర్",
-        "headline_photo": "ఇన్‌స్టాగ్రామ్ ఫోటో డౌన్‌లోడర్",
-        "sub": "పబ్లిక్ పోస్ట్ లేదా రీల్ లింక్‌ను పేస్ట్ చేయండి.",
-        "placeholder": "ఇన్‌స్టాగ్రామ్ లింక్‌ను పేస్ట్ చేయండి",
-        "paste": "పేస్ట్",
-        "clear": "తొలగించండి",
-        "search": "శోధించండి",
-        "results": "ఫలితాలు",
-        "download": "డౌన్‌లోడ్",
-        "error_invalid_link": "దయచేసి సరైన ఇన్‌స్టాగ్రామ్ లింక్‌ను పేస్ట్ చేయండి.",
-        "error_not_reel": "ఈ లింక్ రీల్ కాదు.",
-        "error_no_media": "ఈ ఎంపికకు మీడియా కనిపించలేదు.",
-        "modal_private_title": "ప్రైవేట్ ఖాతా",
-        "modal_private_body": "ఈ ఖాతా ప్రైవేట్. మీడియా డౌన్‌లోడ్ చేయలేరు.",
-        "modal_mismatch_title": "తప్పుడు మీడియా రకం",
-        "modal_mismatch_video": "ఈ లింక్ చిత్రం. ఫోటో ట్యాబ్‌ను ఎంచుకోండి.",
-        "modal_mismatch_photo": "ఈ లింక్ వీడియో. వీడియో లేదా రీల్స్ ట్యాబ్‌ను ఎంచుకోండి.",
-        "footer_contact": "సంప్రదించండి",
-        "footer_about": "మా గురించి",
-        "footer_privacy": "గోప్యతా విధానం",
-        "page_about_title": "మా గురించి",
-        "page_about_body": "Media Vault పబ్లిక్ ఇన్‌స్టాగ్రామ్ మీడియాను చూడటానికి మరియు డౌన్‌లోడ్ చేయటానికి సహాయపడుతుంది.",
-        "page_contact_title": "సంప్రదించండి",
-        "page_contact_body": "సపోర్ట్: support@example.com",
-        "page_privacy_title": "గోప్యతా విధానం",
-        "page_privacy_body": "మేము డౌన్‌లోడ్ చేసిన మీడియాను నిల్వ చేయము.",
-    },
-    "th": {
-        "label": "ไทย",
-        "title": "ตัวดาวน์โหลดสื่อ Instagram",
-        "meta_description": "ดาวน์โหลดวิดีโอ Reels และรูปภาพจากโพสต์สาธารณะของ Instagram เพียงวางลิงก์แล้วดาวน์โหลด",
-        "status": "เฉพาะโพสต์สาธารณะ",
-        "tab_video": "วิดีโอ",
-        "tab_reels": "รีลส์",
-        "tab_photo": "รูปภาพ",
-        "kicker": "ดาวน์โหลดคอนเทนต์ Instagram ได้ที่นี่",
-        "headline_video": "ตัวดาวน์โหลดวิดีโอ Instagram",
-        "headline_reels": "ตัวดาวน์โหลดรีลส์ Instagram",
-        "headline_photo": "ตัวดาวน์โหลดรูปภาพ Instagram",
-        "sub": "วางลิงก์โพสต์หรือรีลส์สาธารณะ",
-        "placeholder": "วางลิงก์ Instagram",
-        "paste": "วาง",
-        "clear": "ล้าง",
-        "search": "ค้นหา",
-        "results": "ผลลัพธ์",
-        "download": "ดาวน์โหลด",
-        "error_invalid_link": "กรุณาวางลิงก์ Instagram ที่ถูกต้อง",
-        "error_not_reel": "ลิงก์นี้ไม่ใช่รีลส์",
-        "error_no_media": "ไม่พบสื่อสำหรับตัวเลือกนี้",
-        "modal_private_title": "บัญชีส่วนตัว",
-        "modal_private_body": "บัญชีนี้เป็นส่วนตัว ไม่สามารถดาวน์โหลดสื่อได้",
-        "modal_mismatch_title": "ประเภทไม่ตรงกัน",
-        "modal_mismatch_video": "ลิงก์นี้เป็นรูปภาพ โปรดเลือกแท็บรูปภาพ",
-        "modal_mismatch_photo": "ลิงก์นี้เป็นวิดีโอ โปรดเลือกแท็บวิดีโอหรือรีลส์",
-        "footer_contact": "ติดต่อเรา",
-        "footer_about": "เกี่ยวกับเรา",
-        "footer_privacy": "นโยบายความเป็นส่วนตัว",
-        "page_about_title": "เกี่ยวกับเรา",
-        "page_about_body": "Media Vault ช่วยให้คุณดูและดาวน์โหลดสื่อ Instagram สาธารณะได้ง่ายขึ้น",
-        "page_contact_title": "ติดต่อเรา",
-        "page_contact_body": "ฝ่ายสนับสนุน: support@example.com",
-        "page_privacy_title": "นโยบายความเป็นส่วนตัว",
-        "page_privacy_body": "เราไม่จัดเก็บสื่อที่ดาวน์โหลด",
-    },
-    "tr": {
-        "label": "Türkçe",
-        "title": "Instagram Medya İndirici",
-        "meta_description": "Herkese açık Instagram gönderilerinden video, Reels ve fotoğraf indirin. Linki yapıştırın ve indirin.",
-        "status": "Yalnızca herkese açık gönderiler",
-        "tab_video": "Video",
-        "tab_reels": "Reels",
-        "tab_photo": "Fotoğraf",
-        "kicker": "Instagram içeriklerini buradan indirin",
-        "headline_video": "Instagram Video İndirici",
-        "headline_reels": "Instagram Reels İndirici",
-        "headline_photo": "Instagram Fotoğraf İndirici",
-        "sub": "Herkese açık gönderi veya Reel bağlantısını yapıştırın.",
-        "placeholder": "Instagram bağlantısını yapıştırın",
-        "paste": "Yapıştır",
-        "clear": "Temizle",
-        "search": "Ara",
-        "results": "Sonuçlar",
-        "download": "İndir",
-        "error_invalid_link": "Lütfen geçerli bir Instagram bağlantısı yapıştırın.",
-        "error_not_reel": "Bu bağlantı bir Reels değil.",
-        "error_no_media": "Bu seçim için medya bulunamadı.",
-        "modal_private_title": "Gizli Hesap",
-        "modal_private_body": "Bu hesap gizli. Medya indirilemez.",
-        "modal_mismatch_title": "Yanlış Tür",
-        "modal_mismatch_video": "Bu bağlantı bir görsel. Fotoğraf sekmesini seçin.",
-        "modal_mismatch_photo": "Bu bağlantı bir video. Video veya Reels sekmesini seçin.",
-        "footer_contact": "İletişim",
-        "footer_about": "Hakkımızda",
-        "footer_privacy": "Gizlilik Politikası",
-        "page_about_title": "Hakkımızda",
-        "page_about_body": "Media Vault, herkese açık Instagram medyalarını görüntüleme ve indirmeye yardımcı olur.",
-        "page_contact_title": "İletişim",
-        "page_contact_body": "Destek: support@example.com",
-        "page_privacy_title": "Gizlilik Politikası",
-        "page_privacy_body": "İndirilen medya saklanmaz.",
-    },
-    "uk": {
-        "label": "Українська",
-        "title": "Завантажувач Instagram",
-        "meta_description": "Завантажуйте відео, Reels і фото з публічних дописів Instagram. Вставте посилання та завантажте.",
-        "status": "Лише публічні дописи",
-        "tab_video": "Відео",
-        "tab_reels": "Reels",
-        "tab_photo": "Фото",
-        "kicker": "Завантажуйте контент Instagram тут",
-        "headline_video": "Завантажувач відео Instagram",
-        "headline_reels": "Завантажувач Reels Instagram",
-        "headline_photo": "Завантажувач фото Instagram",
-        "sub": "Вставте посилання на публічний допис або Reels.",
-        "placeholder": "Вставте посилання Instagram",
-        "paste": "Вставити",
-        "clear": "Очистити",
-        "search": "Пошук",
-        "results": "Результати",
-        "download": "Завантажити",
-        "error_invalid_link": "Вставте дійсне посилання Instagram.",
-        "error_not_reel": "Це посилання не є Reels.",
-        "error_no_media": "Медіа для цього вибору не знайдено.",
-        "modal_private_title": "Приватний акаунт",
-        "modal_private_body": "Цей акаунт приватний. Неможливо завантажити медіа.",
-        "modal_mismatch_title": "Невірний тип",
-        "modal_mismatch_video": "Це зображення. Оберіть вкладку Фото.",
-        "modal_mismatch_photo": "Це відео. Оберіть Відео або Reels.",
-        "footer_contact": "Контакти",
-        "footer_about": "Про нас",
-        "footer_privacy": "Політика конфіденційності",
-        "page_about_title": "Про нас",
-        "page_about_body": "Media Vault допомагає переглядати та завантажувати публічні медіа Instagram.",
-        "page_contact_title": "Контакти",
-        "page_contact_body": "Підтримка: support@example.com",
-        "page_privacy_title": "Політика конфіденційності",
-        "page_privacy_body": "Ми не зберігаємо завантажені медіа.",
-    },
-}
-
-LANG_ORDER = [
-    "en", "ar", "bn", "zh", "fr", "de", "hi", "hu", "id", "it", "ja", "ko",
-    "pl", "pt", "ru", "es", "sw", "te", "th", "tr", "uk",
-]
+def get_lang(lang: str) -> str:
+    return lang if lang in LANGS else DEFAULT_LANG
 
 
-def translate(lang: str) -> Dict[str, str]:
-    base = dict(BASE_TRANSLATIONS)
-    override = LANG_OVERRIDES.get(lang, {})
-    base.update(override)
-    return base
+def safe_filename(name: str) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", name).strip("_")
+    return cleaned or "instagram_media"
 
 
-def normalize_lang(lang: Optional[str]) -> str:
-    if not lang:
-        lang = "en"
-    lang = lang.lower()
-    if lang not in LANG_OVERRIDES:
-        return "en"
-    return lang
-
-
-def safe_segment(name: str) -> str:
-    cleaned = re.sub(r"[^A-Za-z0-9 ._@-]+", "_", name).strip()
-    return cleaned or "untitled"
+def make_loader() -> "instaloader.Instaloader":
+    loader = instaloader.Instaloader(
+        download_pictures=False,
+        download_videos=False,
+        download_video_thumbnails=False,
+        save_metadata=False,
+        compress_json=False,
+        quiet=True,
+    )
+    loader.context.max_connection_attempts = 3
+    return loader
 
 
 def parse_media_url(raw: str) -> Optional[Tuple[str, str]]:
@@ -874,248 +773,261 @@ def is_reel(post: "instaloader.Post") -> bool:
     return False
 
 
-def is_allowed_media_url(url: str) -> bool:
-    try:
-        parsed = urlparse(url)
-    except ValueError:
-        return False
-    if parsed.scheme not in {"http", "https"}:
-        return False
-    host = parsed.hostname or ""
-    return any(host.endswith(suffix) for suffix in ALLOWED_HOST_SUFFIXES)
+def extract_items(post: "instaloader.Post", media_type: str) -> List[Dict[str, str]]:
+    items: List[Dict[str, str]] = []
+
+    if post.typename == "GraphSidecar":
+        nodes = list(post.get_sidecar_nodes())
+        for idx, node in enumerate(nodes, start=1):
+            is_video = node.is_video
+            url = node.video_url if is_video else node.display_url
+            if not url:
+                continue
+            if media_type == "photo" and is_video:
+                continue
+            if media_type in {"video", "reels"} and not is_video:
+                continue
+            kind = "video" if is_video else "photo"
+            if media_type == "reels":
+                kind = "reel"
+            ext = ".mp4" if is_video else ".jpg"
+            filename = safe_filename(f"{post.shortcode}_{idx}{ext}")
+            items.append({"kind": kind, "url": url, "filename": filename})
+    else:
+        is_video = getattr(post, "is_video", False)
+        url = post.video_url if is_video else post.url
+        if not url:
+            return []
+        if media_type == "photo" and is_video:
+            return []
+        if media_type in {"video", "reels"} and not is_video:
+            return []
+        kind = "video" if is_video else "photo"
+        if media_type == "reels":
+            kind = "reel"
+        ext = ".mp4" if is_video else ".jpg"
+        filename = safe_filename(f"{post.shortcode}{ext}")
+        items.append({"kind": kind, "url": url, "filename": filename})
+
+    return items
 
 
-def guess_extension(content_type: str) -> str:
-    if not content_type:
-        return ""
-    content_type = content_type.split(";")[0].strip().lower()
-    mapping = {
-        "image/jpeg": ".jpg",
-        "image/jpg": ".jpg",
-        "image/png": ".png",
-        "image/webp": ".webp",
-        "video/mp4": ".mp4",
-    }
-    return mapping.get(content_type, "")
+def build_media_links(items: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    enriched = []
+    for item in items:
+        url_encoded = quote(item["url"], safe="")
+        filename_encoded = quote(item["filename"])
+        enriched.append(
+            {
+                **item,
+                "proxy_url": f"/media-proxy?url={url_encoded}",
+                "download_url": f"/download-file?url={url_encoded}&filename={filename_encoded}",
+            }
+        )
+    return enriched
 
 
-def render_index(lang: str, **kwargs):
-    t = translate(lang)
-    base_url = request.url_root.rstrip("/")
-    ctx = {
-        "lang": lang,
-        "t": t,
-        "languages": [(code, translate(code)["label"]) for code in LANG_ORDER],
-        "base_url": base_url,
-        "selected_type": kwargs.get("selected_type"),
-        "canonical_url": f"{base_url}/{lang}",
-        "alt_suffix": "",
-    }
-    ctx.update(kwargs)
-    return render_template("index.html", **ctx)
+def alt_langs(page_slug: str) -> List[Dict[str, str]]:
+    links = []
+    for code in LANG_ORDER:
+        suffix = f"/{page_slug}" if page_slug else ""
+        links.append(
+            {
+                "code": code,
+                "label": LANGS[code]["label"],
+                "url": f"/{code}{suffix}",
+            }
+        )
+    return links
 
 
-def render_page(lang: str, page_title: str, page_body: str, page_slug: str):
-    t = translate(lang)
-    base_url = request.url_root.rstrip("/")
+def render_index(
+    lang: str,
+    *,
+    error: Optional[str] = None,
+    modal_show: bool = False,
+    modal_title: Optional[str] = None,
+    modal_message: Optional[str] = None,
+    results: Optional[List[Dict[str, str]]] = None,
+    selected_type: str = "video",
+):
+    strings = build_strings(lang)
     return render_template(
-        "page.html",
+        "index.html",
         lang=lang,
-        t=t,
-        languages=[(code, translate(code)["label"]) for code in LANG_ORDER],
-        base_url=base_url,
-        page_title=page_title,
-        page_body=page_body,
-        canonical_url=f"{base_url}/{lang}/{page_slug}",
-        page_slug=page_slug,
-        alt_suffix=f\"/{page_slug}\",
+        lang_dir=LANGS[lang]["dir"],
+        strings=strings,
+        languages=[{"code": c, "label": LANGS[c]["label"]} for c in LANG_ORDER],
+        alt_langs=alt_langs(""),
+        error=error,
+        modal_show=modal_show,
+        modal_title=modal_title,
+        modal_message=modal_message,
+        results=results or [],
+        selected_type=selected_type,
     )
 
 
 @app.route("/")
-def root():
-    return redirect(url_for("index_lang", lang="en"))
+def root_redirect():
+    return redirect(f"/{DEFAULT_LANG}", code=302)
 
 
-@app.route("/<lang>", strict_slashes=False)
+@app.route("/<lang>")
+@app.route("/<lang>/")
 def index_lang(lang: str):
-    lang = normalize_lang(lang)
+    lang = get_lang(lang)
     return render_index(lang)
 
 
-@app.route("/<lang>/about", strict_slashes=False)
-def about(lang: str):
-    lang = normalize_lang(lang)
-    t = translate(lang)
-    return render_page(lang, t["page_about_title"], t["page_about_body"], "about")
+@app.route("/<lang>/download", methods=["POST"])
+def download(lang: str):
+    lang = get_lang(lang)
+    strings = build_strings(lang)
 
-
-@app.route("/<lang>/contact", strict_slashes=False)
-def contact(lang: str):
-    lang = normalize_lang(lang)
-    t = translate(lang)
-    return render_page(lang, t["page_contact_title"], t["page_contact_body"], "contact")
-
-
-@app.route("/<lang>/privacy", strict_slashes=False)
-def privacy(lang: str):
-    lang = normalize_lang(lang)
-    t = translate(lang)
-    return render_page(lang, t["page_privacy_title"], t["page_privacy_body"], "privacy")
-
-
-def stream_media(media_url: str, *, as_attachment: bool) -> Response:
-    if not media_url or not is_allowed_media_url(media_url):
-        return abort(400, "Invalid media URL")
-
-    range_header = request.headers.get("Range")
-    headers = {}
-    if range_header:
-        headers["Range"] = range_header
-
-    try:
-        upstream = requests.get(media_url, stream=True, timeout=20, allow_redirects=False, headers=headers)
-        upstream.raise_for_status()
-    except requests.RequestException:
-        return abort(502, "Failed to fetch media")
-
-    content_type = upstream.headers.get("Content-Type", "application/octet-stream")
-    base_name = (request.args.get("name") or "media").strip()
-    filename = safe_segment(base_name) + guess_extension(content_type)
-
-    response_headers = {"Content-Type": content_type}
-    if as_attachment:
-        response_headers["Content-Disposition"] = f'attachment; filename="{filename}"'
-    else:
-        response_headers["Content-Disposition"] = "inline"
-
-    for header_name in ("Content-Length", "Content-Range", "Accept-Ranges"):
-        if header_name in upstream.headers:
-            response_headers[header_name] = upstream.headers[header_name]
-
-    return Response(
-        stream_with_context(upstream.iter_content(chunk_size=8192)),
-        headers=response_headers,
-        status=upstream.status_code,
-    )
-
-
-@app.route("/download-file", methods=["GET"])
-def download_file():
-    media_url = (request.args.get("url") or "").strip()
-    return stream_media(media_url, as_attachment=True)
-
-
-@app.route("/media-proxy", methods=["GET"])
-def media_proxy():
-    media_url = (request.args.get("url") or "").strip()
-    return stream_media(media_url, as_attachment=False)
-
-
-@app.route("/<lang>/download", methods=["POST"], strict_slashes=False)
-def download_lang(lang: str):
-    lang = normalize_lang(lang)
-    t = translate(lang)
-    media_url = (request.form.get("media_url") or request.form.get("target_input") or "").strip()
+    media_url = (request.form.get("media_url") or "").strip()
     media_type = (request.form.get("media_type") or "video").strip()
 
     parsed = parse_media_url(media_url)
     if not parsed:
-        return render_index(lang, error=t["error_invalid_link"], selected_type=media_type)
+        return render_index(lang, error=strings["error_invalid_url"], selected_type=media_type)
 
     url_kind, shortcode = parsed
 
-    loader = instaloader.Instaloader(quiet=True)
-    loader.context.max_connection_attempts = 3
-
     try:
+        loader = make_loader()
         post = instaloader.Post.from_shortcode(loader.context, shortcode)
-        owner = getattr(post, "owner_username", "instagram")
-        safe_owner = safe_segment(owner)
+
         owner_profile = getattr(post, "owner_profile", None)
         if owner_profile and getattr(owner_profile, "is_private", False):
             return render_index(
                 lang,
                 modal_show=True,
-                modal_title=t["modal_private_title"],
-                modal_message=t["modal_private_body"],
+                modal_title=strings["modal_private_title"],
+                modal_message=strings["modal_private_msg"],
                 selected_type=media_type,
             )
-
-        is_video = getattr(post, "is_video", False)
-        is_carousel = getattr(post, "typename", "") == "GraphSidecar"
 
         if media_type == "reels":
-            if not is_video or not (url_kind == "reel" or is_reel(post)):
-                return render_index(lang, error=t["error_not_reel"], selected_type=media_type)
+            if not (url_kind == "reel" or is_reel(post)):
+                return render_index(
+                    lang,
+                    modal_show=True,
+                    modal_title=strings["modal_mismatch_title"],
+                    modal_message=strings["modal_mismatch_reel"],
+                    selected_type=media_type,
+                )
 
-        items: List[dict] = []
-        has_video = False
-        has_image = False
-
-        if is_carousel:
-            for idx, node in enumerate(post.get_sidecar_nodes(), start=1):
-                node_is_video = getattr(node, "is_video", False)
-                has_video = has_video or node_is_video
-                has_image = has_image or (not node_is_video)
-
-                if media_type == "photo" and node_is_video:
-                    continue
-                if media_type in {"video", "reels"} and not node_is_video:
-                    continue
-
-                media_link = node.video_url if node_is_video else node.display_url
-                if not media_link:
-                    continue
-                label = "video" if node_is_video else "photo"
-                items.append({"type": label, "url": media_link, "name": f"{safe_owner}_{shortcode}_{idx}"})
-        else:
-            has_video = is_video
-            has_image = not is_video
-            media_link = post.video_url if is_video else post.url
-            if media_link:
-                label = "video" if is_video else "photo"
-                if media_type == "photo" and label != "photo":
-                    items = []
-                elif media_type in {"video", "reels"} and label != "video":
-                    items = []
-                else:
-                    items.append({"type": label, "url": media_link, "name": f"{safe_owner}_{shortcode}"})
-
-        if media_type in {"video", "reels"} and not has_video:
-            return render_index(
-                lang,
-                modal_show=True,
-                modal_title=t["modal_mismatch_title"],
-                modal_message=t["modal_mismatch_video"],
-                selected_type=media_type,
-            )
-        if media_type == "photo" and not has_image:
-            return render_index(
-                lang,
-                modal_show=True,
-                modal_title=t["modal_mismatch_title"],
-                modal_message=t["modal_mismatch_photo"],
-                selected_type=media_type,
-            )
-
+        items = extract_items(post, media_type)
         if not items:
-            return render_index(lang, error=t["error_no_media"], selected_type=media_type)
+            if media_type == "photo":
+                msg = strings["modal_mismatch_image"]
+            else:
+                msg = strings["modal_mismatch_video"]
+            return render_index(
+                lang,
+                modal_show=True,
+                modal_title=strings["modal_mismatch_title"],
+                modal_message=msg,
+                selected_type=media_type,
+            )
 
-        return render_index(lang, items=items, selected_type=media_type)
+        results = build_media_links(items)
+        return render_index(lang, results=results, selected_type=media_type)
 
     except LoginException:
         return render_index(
             lang,
             modal_show=True,
-            modal_title=t["modal_private_title"],
-            modal_message=t["modal_private_body"],
+            modal_title=strings["modal_private_title"],
+            modal_message=strings["modal_private_msg"],
             selected_type=media_type,
         )
     except ConnectionException as exc:
         return render_index(lang, error=f"Connection error: {exc}", selected_type=media_type)
     except Exception as exc:  # pragma: no cover
         return render_index(lang, error=f"Unexpected error: {exc}", selected_type=media_type)
+
+
+@app.route("/media-proxy")
+def media_proxy():
+    url = request.args.get("url", "")
+    if not url.startswith("https://"):
+        abort(400)
+    resp = requests.get(url, stream=True, timeout=20)
+    if resp.status_code != 200:
+        abort(404)
+    content_type = resp.headers.get("Content-Type", "application/octet-stream")
+    return Response(
+        stream_with_context(resp.iter_content(chunk_size=8192)),
+        content_type=content_type,
+    )
+
+
+@app.route("/download-file")
+def download_file():
+    url = request.args.get("url", "")
+    filename = safe_filename(request.args.get("filename", "instagram_media"))
+    if not url.startswith("https://"):
+        abort(400)
+    resp = requests.get(url, stream=True, timeout=20)
+    if resp.status_code != 200:
+        abort(404)
+    content_type = resp.headers.get("Content-Type", "application/octet-stream")
+    headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
+    return Response(
+        stream_with_context(resp.iter_content(chunk_size=8192)),
+        headers=headers,
+        content_type=content_type,
+    )
+
+
+@app.route("/<lang>/about")
+def about_page(lang: str):
+    lang = get_lang(lang)
+    strings = build_strings(lang)
+    return render_template(
+        "page.html",
+        lang=lang,
+        lang_dir=LANGS[lang]["dir"],
+        strings=strings,
+        title=strings["page_about_title"],
+        body=strings["page_about_body"],
+        alt_langs=alt_langs("about"),
+        languages=[{"code": c, "label": LANGS[c]["label"]} for c in LANG_ORDER],
+    )
+
+
+@app.route("/<lang>/contact")
+def contact_page(lang: str):
+    lang = get_lang(lang)
+    strings = build_strings(lang)
+    return render_template(
+        "page.html",
+        lang=lang,
+        lang_dir=LANGS[lang]["dir"],
+        strings=strings,
+        title=strings["page_contact_title"],
+        body=strings["page_contact_body"],
+        alt_langs=alt_langs("contact"),
+        languages=[{"code": c, "label": LANGS[c]["label"]} for c in LANG_ORDER],
+    )
+
+
+@app.route("/<lang>/privacy")
+def privacy_page(lang: str):
+    lang = get_lang(lang)
+    strings = build_strings(lang)
+    return render_template(
+        "page.html",
+        lang=lang,
+        lang_dir=LANGS[lang]["dir"],
+        strings=strings,
+        title=strings["page_privacy_title"],
+        body=strings["page_privacy_body"],
+        alt_langs=alt_langs("privacy"),
+        languages=[{"code": c, "label": LANGS[c]["label"]} for c in LANG_ORDER],
+    )
 
 
 if __name__ == "__main__":
