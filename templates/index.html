@@ -1,9 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ lang }}" dir="{{ t.dir }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Instagram Media Downloader</title>
+  <title>{{ t.title }}</title>
+  <meta name="description" content="{{ t.meta_description }}">
+  <meta name="keywords" content="{{ t.meta_keywords }}">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="{{ canonical_url }}">
+  {% for code, _label in languages %}
+    <link rel="alternate" hreflang="{{ code }}" href="{{ base_url }}/{{ code }}{{ alt_suffix }}">
+  {% endfor %}
+  <link rel="alternate" hreflang="x-default" href="{{ base_url }}/en">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -11,7 +19,7 @@
     <header class="topbar">
       <div class="brand">
         <span class="brand-dot"></span>
-        <span>Media Vault</span>
+        <span>{{ t.brand }}</span>
       </div>
       <div class="platforms">
         <button class="platform active" type="button">
@@ -19,58 +27,71 @@
           Instagram
         </button>
       </div>
-      <div class="status">Public posts only</div>
+      <div class="status">{{ t.status }}</div>
+      <div class="lang-select">
+        <label class="lang-label" for="langSelect">Lang</label>
+        <select id="langSelect">
+          {% for code, label in languages %}
+            <option value="{{ code }}" {% if code == lang %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </header>
 
     <nav class="media-tabs" aria-label="Media types">
-      <button class="tab active" type="button" data-type="video">
+      <button class="tab{% if selected_type in [None, 'video'] %} active{% endif %}" type="button" data-type="video" data-label="{{ t.headline_video }}">
         <span class="tab-icon icon-video" aria-hidden="true"></span>
-        Video
+        {{ t.tab_video }}
       </button>
-      <button class="tab" type="button" data-type="reels">
+      <button class="tab{% if selected_type == 'reels' %} active{% endif %}" type="button" data-type="reels" data-label="{{ t.headline_reels }}">
         <span class="tab-icon icon-reels" aria-hidden="true"></span>
-        Reels
+        {{ t.tab_reels }}
       </button>
-      <button class="tab" type="button" data-type="photo">
+      <button class="tab{% if selected_type == 'photo' %} active{% endif %}" type="button" data-type="photo" data-label="{{ t.headline_photo }}">
         <span class="tab-icon icon-photo" aria-hidden="true"></span>
-        Photo
+        {{ t.tab_photo }}
       </button>
     </nav>
 
     <main class="content">
       <section class="card">
-        <p class="kicker">Download all Instagram stuff here</p>
-        <h1 id="headline">Instagram Video Downloader</h1>
-        <p class="sub">Paste a public post or reel link. Private accounts will show a privacy alert.</p>
+        <p class="kicker">{{ t.kicker }}</p>
+        <h1 id="headline">
+          {% if selected_type == 'reels' %}{{ t.headline_reels }}
+          {% elif selected_type == 'photo' %}{{ t.headline_photo }}
+          {% else %}{{ t.headline_video }}
+          {% endif %}
+        </h1>
+        <p class="sub">{{ t.sub }}</p>
 
-        {% if error and not private_error %}
+        {% if error %}
           <div class="alert">{{ error }}</div>
         {% endif %}
 
-        <form method="post" action="/download" class="search" id="downloadForm">
-          <input type="hidden" name="media_type" id="mediaType" value="video">
+        <form method="post" action="{{ url_for('download_lang', lang=lang) }}" class="search" id="downloadForm">
+          <input type="hidden" name="media_type" id="mediaType" value="{{ selected_type or 'video' }}">
           <label class="search-field">
             <span class="link-icon" aria-hidden="true"></span>
             <input
               type="text"
               name="media_url"
               id="targetInput"
-              placeholder="Paste Instagram post or reel link"
+              placeholder="{{ t.placeholder }}"
               autocomplete="off"
               required
             >
           </label>
-          <button class="chip" type="button" id="pasteBtn">Paste</button>
-          <button class="chip ghost" type="button" id="clearBtn">Clear</button>
+          <button class="chip" type="button" id="pasteBtn">{{ t.paste }}</button>
+          <button class="chip ghost" type="button" id="clearBtn">{{ t.clear }}</button>
           <button class="cta" type="submit">
             <span class="loader" aria-hidden="true"></span>
-            Search
+            {{ t.search }}
           </button>
         </form>
 
         {% if items %}
           <div class="results">
-            <h2>Results</h2>
+            <h2>{{ t.results }}</h2>
             <div class="media-grid">
               {% for item in items %}
                 <div class="media-card" data-mode="{{ selected_type or '' }}">
@@ -81,33 +102,51 @@
                       <img class="media-preview media-image" src="{{ url_for('media_proxy', url=item.url) }}" alt="Instagram media">
                     {% endif %}
                   </div>
-                  <a class="download-btn" href="{{ url_for('download_file', url=item.url, name=item.name) }}">Download</a>
+                  <a class="download-btn" href="{{ url_for('download_file', url=item.url, name=item.name) }}">{{ t.download }}</a>
                 </div>
               {% endfor %}
             </div>
           </div>
         {% endif %}
+
+        <section class="seo">
+          <h2>{{ t.seo_title }}</h2>
+          <p>{{ t.seo_p1 }}</p>
+          <p>{{ t.seo_p2 }}</p>
+          <h3>{{ t.seo_list_title }}</h3>
+          <ul>
+            <li>{{ t.seo_list_1 }}</li>
+            <li>{{ t.seo_list_2 }}</li>
+            <li>{{ t.seo_list_3 }}</li>
+            <li>{{ t.seo_list_4 }}</li>
+          </ul>
+        </section>
       </section>
     </main>
   </div>
 
-  <div class="modal{% if private_error %} show{% endif %}" id="privateModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+      <a href="{{ url_for('about', lang=lang) }}">{{ t.footer_about }}</a>
+      <a href="{{ url_for('privacy', lang=lang) }}">{{ t.footer_privacy }}</a>
+    </div>
+    <p class="footer-disclaimer">{{ t.footer_disclaimer }}</p>
+    <p class="footer-copy">{{ t.footer_copy }}</p>
+  </footer>
+
+  <div class="modal{% if modal_show %} show{% endif %}" id="statusModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
-      <h2 id="modalTitle">Private Account</h2>
-      <p>This Instagram account is private. Media cannot be downloaded.</p>
+      <h2 id="modalTitle">{{ modal_title or '' }}</h2>
+      <p>{{ modal_message or '' }}</p>
       <button class="cta" type="button" id="closeModal">OK</button>
     </div>
   </div>
 
   <script>
-    const tabs = document.querySelectorAll('.tab:not(.disabled)');
+    const tabs = document.querySelectorAll('.tab');
     const mediaType = document.getElementById('mediaType');
     const headline = document.getElementById('headline');
-    const typeLabels = {
-      video: 'Instagram Video Downloader',
-      reels: 'Instagram Reels Downloader',
-      photo: 'Instagram Photo Downloader',
-    };
 
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -115,7 +154,7 @@
         tab.classList.add('active');
         const type = tab.dataset.type;
         mediaType.value = type;
-        headline.textContent = typeLabels[type] || 'Instagram Downloader';
+        headline.textContent = tab.dataset.label || headline.textContent;
       });
     });
 
@@ -143,11 +182,16 @@
       loader.classList.add('spin');
     });
 
-    const modal = document.getElementById('privateModal');
+    const modal = document.getElementById('statusModal');
     const closeModal = document.getElementById('closeModal');
     if (modal.classList.contains('show')) {
       closeModal.addEventListener('click', () => modal.classList.remove('show'));
     }
+
+    const langSelect = document.getElementById('langSelect');
+    langSelect.addEventListener('change', () => {
+      window.location = '/' + langSelect.value;
+    });
   </script>
 </body>
 </html>
