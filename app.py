@@ -33,7 +33,7 @@ except ModuleNotFoundError as exc:  # pragma: no cover
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
-
+ADS_TXT = ""  # Paste your AdSense line here later.
 DEFAULT_LANG = "en"
 LANG_ORDER = [
     "en",
@@ -1638,8 +1638,6 @@ def sitemap():
     xml_lines.append("</urlset>")
 
     return Response("\n".join(xml_lines), mimetype="application/xml")
-
-    ADS_TXT = ""  # Paste your AdSense line here later.
 
 @app.route("/ads.txt")
 def ads_txt():
