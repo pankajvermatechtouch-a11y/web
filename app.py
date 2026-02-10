@@ -6,7 +6,11 @@ Instagram's Terms of Use and applicable laws.
 """
 from __future__ import annotations
 
+import os
 import re
+import smtplib
+import ssl
+from email.message import EmailMessage
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
@@ -34,6 +38,7 @@ except ModuleNotFoundError as exc:  # pragma: no cover
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 ADS_TXT = ""  # Paste your AdSense line here later.
+CONTACT_TO = "pv50017@gmail.com"
 DEFAULT_LANG = "en"
 LANG_ORDER = [
     "en",
@@ -155,10 +160,49 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "footer_copy": "Copyright © 2026 Media Vault. All rights reserved.",
         "page_about_title": "About us",
         "page_about_body": "Media Vault provides a simple way to preview and download public Instagram media for personal use.",
+        "page_about_html": (
+            "<p>Welcome to {brand} — a fast, free, and easy tool designed to help you download Instagram photos, videos, reels, and stories in just a few clicks.</p>"
+            "<p>Our goal is to make saving your favorite Instagram content simple, secure, and hassle-free. No sign-ups, no complicated steps — just paste the link and download instantly.</p>"
+            "<p>We’re constantly improving our tool to give you the best experience with speed, reliability, and privacy at the core.</p>"
+        ),
         "page_contact_title": "Contact us",
         "page_contact_body": "For support or inquiries, email: support@example.com",
+        "page_contact_html": (
+            "<p>Have a question, suggestion, or facing an issue while downloading Instagram media? We’re here to help!</p>"
+            "<p>Feel free to reach out to us anytime, and our team will get back to you as soon as possible.</p>"
+            "<h2>Support Hours</h2>"
+            "<p><strong>🕒 24/7</strong></p>"
+            "<p>Your feedback helps us improve and serve you better.</p>"
+        ),
         "page_privacy_title": "Privacy policy",
         "page_privacy_body": "We do not store the media you download. Requests are processed in real time.",
+        "page_privacy_html": (
+            "<p>Your privacy matters to us. This Privacy Policy explains how our Instagram Media Downloader website collects, uses, and protects your information when you use our service.</p>"
+            "<h2>1. Information We Do Not Collect</h2>"
+            "<p>We do not require you to sign up or create an account. We do not ask for personal information such as your name, email address, or Instagram login details to use our tool.</p>"
+            "<h2>2. Log Data</h2>"
+            "<p>Like most websites, we may collect basic log data such as:</p>"
+            "<ul><li>IP address</li><li>Browser type</li><li>Device information</li><li>Pages visited</li><li>Time and date of visit</li></ul>"
+            "<p>This data is used only to improve website performance and user experience.</p>"
+            "<h2>3. Cookies</h2>"
+            "<p>We may use cookies to enhance your browsing experience. Cookies help us understand user behavior and improve our services. You can disable cookies in your browser settings at any time.</p>"
+            "<h2>4. Third-Party Services</h2>"
+            "<p>We may use third-party services such as analytics tools or advertising networks that may collect information in accordance with their own privacy policies.</p>"
+            "<h2>5. How We Use Information</h2>"
+            "<p>Any data collected is used only for:</p>"
+            "<ul><li>Improving website performance</li><li>Monitoring usage and traffic patterns</li><li>Fixing technical issues</li></ul>"
+            "<p>We do not sell, trade, or share your information with third parties.</p>"
+            "<h2>6. Data Security</h2>"
+            "<p>We implement standard security measures to protect our website and users. However, no method of transmission over the internet is 100% secure.</p>"
+            "<h2>7. Links to Other Websites</h2>"
+            "<p>Our website may contain links to other websites. We are not responsible for the privacy practices of those sites.</p>"
+            "<h2>8. Children’s Privacy</h2>"
+            "<p>Our service is not intended for children under the age of 13. We do not knowingly collect information from children.</p>"
+            "<h2>9. Changes to This Policy</h2>"
+            "<p>We may update this Privacy Policy from time to time. Any changes will be posted on this page.</p>"
+            "<h2>10. Contact Us</h2>"
+            "<p>If you have any questions about this Privacy Policy, feel free to contact us at: <a href=\"{contact_url}\">{contact_url}</a></p>"
+        ),
         "preview_alt": "Instagram media preview",
     },
     "ar": {
@@ -1285,6 +1329,50 @@ def base_url() -> str:
     return request.url_root.rstrip("/")
 
 
+def send_contact_email(name: str, email: str, message: str) -> Tuple[bool, str]:
+    host = os.getenv("SMTP_HOST")
+    if not host:
+        return False, "Email is not configured yet."
+    port = int(os.getenv("SMTP_PORT", "587"))
+    user = os.getenv("SMTP_USER")
+    password = os.getenv("SMTP_PASS")
+    from_addr = os.getenv("SMTP_FROM") or user
+    if not from_addr:
+        return False, "Email is not configured yet."
+
+    msg = EmailMessage()
+    msg["Subject"] = f"New message from {STRINGS['en']['brand']}"
+    msg["From"] = from_addr
+    msg["To"] = CONTACT_TO
+    if email:
+        msg["Reply-To"] = email
+    msg.set_content(
+        f"Name: {name or '-'}\n"
+        f"Email: {email or '-'}\n\n"
+        f"Message:\n{message}"
+    )
+
+    try:
+        if port == 465:
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL(host, port, context=context, timeout=20) as server:
+                if user and password:
+                    server.login(user, password)
+                server.send_message(msg)
+        else:
+            context = ssl.create_default_context()
+            with smtplib.SMTP(host, port, timeout=20) as server:
+                server.ehlo()
+                server.starttls(context=context)
+                server.ehlo()
+                if user and password:
+                    server.login(user, password)
+                server.send_message(msg)
+        return True, ""
+    except Exception:
+        return False, "Unable to send message right now."
+
+
 def safe_filename(name: str) -> str:
     cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", name).strip("_")
     return cleaned or "instagram_media"
@@ -1582,6 +1670,7 @@ def download_file():
 def about(lang: str):
     lang = get_lang(lang)
     t = build_strings(lang)
+    page_body = t.get("page_about_html", t["page_about_body"]).format(brand=t["brand"])
     return render_template(
         "page.html",
         lang=lang,
@@ -1590,16 +1679,35 @@ def about(lang: str):
         languages=get_languages(),
         base_url=base_url(),
         page_title=t["page_about_title"],
-        page_body=t["page_about_body"],
+        page_body=page_body,
         page_slug="about",
         default_lang=DEFAULT_LANG,
     )
 
 
-@app.route("/<lang>/contact")
+@app.route("/<lang>/contact", methods=["GET", "POST"])
 def contact(lang: str):
     lang = get_lang(lang)
     t = build_strings(lang)
+    notice = None
+    error = None
+    if request.method == "POST":
+        name = (request.form.get("name") or "").strip()
+        email = (request.form.get("email") or "").strip()
+        message = (request.form.get("message") or "").strip()
+        if not message:
+            error = "Please enter a message."
+        else:
+            ok, err_msg = send_contact_email(name, email, message)
+            if ok:
+                notice = "Thanks! Your message has been sent."
+            else:
+                error = err_msg
+    contact_url = f"{base_url()}/{lang}/contact"
+    page_body = t.get("page_contact_html", t["page_contact_body"]).format(
+        brand=t["brand"],
+        contact_url=contact_url,
+    )
     return render_template(
         "page.html",
         lang=lang,
@@ -1608,9 +1716,11 @@ def contact(lang: str):
         languages=get_languages(),
         base_url=base_url(),
         page_title=t["page_contact_title"],
-        page_body=t["page_contact_body"],
+        page_body=page_body,
         page_slug="contact",
         default_lang=DEFAULT_LANG,
+        page_notice=notice,
+        page_error=error,
     )
 
 
@@ -1618,6 +1728,11 @@ def contact(lang: str):
 def privacy(lang: str):
     lang = get_lang(lang)
     t = build_strings(lang)
+    contact_url = f"{base_url()}/{lang}/contact"
+    page_body = t.get("page_privacy_html", t["page_privacy_body"]).format(
+        brand=t["brand"],
+        contact_url=contact_url,
+    )
     return render_template(
         "page.html",
         lang=lang,
@@ -1626,7 +1741,7 @@ def privacy(lang: str):
         languages=get_languages(),
         base_url=base_url(),
         page_title=t["page_privacy_title"],
-        page_body=t["page_privacy_body"],
+        page_body=page_body,
         page_slug="privacy",
         default_lang=DEFAULT_LANG,
     )
