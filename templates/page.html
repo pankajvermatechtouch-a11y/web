@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="{{ lang }}" dir="{{ t.dir }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page_title }} - {{ t.title }}</title>
+  <meta name="description" content="{{ t.meta_description }}">
+  <meta name="keywords" content="{{ t.meta_keywords }}">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="{{ base_url }}/">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span>{{ t.brand }}</span>
+      </div>
+      <div class="platforms">
+        <a class="platform active" href="{{ url_for('index', lang=lang) }}">
+          <span class="icon ig"></span>
+          Instagram
+        </a>
+      </div>
+      <div class="status">{{ t.status }}</div>
+      <form class="lang-select" method="get" action="/">
+        <label class="lang-label" for="langSelect">Lang</label>
+        <select id="langSelect" name="lang" onchange="this.form.submit()">
+          {% for code, label in languages %}
+            <option value="{{ code }}" {% if code == lang %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </header>
+
+    <main class="content">
+      <section class="card page-card">
+        <h1>{{ page_title }}</h1>
+        <p>{{ page_body }}</p>
+      </section>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
+      <a href="{{ url_for('about', lang=lang) }}">{{ t.footer_about }}</a>
+      <a href="{{ url_for('privacy', lang=lang) }}">{{ t.footer_privacy }}</a>
+    </div>
+    <p class="footer-disclaimer">{{ t.footer_disclaimer }}</p>
+    <p class="footer-copy">{{ t.footer_copy }}</p>
+  </footer>
+</body>
+</html>
