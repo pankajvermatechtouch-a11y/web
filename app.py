@@ -6,6 +6,7 @@ Instagram's Terms of Use and applicable laws.
 """
 from __future__ import annotations
 
+import logging
 import os
 import re
 import smtplib
@@ -40,6 +41,8 @@ app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 ADS_TXT = ""  # Paste your AdSense line here later.
 CONTACT_TO = "pv50017@gmail.com"
 DEFAULT_LANG = "en"
+
+logger = logging.getLogger(__name__)
 LANG_ORDER = [
     "en",
     "ar",
@@ -1369,7 +1372,8 @@ def send_contact_email(name: str, email: str, message: str) -> Tuple[bool, str]:
                     server.login(user, password)
                 server.send_message(msg)
         return True, ""
-    except Exception:
+    except Exception as exc:
+        logger.exception("Contact email failed: %s", exc)
         return False, "Unable to send message right now."
 
 
