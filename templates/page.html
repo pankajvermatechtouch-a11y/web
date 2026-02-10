@@ -17,19 +17,28 @@
 <body>
   <div class="page">
     <header class="topbar">
-      <div class="brand">
-        <span class="brand-dot"></span>
-        <span>{{ t.brand }}</span>
+      <div class="topbar-main">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <span>{{ t.brand }}</span>
+        </div>
+        <button class="menu-toggle" type="button" id="menuToggle" aria-expanded="false" aria-controls="topbarActions" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
-      <a class="home-btn" href="{{ url_for('index', lang=lang) }}">{{ t.home }}</a>
-      <form class="lang-select" method="get" action="/">
-        <label class="lang-label" for="langSelect">{{ t.language_label }}</label>
-        <select id="langSelect" name="lang">
-          {% for code, label in languages %}
-            <option value="{{ code }}" {% if code == lang %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
-        </select>
-      </form>
+      <div class="topbar-actions" id="topbarActions">
+        <a class="home-btn" href="{{ url_for('index', lang=lang) }}">{{ t.home }}</a>
+        <form class="lang-select" method="get" action="/">
+          <label class="lang-label" for="langSelect">{{ t.language_label }}</label>
+          <select id="langSelect" name="lang">
+            {% for code, label in languages %}
+              <option value="{{ code }}" {% if code == lang %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
     </header>
 
     <main class="content">
@@ -55,6 +64,15 @@
     if (langSelect) {
       langSelect.addEventListener('change', () => {
         window.location.href = '/' + langSelect.value + '/{{ page_slug }}';
+      });
+    }
+
+    const menuToggle = document.getElementById('menuToggle');
+    const topbar = document.querySelector('.topbar');
+    if (menuToggle && topbar) {
+      menuToggle.addEventListener('click', () => {
+        const isOpen = topbar.classList.toggle('menu-open');
+        menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
     }
   </script>
