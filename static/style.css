@@ -253,31 +253,6 @@ body {
   padding: 0;
 }
 
-.contact-form {
-  margin-top: 22px;
-  display: grid;
-  gap: 14px;
-}
-
-.contact-form .form-row {
-  display: grid;
-  gap: 6px;
-}
-
-.contact-form label {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.contact-form input,
-.contact-form textarea {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 15px;
-  font-family: "Manrope", "Segoe UI", sans-serif;
-}
-
 .alert.success {
   background: #ecfdf3;
   color: #166534;
