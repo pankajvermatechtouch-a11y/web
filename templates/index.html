@@ -1,144 +1,139 @@
 <!doctype html>
-<html lang="{{ lang }}" dir="{{ t.dir }}">
+<html lang="{{ lang }}" dir="{{ lang_dir }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ t.title }}</title>
-  <meta name="description" content="{{ t.meta_description }}">
-  <meta name="keywords" content="{{ t.meta_keywords }}">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="{{ canonical_url }}">
-  {% for code, _label in languages %}
-    <link rel="alternate" hreflang="{{ code }}" href="{{ base_url }}/{{ code }}{{ alt_suffix }}">
+  <title>{{ strings.title }}</title>
+  <meta name="description" content="{{ strings.meta_description }}">
+  <meta name="keywords" content="{{ strings.meta_keywords }}">
+  {% for link in alt_langs %}
+    <link rel="alternate" hreflang="{{ link.code }}" href="{{ link.url }}">
   {% endfor %}
-  <link rel="alternate" hreflang="x-default" href="{{ base_url }}/en">
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-current-type="{{ selected_type }}">
   <div class="page">
     <header class="topbar">
       <div class="brand">
         <span class="brand-dot"></span>
-        <span>{{ t.brand }}</span>
+        <span>{{ strings.brand }}</span>
       </div>
+
       <div class="platforms">
         <button class="platform active" type="button">
           <span class="icon ig"></span>
           Instagram
         </button>
       </div>
-      <div class="status">{{ t.status }}</div>
-      <div class="lang-select">
-        <label class="lang-label" for="langSelect">Lang</label>
-        <select id="langSelect">
-          {% for code, label in languages %}
-            <option value="{{ code }}" {% if code == lang %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
-        </select>
+
+      <div class="actions">
+        <span class="status">{{ strings.status_public }}</span>
+        <label class="lang-label">
+          <span>{{ strings.language_label }}</span>
+          <select id="langSelect" class="lang-select">
+            {% for lang_item in languages %}
+              <option value="{{ lang_item.code }}" {% if lang_item.code == lang %}selected{% endif %}>
+                {{ lang_item.label }}
+              </option>
+            {% endfor %}
+          </select>
+        </label>
       </div>
     </header>
 
     <nav class="media-tabs" aria-label="Media types">
-      <button class="tab{% if selected_type in [None, 'video'] %} active{% endif %}" type="button" data-type="video" data-label="{{ t.headline_video }}">
+      <button class="tab {% if selected_type == 'video' %}active{% endif %}" type="button" data-type="video">
         <span class="tab-icon icon-video" aria-hidden="true"></span>
-        {{ t.tab_video }}
+        {{ strings.tab_video }}
       </button>
-      <button class="tab{% if selected_type == 'reels' %} active{% endif %}" type="button" data-type="reels" data-label="{{ t.headline_reels }}">
+      <button class="tab {% if selected_type == 'reels' %}active{% endif %}" type="button" data-type="reels">
         <span class="tab-icon icon-reels" aria-hidden="true"></span>
-        {{ t.tab_reels }}
+        {{ strings.tab_reels }}
       </button>
-      <button class="tab{% if selected_type == 'photo' %} active{% endif %}" type="button" data-type="photo" data-label="{{ t.headline_photo }}">
+      <button class="tab {% if selected_type == 'photo' %}active{% endif %}" type="button" data-type="photo">
         <span class="tab-icon icon-photo" aria-hidden="true"></span>
-        {{ t.tab_photo }}
+        {{ strings.tab_photo }}
       </button>
     </nav>
 
     <main class="content">
       <section class="card">
-        <p class="kicker">{{ t.kicker }}</p>
-        <h1 id="headline">
-          {% if selected_type == 'reels' %}{{ t.headline_reels }}
-          {% elif selected_type == 'photo' %}{{ t.headline_photo }}
-          {% else %}{{ t.headline_video }}
-          {% endif %}
-        </h1>
-        <p class="sub">{{ t.sub }}</p>
+        <p class="kicker">{{ strings.kicker }}</p>
+        <h1 id="headline">{{ strings["headline_" ~ selected_type] }}</h1>
+        <p class="sub">{{ strings.subhead }}</p>
 
         {% if error %}
           <div class="alert">{{ error }}</div>
         {% endif %}
 
-        <form method="post" action="{{ url_for('download_lang', lang=lang) }}" class="search" id="downloadForm">
-          <input type="hidden" name="media_type" id="mediaType" value="{{ selected_type or 'video' }}">
+        <form method="post" action="/{{ lang }}/download" class="search" id="downloadForm">
+          <input type="hidden" name="media_type" id="mediaType" value="{{ selected_type }}">
           <label class="search-field">
             <span class="link-icon" aria-hidden="true"></span>
             <input
               type="text"
               name="media_url"
               id="targetInput"
-              placeholder="{{ t.placeholder }}"
+              placeholder="{{ strings.placeholder }}"
               autocomplete="off"
               required
             >
           </label>
-          <button class="chip" type="button" id="pasteBtn">{{ t.paste }}</button>
-          <button class="chip ghost" type="button" id="clearBtn">{{ t.clear }}</button>
+          <button class="chip" type="button" id="pasteBtn">{{ strings.paste }}</button>
+          <button class="chip ghost" type="button" id="clearBtn">{{ strings.clear }}</button>
           <button class="cta" type="submit">
             <span class="loader" aria-hidden="true"></span>
-            {{ t.search }}
+            {{ strings.search }}
           </button>
         </form>
 
-        {% if items %}
+        {% if results %}
           <div class="results">
-            <h2>{{ t.results }}</h2>
+            <h2>{{ strings.results }}</h2>
             <div class="media-grid">
-              {% for item in items %}
-                <div class="media-card" data-mode="{{ selected_type or '' }}">
-                  <div class="media-frame">
-                    {% if item.type == "video" %}
-                      <video class="media-preview media-video" controls playsinline src="{{ url_for('media_proxy', url=item.url) }}"></video>
+              {% for item in results %}
+                <div class="media-card">
+                  <div class="media-frame {% if item.kind == 'reel' %}is-reel{% elif item.kind == 'video' %}is-video{% else %}is-photo{% endif %}">
+                    {% if item.kind == 'video' or item.kind == 'reel' %}
+                      <video controls preload="metadata" src="{{ item.proxy_url }}"></video>
                     {% else %}
-                      <img class="media-preview media-image" src="{{ url_for('media_proxy', url=item.url) }}" alt="Instagram media">
+                      <img src="{{ item.proxy_url }}" alt="{{ strings.preview_alt }}">
                     {% endif %}
                   </div>
-                  <a class="download-btn" href="{{ url_for('download_file', url=item.url, name=item.name) }}">{{ t.download }}</a>
+                  <a class="download-btn" href="{{ item.download_url }}">{{ strings.download }}</a>
                 </div>
               {% endfor %}
             </div>
           </div>
         {% endif %}
+      </section>
 
-        <section class="seo">
-          <h2>{{ t.seo_title }}</h2>
-          <p>{{ t.seo_p1 }}</p>
-          <p>{{ t.seo_p2 }}</p>
-          <h3>{{ t.seo_list_title }}</h3>
-          <ul>
-            <li>{{ t.seo_list_1 }}</li>
-            <li>{{ t.seo_list_2 }}</li>
-            <li>{{ t.seo_list_3 }}</li>
-            <li>{{ t.seo_list_4 }}</li>
-          </ul>
-        </section>
+      <section class="seo">
+        <h2>{{ strings.seo_heading }}</h2>
+        {% for para in strings.seo_paragraphs %}
+          <p>{{ para }}</p>
+        {% endfor %}
       </section>
     </main>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/{{ lang }}/contact">{{ strings.contact }}</a>
+        <a href="/{{ lang }}/about">{{ strings.about }}</a>
+        <a href="/{{ lang }}/privacy">{{ strings.privacy }}</a>
+      </div>
+      <div class="footer-disclaimer">{{ strings.footer_disclaimer }}</div>
+      <div class="footer-copy">{{ strings.copyright.replace("{year}", "2026") }}</div>
+    </footer>
   </div>
 
-  <footer class="footer">
-    <div class="footer-links">
-      <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
-      <a href="{{ url_for('about', lang=lang) }}">{{ t.footer_about }}</a>
-      <a href="{{ url_for('privacy', lang=lang) }}">{{ t.footer_privacy }}</a>
-    </div>
-    <p class="footer-disclaimer">{{ t.footer_disclaimer }}</p>
-    <p class="footer-copy">{{ t.footer_copy }}</p>
-  </footer>
-
-  <div class="modal{% if modal_show %} show{% endif %}" id="statusModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal{% if modal_show %} show{% endif %}" id="alertModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
-      <h2 id="modalTitle">{{ modal_title or '' }}</h2>
-      <p>{{ modal_message or '' }}</p>
+      <h2 id="modalTitle">{{ modal_title }}</h2>
+      <p>{{ modal_message }}</p>
       <button class="cta" type="button" id="closeModal">OK</button>
     </div>
   </div>
@@ -148,13 +143,19 @@
     const mediaType = document.getElementById('mediaType');
     const headline = document.getElementById('headline');
 
+    const typeLabels = {
+      video: "{{ strings.headline_video }}",
+      reels: "{{ strings.headline_reels }}",
+      photo: "{{ strings.headline_photo }}"
+    };
+
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         const type = tab.dataset.type;
         mediaType.value = type;
-        headline.textContent = tab.dataset.label || headline.textContent;
+        headline.textContent = typeLabels[type] || "{{ strings.title }}";
       });
     });
 
@@ -182,7 +183,7 @@
       loader.classList.add('spin');
     });
 
-    const modal = document.getElementById('statusModal');
+    const modal = document.getElementById('alertModal');
     const closeModal = document.getElementById('closeModal');
     if (modal.classList.contains('show')) {
       closeModal.addEventListener('click', () => modal.classList.remove('show'));
@@ -190,7 +191,7 @@
 
     const langSelect = document.getElementById('langSelect');
     langSelect.addEventListener('change', () => {
-      window.location = '/' + langSelect.value;
+      window.location.href = '/' + langSelect.value;
     });
   </script>
 </body>
