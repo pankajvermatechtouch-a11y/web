@@ -44,7 +44,32 @@
     <main class="content">
       <section class="card page-card">
         <h1>{{ page_title }}</h1>
-        <p>{{ page_body }}</p>
+        {% if page_notice %}
+          <div class="alert success">{{ page_notice }}</div>
+        {% endif %}
+        {% if page_error %}
+          <div class="alert">{{ page_error }}</div>
+        {% endif %}
+        <div class="page-body">
+          {{ page_body|safe }}
+        </div>
+        {% if page_slug == 'contact' %}
+          <form class="contact-form" method="post" action="{{ url_for('contact', lang=lang) }}">
+            <div class="form-row">
+              <label for="contactName">Name</label>
+              <input id="contactName" name="name" type="text" placeholder="Your name">
+            </div>
+            <div class="form-row">
+              <label for="contactEmail">Email</label>
+              <input id="contactEmail" name="email" type="email" placeholder="you@example.com">
+            </div>
+            <div class="form-row">
+              <label for="contactMessage">Message</label>
+              <textarea id="contactMessage" name="message" rows="6" placeholder="Tell us how we can help..." required></textarea>
+            </div>
+            <button class="cta" type="submit">Send message</button>
+          </form>
+        {% endif %}
       </section>
     </main>
   </div>
