@@ -21,7 +21,7 @@
         <span class="brand-dot"></span>
         <span>{{ t.brand }}</span>
       </div>
-      <a class="home-btn" href="{{ url_for('video_download', lang=lang) }}">{{ t.home }}</a>
+      <a class="home-btn" href="{{ url_for('index', lang=lang) }}">{{ t.home }}</a>
       <form class="lang-select" method="get" action="/">
         <label class="lang-label" for="langSelect">{{ t.language_label }}</label>
         <select id="langSelect" name="lang">
