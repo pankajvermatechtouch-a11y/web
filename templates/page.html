@@ -1,55 +1,61 @@
 <!doctype html>
-<html lang="{{ lang }}" dir="{{ t.dir }}">
+<html lang="{{ lang }}" dir="{{ lang_dir }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page_title }} - {{ t.title }}</title>
-  <meta name="description" content="{{ t.meta_description }}">
-  <meta name="keywords" content="{{ t.meta_keywords }}">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="{{ base_url }}/">
+  <title>{{ title }} - {{ strings.title }}</title>
+  {% for link in alt_langs %}
+    <link rel="alternate" hreflang="{{ link.code }}" href="{{ link.url }}">
+  {% endfor %}
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="page">
     <header class="topbar">
       <div class="brand">
         <span class="brand-dot"></span>
-        <span>{{ t.brand }}</span>
+        <span>{{ strings.brand }}</span>
       </div>
-      <div class="platforms">
-        <a class="platform active" href="{{ url_for('index', lang=lang) }}">
-          <span class="icon ig"></span>
-          Instagram
-        </a>
+      <div class="actions">
+        <label class="lang-label">
+          <span>{{ strings.language_label }}</span>
+          <select id="langSelect" class="lang-select">
+            {% for lang_item in languages %}
+              <option value="{{ lang_item.code }}" {% if lang_item.code == lang %}selected{% endif %}>
+                {{ lang_item.label }}
+              </option>
+            {% endfor %}
+          </select>
+        </label>
       </div>
-      <div class="status">{{ t.status }}</div>
-      <form class="lang-select" method="get" action="/">
-        <label class="lang-label" for="langSelect">Lang</label>
-        <select id="langSelect" name="lang" onchange="this.form.submit()">
-          {% for code, label in languages %}
-            <option value="{{ code }}" {% if code == lang %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
-        </select>
-      </form>
     </header>
 
     <main class="content">
-      <section class="card page-card">
-        <h1>{{ page_title }}</h1>
-        <p>{{ page_body }}</p>
+      <section class="card">
+        <h1>{{ title }}</h1>
+        <p>{{ body }}</p>
       </section>
     </main>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/{{ lang }}/contact">{{ strings.contact }}</a>
+        <a href="/{{ lang }}/about">{{ strings.about }}</a>
+        <a href="/{{ lang }}/privacy">{{ strings.privacy }}</a>
+      </div>
+      <div class="footer-disclaimer">{{ strings.footer_disclaimer }}</div>
+      <div class="footer-copy">{{ strings.copyright.replace("{year}", "2026") }}</div>
+    </footer>
   </div>
 
-  <footer class="footer">
-    <div class="footer-links">
-      <a href="{{ url_for('contact', lang=lang) }}">{{ t.footer_contact }}</a>
-      <a href="{{ url_for('about', lang=lang) }}">{{ t.footer_about }}</a>
-      <a href="{{ url_for('privacy', lang=lang) }}">{{ t.footer_privacy }}</a>
-    </div>
-    <p class="footer-disclaimer">{{ t.footer_disclaimer }}</p>
-    <p class="footer-copy">{{ t.footer_copy }}</p>
-  </footer>
+  <script>
+    const langSelect = document.getElementById('langSelect');
+    langSelect.addEventListener('change', () => {
+      window.location.href = '/' + langSelect.value;
+    });
+  </script>
 </body>
 </html>
