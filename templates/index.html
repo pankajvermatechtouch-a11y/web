@@ -121,19 +121,25 @@
           </div>
         {% endif %}
 
-        <section class="seo">
-          <h2>{{ seo_title }}</h2>
-          {% for paragraph in seo_paragraphs %}
-            <p>{{ paragraph }}</p>
-          {% endfor %}
-          <h3>{{ t.seo_list_title }}</h3>
-          <ul>
-            <li>{{ t.seo_list_1 }}</li>
-            <li>{{ t.seo_list_2 }}</li>
-            <li>{{ t.seo_list_3 }}</li>
-            <li>{{ t.seo_list_4 }}</li>
-          </ul>
-        </section>
+        {% if video_long_html %}
+          <section class="video-guide">
+            {{ video_long_html|safe }}
+          </section>
+        {% else %}
+          <section class="seo">
+            <h2>{{ seo_title }}</h2>
+            {% for paragraph in seo_paragraphs %}
+              <p>{{ paragraph }}</p>
+            {% endfor %}
+            <h3>{{ t.seo_list_title }}</h3>
+            <ul>
+              <li>{{ t.seo_list_1 }}</li>
+              <li>{{ t.seo_list_2 }}</li>
+              <li>{{ t.seo_list_3 }}</li>
+              <li>{{ t.seo_list_4 }}</li>
+            </ul>
+          </section>
+        {% endif %}
       </section>
     </main>
   </div>
