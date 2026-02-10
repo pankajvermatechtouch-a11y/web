@@ -1613,7 +1613,36 @@ def privacy(lang: str):
         page_slug="privacy",
         default_lang=DEFAULT_LANG,
     )
+@app.route("/sitemap.xml")
+def sitemap():
+    base = base_url()
+    urls: List[str] = []
 
+    for lang in LANG_ORDER:
+        urls.append(f"{base}/{lang}")
+        urls.append(f"{base}/{lang}/{MEDIA_SLUGS['video']}")
+        urls.append(f"{base}/{lang}/{MEDIA_SLUGS['reels']}")
+        urls.append(f"{base}/{lang}/{MEDIA_SLUGS['photo']}")
+        urls.append(f"{base}/{lang}/about")
+        urls.append(f"{base}/{lang}/contact")
+        urls.append(f"{base}/{lang}/privacy")
+
+    xml_lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for url in urls:
+        xml_lines.append("  <url>")
+        xml_lines.append(f"    <loc>{url}</loc>")
+        xml_lines.append("  </url>")
+    xml_lines.append("</urlset>")
+
+    return Response("\n".join(xml_lines), mimetype="application/xml")
+    ADS_TXT = ""  # Paste your AdSense line here later.
+
+@app.route("/ads.txt")
+def ads_txt():
+    return Response(ADS_TXT + "\n", mimetype="text/plain")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
