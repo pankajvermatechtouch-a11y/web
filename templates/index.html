@@ -3,28 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ t.title }}</title>
-  <meta name="description" content="{{ t.meta_description }}">
+  <title>{{ page_title }}</title>
+  <meta name="description" content="{{ page_description }}">
   <meta name="keywords" content="{{ t.meta_keywords }}">
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="{{ t.title }}">
-  <meta property="og:description" content="{{ t.meta_description }}">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ page_description }}">
   <meta property="og:type" content="website">
-  <link rel="canonical" href="{{ base_url }}/{{ lang }}">
+  <link rel="canonical" href="{{ base_url }}/{{ lang }}{% if page_slug %}/{{ page_slug }}{% endif %}">
   {% for code, _label in languages %}
-    <link rel="alternate" hreflang="{{ code }}" href="{{ base_url }}/{{ code }}">
+    <link rel="alternate" hreflang="{{ code }}" href="{{ base_url }}/{{ code }}{% if page_slug %}/{{ page_slug }}{% endif %}">
   {% endfor %}
-  <link rel="alternate" hreflang="x-default" href="{{ base_url }}/{{ default_lang }}">
+  <link rel="alternate" hreflang="x-default" href="{{ base_url }}/{{ default_lang }}{% if page_slug %}/{{ page_slug }}{% endif %}">
   <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
+<body data-lang="{{ lang }}" data-page-slug="{{ page_slug }}">
   <div class="page">
     <header class="topbar">
       <div class="brand">
         <span class="brand-dot"></span>
         <span>{{ t.brand }}</span>
       </div>
-      <div class="status">{{ t.status }}</div>
+      <a class="home-btn" href="{{ url_for('video_download', lang=lang) }}">{{ t.home }}</a>
       <form class="lang-select" method="get" action="/">
         <label class="lang-label" for="langSelect">{{ t.language_label }}</label>
         <select id="langSelect" name="lang">
@@ -65,7 +65,7 @@
           <div class="alert">{{ error }}</div>
         {% endif %}
 
-        <form method="post" action="{{ url_for('download', lang=lang) }}" class="search" id="downloadForm">
+        <form method="post" action="{{ post_url }}" class="search" id="downloadForm">
           <input type="hidden" name="media_type" id="mediaType" value="{{ selected_type or 'video' }}">
 
           <div class="search-row">
@@ -113,9 +113,10 @@
         {% endif %}
 
         <section class="seo">
-          <h2>{{ t.seo_title }}</h2>
-          <p>{{ t.seo_p1 }}</p>
-          <p>{{ t.seo_p2 }}</p>
+          <h2>{{ seo_title }}</h2>
+          {% for paragraph in seo_paragraphs %}
+            <p>{{ paragraph }}</p>
+          {% endfor %}
           <h3>{{ t.seo_list_title }}</h3>
           <ul>
             <li>{{ t.seo_list_1 }}</li>
@@ -150,14 +151,19 @@
     const tabs = document.querySelectorAll('.tab');
     const mediaType = document.getElementById('mediaType');
     const headline = document.getElementById('headline');
+    const currentLang = document.body.dataset.lang;
+
+    const slugMap = {
+      video: 'video-download',
+      reels: 'reels-download',
+      photo: 'photo-download'
+    };
 
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
         const type = tab.dataset.type;
-        mediaType.value = type;
-        headline.textContent = tab.dataset.label || headline.textContent;
+        const slug = slugMap[type] || '';
+        window.location.href = '/' + currentLang + '/' + slug;
       });
     });
 
@@ -194,7 +200,10 @@
     const langSelect = document.getElementById('langSelect');
     if (langSelect) {
       langSelect.addEventListener('change', () => {
-        window.location.href = '/' + langSelect.value;
+        const selected = langSelect.value;
+        const slug = document.body.dataset.pageSlug;
+        const path = slug ? '/' + selected + '/' + slug : '/' + selected;
+        window.location.href = path;
       });
     }
   </script>
