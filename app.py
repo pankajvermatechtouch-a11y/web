@@ -1536,11 +1536,28 @@ def media_proxy():
     url = request.args.get("url", "")
     if not is_allowed_media_url(url):
         abort(400)
-    resp = requests.get(url, stream=True, timeout=20)
-    if resp.status_code != 200:
+
+    headers = {}
+    range_header = request.headers.get("Range")
+    if range_header:
+        headers["Range"] = range_header
+
+    resp = requests.get(url, stream=True, timeout=20, headers=headers)
+    if resp.status_code not in (200, 206):
         abort(404)
+
     content_type = resp.headers.get("Content-Type", "application/octet-stream")
-    return Response(stream_with_context(resp.iter_content(chunk_size=8192)), content_type=content_type)
+    forward_headers = {}
+    for key in ("Content-Range", "Accept-Ranges", "Content-Length"):
+        if key in resp.headers:
+            forward_headers[key] = resp.headers[key]
+
+    return Response(
+        stream_with_context(resp.iter_content(chunk_size=8192)),
+        status=resp.status_code,
+        headers=forward_headers,
+        content_type=content_type,
+    )
 
 
 @app.route("/download-file")
