@@ -487,3 +487,12 @@ h1 {
     padding: 24px 20px;
   }
 }
+.home-btn {
+  border: 1px solid var(--border);
+  background: #f3f4f7;
+  color: var(--accent);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+}
