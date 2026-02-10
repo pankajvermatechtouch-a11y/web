@@ -86,9 +86,16 @@ LANGS = {
 STRINGS: Dict[str, Dict[str, str]] = {
     "en": {
         "title": "Instagram Media Downloader",
+        "title_video": "Instagram Video Download",
+        "title_reels": "Instagram Reels Download",
+        "title_photo": "Instagram Photo Download",
         "meta_description": "Download Instagram videos, reels, and photos from public posts. Paste a link and get previews with direct downloads.",
+        "meta_description_video": "Instagram video download for public posts. Paste a link, preview the video, and save it in original quality.",
+        "meta_description_reels": "Instagram Reels download for public profiles. Paste a Reel link to preview and download instantly.",
+        "meta_description_photo": "Instagram photo download for public posts. Paste a link to preview and save images in high quality.",
         "meta_keywords": "instagram downloader, instagram video downloader, instagram reels downloader, instagram photo downloader, download instagram media",
         "brand": "Media Vault",
+        "home": "Home",
         "status": "Public posts only",
         "language_label": "Language",
         "tab_video": "Video",
@@ -115,6 +122,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "seo_title": "Fast Instagram Media Downloader for Public Posts",
         "seo_p1": "Use this Instagram downloader to save public videos, reels, and photos directly from post links.",
         "seo_p2": "Paste a link, preview the media, and download each item individually.",
+        "seo_video_title": "Instagram Video Downloader for Public Posts",
+        "seo_video_paragraphs": [
+            "Download Instagram videos from public posts with clean previews and direct downloads.",
+            "Paste a link, watch the video instantly, and save it without extra steps.",
+            "Works for single videos and carousels that include videos, each with its own download button.",
+            "Private accounts are not supported. Only download content you own or have permission to use.",
+        ],
+        "seo_reels_title": "Instagram Reels Downloader for Public Profiles",
+        "seo_reels_paragraphs": [
+            "Download Instagram Reels from public profiles in seconds with fast previews and direct links.",
+            "Paste a Reel link and get the video instantly, ready to save in original quality.",
+            "Great for creators, editors, and marketers who need quick access to public Reels for inspiration.",
+            "Private accounts are not supported. Respect copyright and only download with permission.",
+        ],
+        "seo_photo_title": "Instagram Photo Downloader for Public Posts",
+        "seo_photo_paragraphs": [
+            "Download Instagram photos from public posts in high quality with clean previews.",
+            "Supports single-photo posts and multi-photo carousels, each image with its own download button.",
+            "Paste a link, preview every image, and save them quickly and easily.",
+            "Private accounts are not supported. Only download content you own or have permission to use.",
+        ],
         "seo_list_title": "Features",
         "seo_list_1": "Supports public Instagram posts, reels, and photos",
         "seo_list_2": "Clean previews and one-click downloads",
@@ -136,7 +164,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
     "ar": {
         "title": "أداة تنزيل وسائط إنستغرام",
         "meta_description": "حمّل فيديوهات وصور وريـلز إنستغرام من المنشورات العامة. الصق الرابط وشاهد المعاينة.",
-        "meta_keywords": "تحميل انستغرام, تنزيل ريلز, تحميل فيديو انستغرام, تنزيل صور انستغرام",
+        "meta_keywords": "تحميل انستغرام, تنزيل ريلز, تحميل فيديو انستغram, تنزيل صور انستغram",
         "status": "المنشورات العامة فقط",
         "language_label": "اللغة",
         "tab_video": "فيديو",
@@ -147,7 +175,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "headline_reels": "أداة تنزيل ريلز إنستغرام",
         "headline_photo": "أداة تنزيل صور إنستغرام",
         "sub": "الصق رابط منشور عام أو ريلز. الحسابات الخاصة ستعرض تنبيهًا.",
-        "placeholder": "الصق رابط منشور أو ريلز إنستغرام",
+        "placeholder": "الصق رابط منشور أو ريلز إنستغram",
         "paste": "لصق",
         "clear": "مسح",
         "search": "بحث",
@@ -496,10 +524,10 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "download": "Pobierz",
         "modal_private_title": "Konto prywatne",
         "modal_private_body": "To konto jest prywatne. Nie można pobrać.",
-        "modal_mismatch_title": "Nieprawidłowy typ",
+        "modal_mismatch_title": "Błędny typ",
         "modal_mismatch_video": "Ten link to obraz. Wybierz zakładkę Zdjęcie.",
         "modal_mismatch_photo": "Ten link to wideo. Wybierz Wideo lub Reels.",
-        "modal_mismatch_reel": "To nie jest reels. Wybierz Wideo.",
+        "modal_mismatch_reel": "Ten link nie jest reels. Wybierz Wideo.",
         "seo_title": "Szybki downloader Instagrama dla publicznych postów",
         "footer_contact": "Kontakt",
         "footer_about": "O nas",
@@ -507,8 +535,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "pt": {
         "title": "Downloader de mídia do Instagram",
-        "meta_description": "Baixe vídeos, reels e fotos do Instagram de posts públicos. Cole o link para visualizar.",
-        "meta_keywords": "instagram downloader, baixar instagram, reels instagram, baixar fotos",
+        "meta_description": "Baixe vídeos, reels e fotos do Instagram de posts públicos. Cole o link e veja a prévia.",
+        "meta_keywords": "instagram downloader, baixar video instagram, baixar reels, baixar fotos instagram",
         "status": "Somente posts públicos",
         "language_label": "Idioma",
         "tab_video": "Vídeo",
@@ -518,7 +546,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "headline_video": "Downloader de vídeos do Instagram",
         "headline_reels": "Downloader de Reels do Instagram",
         "headline_photo": "Downloader de fotos do Instagram",
-        "sub": "Cole um link de post ou reels público. Contas privadas mostram alerta.",
+        "sub": "Cole um link de post ou reels público. Contas privadas mostrarão um alerta.",
         "placeholder": "Cole o link do post ou reels do Instagram",
         "paste": "Colar",
         "clear": "Limpar",
@@ -527,7 +555,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "download": "Baixar",
         "modal_private_title": "Conta privada",
         "modal_private_body": "Esta conta é privada. Não é possível baixar.",
-        "modal_mismatch_title": "Tipo de mídia incorreto",
+        "modal_mismatch_title": "Tipo incorreto",
         "modal_mismatch_video": "Este link é uma imagem. Selecione a aba Foto.",
         "modal_mismatch_photo": "Este link é um vídeo. Selecione Vídeo ou Reels.",
         "modal_mismatch_reel": "Este link não é reels. Selecione Vídeo.",
@@ -538,8 +566,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "ru": {
         "title": "Загрузчик медиа Instagram",
-        "meta_description": "Скачивайте видео, reels и фото Instagram из публичных постов. Вставьте ссылку и посмотрите превью.",
-        "meta_keywords": "instagram downloader, скачать инстаграм, reels instagram, скачать фото",
+        "meta_description": "Скачивайте видео, reels и фото Instagram из публичных постов. Вставьте ссылку для просмотра.",
+        "meta_keywords": "instagram downloader, скачать instagram, reels instagram, скачать фото",
         "status": "Только публичные посты",
         "language_label": "Язык",
         "tab_video": "Видео",
@@ -549,7 +577,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "headline_video": "Загрузчик видео Instagram",
         "headline_reels": "Загрузчик Reels Instagram",
         "headline_photo": "Загрузчик фото Instagram",
-        "sub": "Вставьте ссылку на публичный пост или reels. Для приватных аккаунтов будет предупреждение.",
+        "sub": "Вставьте ссылку на публичный пост или reels. Приватные аккаунты покажут предупреждение.",
         "placeholder": "Вставьте ссылку на пост или reels Instagram",
         "paste": "Вставить",
         "clear": "Очистить",
@@ -557,11 +585,11 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "results": "Результаты",
         "download": "Скачать",
         "modal_private_title": "Приватный аккаунт",
-        "modal_private_body": "Этот аккаунт приватный. Нельзя скачать медиа.",
+        "modal_private_body": "Этот аккаунт приватный. Скачивание невозможно.",
         "modal_mismatch_title": "Неверный тип",
-        "modal_mismatch_video": "Эта ссылка — изображение. Выберите вкладку Фото.",
-        "modal_mismatch_photo": "Эта ссылка — видео. Выберите Видео или Reels.",
-        "modal_mismatch_reel": "Эта ссылка не reels. Выберите Видео.",
+        "modal_mismatch_video": "Это изображение. Выберите вкладку Фото.",
+        "modal_mismatch_photo": "Это видео. Выберите Видео или Reels.",
+        "modal_mismatch_reel": "Это не reels. Выберите Видео.",
         "seo_title": "Быстрый загрузчик Instagram для публичных постов",
         "footer_contact": "Контакты",
         "footer_about": "О нас",
@@ -569,7 +597,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "es": {
         "title": "Descargador de medios de Instagram",
-        "meta_description": "Descarga videos, reels y fotos de Instagram desde publicaciones públicas. Pega el enlace para previsualizar.",
+        "meta_description": "Descarga videos, reels y fotos de Instagram desde publicaciones públicas. Pega el enlace y previsualiza.",
         "meta_keywords": "instagram downloader, descargar instagram, reels instagram, descargar fotos",
         "status": "Solo publicaciones públicas",
         "language_label": "Idioma",
@@ -581,9 +609,9 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "headline_reels": "Descargador de Reels de Instagram",
         "headline_photo": "Descargador de fotos de Instagram",
         "sub": "Pega un enlace de publicación o reel público. Las cuentas privadas mostrarán una alerta.",
-        "placeholder": "Pega el enlace de un post o reel de Instagram",
+        "placeholder": "Pega el enlace de publicación o reel de Instagram",
         "paste": "Pegar",
-        "clear": "Limpiar",
+        "clear": "Borrar",
         "search": "Buscar",
         "results": "Resultados",
         "download": "Descargar",
@@ -592,26 +620,26 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_title": "Tipo incorrecto",
         "modal_mismatch_video": "Este enlace es una imagen. Selecciona la pestaña Foto.",
         "modal_mismatch_photo": "Este enlace es un video. Selecciona Video o Reels.",
-        "modal_mismatch_reel": "Este enlace no es reel. Selecciona Video.",
+        "modal_mismatch_reel": "Este enlace no es un reel. Selecciona Video.",
         "seo_title": "Descargador rápido de Instagram para publicaciones públicas",
         "footer_contact": "Contacto",
         "footer_about": "Sobre nosotros",
         "footer_privacy": "Política de privacidad",
     },
     "sw": {
-        "title": "Kipakua Media za Instagram",
-        "meta_description": "Pakua video, reels na picha za Instagram kutoka kwenye posti za umma. Bandika kiungo ili kuona mwonekano.",
+        "title": "Kipakua Media ya Instagram",
+        "meta_description": "Pakua video, reels na picha za Instagram kutoka posti za umma. Bandika kiungo uone mwonekano.",
         "meta_keywords": "instagram downloader, pakua instagram, reels instagram, pakua picha",
-        "status": "Machapisho ya umma tu",
+        "status": "Posti za umma pekee",
         "language_label": "Lugha",
         "tab_video": "Video",
         "tab_reels": "Reels",
         "tab_photo": "Picha",
         "kicker": "Pakua maudhui yote ya Instagram hapa",
-        "headline_video": "Kipakua Video za Instagram",
-        "headline_reels": "Kipakua Reels za Instagram",
-        "headline_photo": "Kipakua Picha za Instagram",
-        "sub": "Bandika kiungo cha post au reels ya umma. Akaunti binafsi zitaonyesha tahadhari.",
+        "headline_video": "Kipakua Video cha Instagram",
+        "headline_reels": "Kipakua Reels cha Instagram",
+        "headline_photo": "Kipakua Picha cha Instagram",
+        "sub": "Bandika kiungo cha post au reels ya umma. Akaunti binafsi zitaonyesha arifa.",
         "placeholder": "Bandika kiungo cha post au reels ya Instagram",
         "paste": "Bandika",
         "clear": "Futa",
@@ -619,20 +647,20 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "results": "Matokeo",
         "download": "Pakua",
         "modal_private_title": "Akaunti Binafsi",
-        "modal_private_body": "Akaunti hii ni binafsi. Haiwezi kupakua media.",
-        "modal_mismatch_title": "Aina ya media si sahihi",
+        "modal_private_body": "Akaunti hii ni binafsi. Haiwezi kupakuliwa.",
+        "modal_mismatch_title": "Aina isiyo sahihi",
         "modal_mismatch_video": "Kiungo hiki ni picha. Chagua kichupo cha Picha.",
         "modal_mismatch_photo": "Kiungo hiki ni video. Chagua Video au Reels.",
-        "modal_mismatch_reel": "Kiungo hiki sio reels. Chagua Video.",
+        "modal_mismatch_reel": "Kiungo hiki si reels. Chagua Video.",
         "seo_title": "Kipakua cha haraka cha Instagram kwa posti za umma",
         "footer_contact": "Wasiliana nasi",
         "footer_about": "Kuhusu sisi",
         "footer_privacy": "Sera ya faragha",
     },
     "te": {
-        "title": "ఇన్‌స్టాగ్రామ్ మీడియా డౌన్‌లోడర్",
-        "meta_description": "పబ్లిక్ పోస్టుల నుండి Instagram వీడియోలు, రీల్స్, ఫోటోలు డౌన్‌లోడ్ చేయండి. లింక్ పేస్ట్ చేసి ప్రివ్యూ చూడండి.",
-        "meta_keywords": "instagram downloader, రీల్స్ డౌన్‌లోడ్, వీడియో డౌన్‌లోడ్, ఫోటో డౌన్‌లోడ్",
+        "title": "ఇన్‍స్టాగ్రామ్ మీడియా డౌన్‌లోడర్",
+        "meta_description": "పబ్లిక్ పోస్టుల నుండి Instagram వీడియోలు, రీల్స్ మరియు ఫోటోలు డౌన్‌లోడ్ చేయండి.",
+        "meta_keywords": "instagram downloader, instagram video downloader, reels downloader, ఫోటో డౌన్‌లోడ్",
         "status": "పబ్లిక్ పోస్టులు మాత్రమే",
         "language_label": "భాష",
         "tab_video": "వీడియో",
@@ -642,50 +670,50 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "headline_video": "Instagram వీడియో డౌన్‌లోడర్",
         "headline_reels": "Instagram రీల్స్ డౌన్‌లోడర్",
         "headline_photo": "Instagram ఫోటో డౌన్‌లోడర్",
-        "sub": "పబ్లిక్ పోస్ట్ లేదా రీల్ లింక్ పేస్ట్ చేయండి. ప్రైవేట్ ఖాతాల్లో హెచ్చరిక కనిపిస్తుంది.",
-        "placeholder": "Instagram పోస్ట్ లేదా రీల్ లింక్ పేస్ట్ చేయండి",
+        "sub": "పబ్లిక్ పోస్టు లేదా రీల్ లింక్ పేస్ట్ చేయండి. ప్రైవేట్ అకౌంట్లకు అలర్ట్ వస్తుంది.",
+        "placeholder": "Instagram పోస్టు లేదా రీల్ లింక్ పేస్ట్ చేయండి",
         "paste": "పేస్ట్",
         "clear": "క్లియర్",
         "search": "సెర్చ్",
         "results": "ఫలితాలు",
         "download": "డౌన్‌లోడ్",
         "modal_private_title": "ప్రైవేట్ అకౌంట్",
-        "modal_private_body": "ఈ అకౌంట్ ప్రైవేట్. మీడియాను డౌన్‌లోడ్ చేయలేరు.",
+        "modal_private_body": "ఈ అకౌంట్ ప్రైవేట్. మీడియా డౌన్‌లోడ్ కాదు.",
         "modal_mismatch_title": "తప్పు మీడియా టైప్",
-        "modal_mismatch_video": "ఈ లింక్ చిత్రం. ఫోటో ట్యాబ్ ఎంచుకోండి.",
+        "modal_mismatch_video": "ఈ లింక్ ఫోటో. ఫోటో ట్యాబ్ ఎంచుకోండి.",
         "modal_mismatch_photo": "ఈ లింక్ వీడియో. వీడియో లేదా రీల్స్ ట్యాబ్ ఎంచుకోండి.",
         "modal_mismatch_reel": "ఈ లింక్ రీల్ కాదు. వీడియో ఎంచుకోండి.",
         "seo_title": "పబ్లిక్ పోస్టుల కోసం వేగమైన Instagram డౌన్‌లోడర్",
-        "footer_contact": "సంప్రదించండి",
+        "footer_contact": "మమ్మల్ని సంప్రదించండి",
         "footer_about": "మా గురించి",
         "footer_privacy": "ప్రైవసీ పాలసీ",
     },
     "th": {
-        "title": "เครื่องมือดาวน์โหลดสื่อ Instagram",
-        "meta_description": "ดาวน์โหลดวิดีโอ รีลส์ และรูปภาพ Instagram จากโพสต์สาธารณะ วางลิงก์เพื่อดูตัวอย่าง",
+        "title": "ตัวดาวน์โหลดสื่อ Instagram",
+        "meta_description": "ดาวน์โหลดวิดีโอ Reels และรูปภาพ Instagram จากโพสต์สาธารณะ วางลิงก์แล้วพรีวิวได้ทันที",
         "meta_keywords": "instagram downloader, ดาวน์โหลด instagram, reels instagram, ดาวน์โหลดรูป",
         "status": "เฉพาะโพสต์สาธารณะ",
         "language_label": "ภาษา",
         "tab_video": "วิดีโอ",
-        "tab_reels": "รีลส์",
+        "tab_reels": "Reels",
         "tab_photo": "รูปภาพ",
-        "kicker": "ดาวน์โหลดทุกอย่างจาก Instagram ได้ที่นี่",
-        "headline_video": "ดาวน์โหลดวิดีโอ Instagram",
-        "headline_reels": "ดาวน์โหลด Reels Instagram",
-        "headline_photo": "ดาวน์โหลดรูปภาพ Instagram",
-        "sub": "วางลิงก์โพสต์หรือรีลส์สาธารณะ บัญชีส่วนตัวจะแสดงการแจ้งเตือน",
-        "placeholder": "วางลิงก์โพสต์หรือรีลส์ Instagram",
+        "kicker": "ดาวน์โหลดคอนเทนต์ Instagram ทั้งหมดได้ที่นี่",
+        "headline_video": "ตัวดาวน์โหลดวิดีโอ Instagram",
+        "headline_reels": "ตัวดาวน์โหลด Reels Instagram",
+        "headline_photo": "ตัวดาวน์โหลดรูปภาพ Instagram",
+        "sub": "วางลิงก์โพสต์หรือรีลสาธารณะ บัญชีส่วนตัวจะแสดงการแจ้งเตือน",
+        "placeholder": "วางลิงก์โพสต์หรือรีลของ Instagram",
         "paste": "วาง",
         "clear": "ล้าง",
         "search": "ค้นหา",
         "results": "ผลลัพธ์",
         "download": "ดาวน์โหลด",
         "modal_private_title": "บัญชีส่วนตัว",
-        "modal_private_body": "บัญชีนี้เป็นส่วนตัว ไม่สามารถดาวน์โหลดได้",
-        "modal_mismatch_title": "ชนิดสื่อไม่ถูกต้อง",
+        "modal_private_body": "บัญชีนี้เป็นส่วนตัว ดาวน์โหลดไม่ได้",
+        "modal_mismatch_title": "ประเภทไม่ถูกต้อง",
         "modal_mismatch_video": "ลิงก์นี้เป็นรูปภาพ กรุณาเลือกแท็บรูปภาพ",
-        "modal_mismatch_photo": "ลิงก์นี้เป็นวิดีโอ กรุณาเลือกวิดีโอหรือรีลส์",
-        "modal_mismatch_reel": "ลิงก์นี้ไม่ใช่รีลส์ กรุณาเลือกวิดีโอ",
+        "modal_mismatch_photo": "ลิงก์นี้เป็นวิดีโอ กรุณาเลือกวิดีโอหรือ Reels",
+        "modal_mismatch_reel": "ลิงก์นี้ไม่ใช่ Reels กรุณาเลือกวิดีโอ",
         "seo_title": "ดาวน์โหลด Instagram สำหรับโพสต์สาธารณะอย่างรวดเร็ว",
         "footer_contact": "ติดต่อเรา",
         "footer_about": "เกี่ยวกับเรา",
@@ -755,12 +783,488 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
 }
 
+SEO_I18N: Dict[str, Dict[str, object]] = {
+    "ar": {
+        "seo_video_title": "أداة تنزيل فيديو إنستغرام للمنشورات العامة",
+        "seo_video_paragraphs": [
+            "نزّل فيديوهات إنستغرام من المنشورات العامة مع معاينة واضحة وتنزيل مباشر.",
+            "الصق الرابط وشغّل الفيديو فوراً ثم احفظه بالجودة الأصلية.",
+            "يدعم الفيديوهات الفردية ومنشورات الكاروسيل التي تحتوي على فيديو، ولكل عنصر زر تنزيل.",
+            "الحسابات الخاصة غير مدعومة. نزّل فقط المحتوى الذي تملكه أو لديك إذن به.",
+        ],
+        "seo_reels_title": "أداة تنزيل ريلز إنستغram للحسابات العامة",
+        "seo_reels_paragraphs": [
+            "نزّل ريلز إنستغram من الحسابات العامة خلال ثوانٍ مع معاينة سريعة وروابط مباشرة.",
+            "الصق رابط الريلز واحصل على الفيديو فوراً وجاهز للحفظ بالجودة الأصلية.",
+            "مفيد للمبدعين والمحررين والمسوقين للوصول السريع إلى ريلز عامة للإلهام.",
+            "الحسابات الخاصة غير مدعومة. احترم حقوق النشر ولا تنزّل إلا بإذن.",
+        ],
+        "seo_photo_title": "أداة تنزيل صور إنستغram للمنشورات العامة",
+        "seo_photo_paragraphs": [
+            "نزّل صور إنستغram من المنشورات العامة بجودة عالية ومعاينة واضحة.",
+            "يدعم المنشورات ذات صورة واحدة والكاروسيل متعدد الصور، ولكل صورة زر تنزيل.",
+            "الصق الرابط، شاهد كل الصور، ثم احفظها بسرعة وسهولة.",
+            "الحسابات الخاصة غير مدعومة. نزّل فقط المحتوى الذي تملكه أو لديك إذن به.",
+        ],
+    },
+    "bn": {
+        "seo_video_title": "পাবলিক পোস্টের জন্য ইনস্টাগ্রাম ভিডিও ডাউনলোডার",
+        "seo_video_paragraphs": [
+            "পাবলিক পোস্ট থেকে ইনস্টাগ্রাম ভিডিও পরিষ্কার প্রিভিউসহ সরাসরি ডাউনলোড করুন।",
+            "লিংক পেস্ট করুন, সাথে সাথে ভিডিও দেখুন এবং মূল মানে সেভ করুন।",
+            "একক ভিডিও এবং ভিডিওসহ ক্যারোসেল পোস্ট, প্রতিটির জন্য আলাদা ডাউনলোড বোতাম।",
+            "প্রাইভেট অ্যাকাউন্ট সমর্থিত নয়। অনুমতি থাকলে তবেই ডাউনলোড করুন।",
+        ],
+        "seo_reels_title": "পাবলিক প্রোফাইলের জন্য ইনস্টাগ্রাম রিলস ডাউনলোডার",
+        "seo_reels_paragraphs": [
+            "পাবলিক প্রোফাইল থেকে রিলস দ্রুত ডাউনলোড করুন, দ্রুত প্রিভিউ ও সরাসরি লিঙ্কসহ।",
+            "রিল লিংক পেস্ট করুন এবং সঙ্গে সঙ্গে ভিডিওটি পান।",
+            "ক্রিয়েটর ও মার্কেটারদের জন্য পাবলিক রিলস দেখার ও সংরক্ষণের সহজ উপায়।",
+            "প্রাইভেট অ্যাকাউন্ট সমর্থিত নয়। কপিরাইট মেনে চলুন।",
+        ],
+        "seo_photo_title": "পাবলিক পোস্টের জন্য ইনস্টাগ্রাম ছবি ডাউনলোডার",
+        "seo_photo_paragraphs": [
+            "পাবলিক পোস্টের ছবি উচ্চ মানে ডাউনলোড করুন।",
+            "সিঙ্গেল ও মাল্টি-ফটো ক্যারোসেল, প্রতিটি ছবির জন্য আলাদা ডাউনলোড বোতাম।",
+            "লিংক পেস্ট করুন, সব ছবি প্রিভিউ করুন, দ্রুত সেভ করুন।",
+            "প্রাইভেট অ্যাকাউন্ট সমর্থিত নয়। অনুমতি থাকলে তবেই ডাউনলোড করুন।",
+        ],
+    },
+    "zh": {
+        "seo_video_title": "公开帖子 Instagram 视频下载器",
+        "seo_video_paragraphs": [
+            "从公开帖子下载 Instagram 视频，提供清晰预览与直接下载。",
+            "粘贴链接即可立即播放并保存原画质视频。",
+            "支持单个视频和含视频的轮播，每个项目都有下载按钮。",
+            "不支持私密账号。仅下载你拥有或获授权的内容。",
+        ],
+        "seo_reels_title": "公开账号 Instagram Reels 下载器",
+        "seo_reels_paragraphs": [
+            "从公开账号快速下载 Reels，预览快，链接直达。",
+            "粘贴 Reel 链接即可立即获取视频并保存原画质。",
+            "适合创作者和营销人员快速获取公开 Reels 灵感。",
+            "不支持私密账号，请尊重版权并获得许可。",
+        ],
+        "seo_photo_title": "公开帖子 Instagram 图片下载器",
+        "seo_photo_paragraphs": [
+            "从公开帖子高质量下载 Instagram 图片，并提供清晰预览。",
+            "支持单图与多图轮播，每张图片都有独立下载按钮。",
+            "粘贴链接，预览全部图片，快速保存。",
+            "不支持私密账号。仅下载你拥有或获授权的内容。",
+        ],
+    },
+    "fr": {
+        "seo_video_title": "Téléchargeur de vidéos Instagram pour posts publics",
+        "seo_video_paragraphs": [
+            "Téléchargez des vidéos Instagram depuis des posts publics avec aperçu clair et lien direct.",
+            "Collez un lien, regardez la vidéo instantanément et enregistrez-la en qualité d'origine.",
+            "Fonctionne pour les vidéos seules et les carrousels contenant des vidéos, avec un bouton par élément.",
+            "Les comptes privés ne sont pas pris en charge. Téléchargez uniquement avec autorisation.",
+        ],
+        "seo_reels_title": "Téléchargeur de Reels Instagram pour profils publics",
+        "seo_reels_paragraphs": [
+            "Téléchargez des Reels Instagram depuis des profils publics en quelques secondes.",
+            "Collez le lien d'un Reel et obtenez la vidéo immédiatement en qualité d'origine.",
+            "Idéal pour les créateurs et marketeurs qui veulent accéder rapidement aux Reels publics.",
+            "Comptes privés non pris en charge. Respectez les droits d'auteur.",
+        ],
+        "seo_photo_title": "Téléchargeur de photos Instagram pour posts publics",
+        "seo_photo_paragraphs": [
+            "Téléchargez des photos Instagram de posts publics en haute qualité avec aperçu propre.",
+            "Prend en charge les posts à photo unique et les carrousels multi-photos, chaque image a son bouton.",
+            "Collez un lien, prévisualisez toutes les images, puis enregistrez-les rapidement.",
+            "Comptes privés non pris en charge. Téléchargez seulement avec permission.",
+        ],
+    },
+    "de": {
+        "seo_video_title": "Instagram Video-Downloader für öffentliche Beiträge",
+        "seo_video_paragraphs": [
+            "Lade Instagram-Videos aus öffentlichen Beiträgen mit klarer Vorschau und Direktdownload.",
+            "Link einfügen, Video sofort ansehen und in Originalqualität speichern.",
+            "Funktioniert für einzelne Videos und Karussells mit Videos, jedes mit eigenem Download-Button.",
+            "Private Konten werden nicht unterstützt. Nur mit Erlaubnis herunterladen.",
+        ],
+        "seo_reels_title": "Instagram Reels Downloader für öffentliche Profile",
+        "seo_reels_paragraphs": [
+            "Lade Instagram Reels von öffentlichen Profilen in Sekunden mit schneller Vorschau.",
+            "Reel-Link einfügen und das Video sofort in Originalqualität erhalten.",
+            "Ideal für Creator und Marketer, die schnell auf öffentliche Reels zugreifen wollen.",
+            "Private Konten werden nicht unterstützt. Urheberrecht beachten.",
+        ],
+        "seo_photo_title": "Instagram Foto-Downloader für öffentliche Beiträge",
+        "seo_photo_paragraphs": [
+            "Lade Instagram-Fotos aus öffentlichen Beiträgen in hoher Qualität mit Vorschau.",
+            "Unterstützt Einzelbilder und Mehrfach-Karussells, jede Bilddatei mit eigenem Button.",
+            "Link einfügen, alle Bilder ansehen und schnell speichern.",
+            "Private Konten werden nicht unterstützt. Nur mit Erlaubnis herunterladen.",
+        ],
+    },
+    "hi": {
+        "seo_video_title": "पब्लिक पोस्ट के लिए Instagram वीडियो डाउनलोडर",
+        "seo_video_paragraphs": [
+            "पब्लिक पोस्ट से Instagram वीडियो साफ़ प्रिव्यू और डायरेक्ट डाउनलोड के साथ डाउनलोड करें।",
+            "लिंक पेस्ट करें, तुरंत वीडियो देखें और ओरिजिनल क्वालिटी में सेव करें।",
+            "सिंगल वीडियो और वीडियो वाले कैरॉसेल दोनों सपोर्ट करता है, हर आइटम का अलग डाउनलोड बटन।",
+            "प्राइवेट अकाउंट सपोर्टेड नहीं हैं। अनुमति होने पर ही डाउनलोड करें।",
+        ],
+        "seo_reels_title": "पब्लिक प्रोफाइल के लिए Instagram रील्स डाउनलोडर",
+        "seo_reels_paragraphs": [
+            "पब्लिक प्रोफाइल से रील्स तेज़ी से डाउनलोड करें, जल्दी प्रिव्यू के साथ।",
+            "रील लिंक पेस्ट करें और वीडियो तुरंत ऑरिजिनल क्वालिटी में पाएं।",
+            "क्रिएटर्स और मार्केटर्स के लिए पब्लिक रील्स तक तेज़ पहुंच।",
+            "प्राइवेट अकाउंट सपोर्टेड नहीं हैं। कॉपीराइट का सम्मान करें।",
+        ],
+        "seo_photo_title": "पब्लिक पोस्ट के लिए Instagram फोटो डाउनलोडर",
+        "seo_photo_paragraphs": [
+            "पब्लिक पोस्ट की फोटो हाई क्वालिटी में डाउनलोड करें और साफ़ प्रिव्यू देखें।",
+            "सिंगल और मल्टी-फोटो कैरॉसेल सपोर्ट, हर फोटो के लिए अलग डाउनलोड बटन।",
+            "लिंक पेस्ट करें, सभी फोटो देखें और जल्दी सेव करें।",
+            "प्राइवेट अकाउंट सपोर्टेड नहीं हैं। अनुमति होने पर ही डाउनलोड करें।",
+        ],
+    },
+    "hu": {
+        "seo_video_title": "Instagram videó letöltő nyilvános posztokhoz",
+        "seo_video_paragraphs": [
+            "Instagram videók letöltése nyilvános posztokból tiszta előnézettel és közvetlen letöltéssel.",
+            "Link beillesztése, azonnali lejátszás és mentés eredeti minőségben.",
+            "Működik egyedi videókra és videós karusellekre, minden elemhez külön letöltés.",
+            "Privát fiókok nem támogatottak. Csak engedéllyel tölts le.",
+        ],
+        "seo_reels_title": "Instagram Reels letöltő nyilvános profilokhoz",
+        "seo_reels_paragraphs": [
+            "Instagram Reels letöltése nyilvános profilokról másodpercek alatt.",
+            "Reel link beillesztése, és a videó azonnal elérhető eredeti minőségben.",
+            "Hasznos kreatoroknak és marketingeseknek gyors inspirációhoz.",
+            "Privát fiókok nem támogatottak. Tartsd tiszteletben a szerzői jogokat.",
+        ],
+        "seo_photo_title": "Instagram fotó letöltő nyilvános posztokhoz",
+        "seo_photo_paragraphs": [
+            "Instagram fotók letöltése nyilvános posztokból magas minőségben.",
+            "Egyedi fotók és többképes karusellek támogatása, minden képhez külön gomb.",
+            "Link beillesztése, előnézet, gyors mentés.",
+            "Privát fiókok nem támogatottak. Csak engedéllyel tölts le.",
+        ],
+    },
+    "id": {
+        "seo_video_title": "Pengunduh Video Instagram untuk Post Publik",
+        "seo_video_paragraphs": [
+            "Unduh video Instagram dari post publik dengan pratinjau bersih dan tautan langsung.",
+            "Tempel tautan, tonton video segera, dan simpan dalam kualitas asli.",
+            "Mendukung video tunggal dan carousel berisi video, setiap item punya tombol unduh.",
+            "Akun privat tidak didukung. Unduh hanya dengan izin.",
+        ],
+        "seo_reels_title": "Pengunduh Reels Instagram untuk Profil Publik",
+        "seo_reels_paragraphs": [
+            "Unduh Reels Instagram dari profil publik dalam hitungan detik.",
+            "Tempel tautan Reel dan dapatkan video segera dalam kualitas asli.",
+            "Cocok untuk kreator dan marketer yang butuh akses cepat ke Reels publik.",
+            "Akun privat tidak didukung. Hormati hak cipta.",
+        ],
+        "seo_photo_title": "Pengunduh Foto Instagram untuk Post Publik",
+        "seo_photo_paragraphs": [
+            "Unduh foto Instagram dari post publik dengan kualitas tinggi.",
+            "Mendukung post foto tunggal dan carousel multi-foto, setiap foto punya tombol unduh.",
+            "Tempel tautan, pratinjau semua foto, simpan dengan cepat.",
+            "Akun privat tidak didukung. Unduh hanya dengan izin.",
+        ],
+    },
+    "it": {
+        "seo_video_title": "Downloader video Instagram per post pubblici",
+        "seo_video_paragraphs": [
+            "Scarica video Instagram da post pubblici con anteprima chiara e download diretto.",
+            "Incolla il link, guarda subito il video e salvalo in qualità originale.",
+            "Supporta video singoli e caroselli con video, ogni elemento ha il suo download.",
+            "Account privati non supportati. Scarica solo con permesso.",
+        ],
+        "seo_reels_title": "Downloader Reels Instagram per profili pubblici",
+        "seo_reels_paragraphs": [
+            "Scarica Reels Instagram da profili pubblici in pochi secondi.",
+            "Incolla il link di un Reel e ottieni il video subito in qualità originale.",
+            "Ideale per creator e marketer che vogliono accesso rapido ai Reels pubblici.",
+            "Account privati non supportati. Rispetta il copyright.",
+        ],
+        "seo_photo_title": "Downloader foto Instagram per post pubblici",
+        "seo_photo_paragraphs": [
+            "Scarica foto Instagram da post pubblici in alta qualità con anteprima.",
+            "Supporta post singoli e caroselli multipli, ogni immagine ha il suo download.",
+            "Incolla il link, visualizza tutte le foto e salva rapidamente.",
+            "Account privati non supportati. Scarica solo con permesso.",
+        ],
+    },
+    "ja": {
+        "seo_video_title": "公開投稿向けInstagram動画ダウンローダー",
+        "seo_video_paragraphs": [
+            "公開投稿のInstagram動画を、きれいなプレビューと直接ダウンロードで取得できます。",
+            "リンクを貼り付けるとすぐ再生でき、オリジナル品質で保存できます。",
+            "単体動画と動画入りカルーセルに対応し、各項目にダウンロードボタン付き。",
+            "非公開アカウントは非対応。権利を尊重し、許可のある内容のみ保存してください。",
+        ],
+        "seo_reels_title": "公開プロフィール向けInstagram Reelsダウンローダー",
+        "seo_reels_paragraphs": [
+            "公開プロフィールのReelsを数秒でダウンロードできます。",
+            "Reelリンクを貼り付ければ、すぐにオリジナル品質で取得可能です。",
+            "クリエイターやマーケターが公開Reelsに素早くアクセスするのに最適。",
+            "非公開アカウントは非対応。著作権を尊重してください。",
+        ],
+        "seo_photo_title": "公開投稿向けInstagram写真ダウンローダー",
+        "seo_photo_paragraphs": [
+            "公開投稿のInstagram写真を高画質でダウンロードできます。",
+            "単一写真と複数写真カルーセルに対応し、各写真にダウンロードボタン付き。",
+            "リンクを貼り付け、すべての写真をプレビューして素早く保存。",
+            "非公開アカウントは非対応。許可のある内容のみ保存してください。",
+        ],
+    },
+    "ko": {
+        "seo_video_title": "공개 게시물용 Instagram 동영상 다운로더",
+        "seo_video_paragraphs": [
+            "공개 게시물의 Instagram 동영상을 깔끔한 미리보기와 직접 다운로드로 저장하세요.",
+            "링크를 붙여넣으면 즉시 재생되고 원본 품질로 저장할 수 있습니다.",
+            "단일 동영상과 동영상 포함 캐러셀을 지원하며 각 항목에 다운로드 버튼이 있습니다.",
+            "비공개 계정은 지원되지 않습니다. 허가된 콘텐츠만 다운로드하세요.",
+        ],
+        "seo_reels_title": "공개 프로필용 Instagram Reels 다운로더",
+        "seo_reels_paragraphs": [
+            "공개 프로필의 Reels를 몇 초 만에 다운로드하세요.",
+            "Reel 링크를 붙여넣으면 원본 품질의 영상을 바로 받을 수 있습니다.",
+            "크리에이터와 마케터에게 공개 Reels에 빠르게 접근할 수 있는 도구입니다.",
+            "비공개 계정은 지원되지 않습니다. 저작권을 존중하세요.",
+        ],
+        "seo_photo_title": "공개 게시물용 Instagram 사진 다운로더",
+        "seo_photo_paragraphs": [
+            "공개 게시물의 Instagram 사진을 고화질로 다운로드하세요.",
+            "단일 사진과 다중 사진 캐러셀을 지원하며 각 사진에 다운로드 버튼이 있습니다.",
+            "링크를 붙여넣고 모든 사진을 미리 본 후 빠르게 저장하세요.",
+            "비공개 계정은 지원되지 않습니다. 허가된 콘텐츠만 다운로드하세요.",
+        ],
+    },
+    "pl": {
+        "seo_video_title": "Pobieranie wideo z Instagram dla publicznych postów",
+        "seo_video_paragraphs": [
+            "Pobieraj wideo z publicznych postów Instagram z czystym podglądem i bezpośrednim pobraniem.",
+            "Wklej link, obejrzyj wideo od razu i zapisz w oryginalnej jakości.",
+            "Obsługuje pojedyncze wideo i karuzele z wideo, każdy element ma własny przycisk pobierania.",
+            "Konta prywatne nie są obsługiwane. Pobieraj tylko za zgodą.",
+        ],
+        "seo_reels_title": "Pobieranie Instagram Reels dla publicznych profili",
+        "seo_reels_paragraphs": [
+            "Pobieraj Reels z publicznych profili w kilka sekund.",
+            "Wklej link do Reels i pobierz wideo natychmiast w oryginalnej jakości.",
+            "Idealne dla twórców i marketerów do szybkiego dostępu do publicznych Reels.",
+            "Konta prywatne nie są obsługiwane. Szanuj prawa autorskie.",
+        ],
+        "seo_photo_title": "Pobieranie zdjęć z Instagram dla publicznych postów",
+        "seo_photo_paragraphs": [
+            "Pobieraj zdjęcia z publicznych postów Instagram w wysokiej jakości.",
+            "Obsługuje pojedyncze zdjęcia i karuzele, każda fotografia ma własny przycisk.",
+            "Wklej link, obejrzyj wszystkie zdjęcia i szybko je zapisz.",
+            "Konta prywatne nie są obsługiwane. Pobieraj tylko za zgodą.",
+        ],
+    },
+    "pt": {
+        "seo_video_title": "Downloader de vídeos do Instagram para posts públicos",
+        "seo_video_paragraphs": [
+            "Baixe vídeos do Instagram de posts públicos com prévia limpa e download direto.",
+            "Cole o link, assista imediatamente e salve em qualidade original.",
+            "Funciona com vídeos únicos e carrosséis com vídeos, cada item com seu botão.",
+            "Contas privadas não são suportadas. Baixe apenas com permissão.",
+        ],
+        "seo_reels_title": "Downloader de Reels do Instagram para perfis públicos",
+        "seo_reels_paragraphs": [
+            "Baixe Reels de perfis públicos em segundos com prévia rápida.",
+            "Cole o link do Reel e obtenha o vídeo na hora em qualidade original.",
+            "Ótimo para criadores e marketers que precisam de acesso rápido a Reels públicos.",
+            "Contas privadas não são suportadas. Respeite direitos autorais.",
+        ],
+        "seo_photo_title": "Downloader de fotos do Instagram para posts públicos",
+        "seo_photo_paragraphs": [
+            "Baixe fotos do Instagram de posts públicos em alta qualidade.",
+            "Suporta post único e carrosséis com várias fotos, cada foto com botão próprio.",
+            "Cole o link, visualize todas as fotos e salve rapidamente.",
+            "Contas privadas não são suportadas. Baixe apenas com permissão.",
+        ],
+    },
+    "ru": {
+        "seo_video_title": "Загрузчик видео Instagram для публичных постов",
+        "seo_video_paragraphs": [
+            "Скачивайте видео из публичных постов Instagram с чистым предпросмотром и прямой загрузкой.",
+            "Вставьте ссылку, сразу смотрите видео и сохраняйте в оригинальном качестве.",
+            "Поддерживает одиночные видео и карусели с видео, у каждого элемента свой файл.",
+            "Приватные аккаунты не поддерживаются. Скачивайте только с разрешения.",
+        ],
+        "seo_reels_title": "Загрузчик Instagram Reels для публичных профилей",
+        "seo_reels_paragraphs": [
+            "Скачивайте Reels с публичных профилей за секунды.",
+            "Вставьте ссылку на Reel и получите видео сразу в оригинальном качестве.",
+            "Подходит для создателей и маркетологов, которым нужен быстрый доступ к публичным Reels.",
+            "Приватные аккаунты не поддерживаются. Уважайте авторские права.",
+        ],
+        "seo_photo_title": "Загрузчик фото Instagram для публичных постов",
+        "seo_photo_paragraphs": [
+            "Скачивайте фотографии Instagram из публичных постов в высоком качестве.",
+            "Поддерживает одиночные фото и карусели, каждая картинка с отдельной кнопкой.",
+            "Вставьте ссылку, просмотрите все фото и быстро сохраните.",
+            "Приватные аккаунты не поддерживаются. Скачивайте только с разрешения.",
+        ],
+    },
+    "es": {
+        "seo_video_title": "Descargador de videos de Instagram para publicaciones públicas",
+        "seo_video_paragraphs": [
+            "Descarga videos de Instagram de publicaciones públicas con vista previa limpia y descarga directa.",
+            "Pega un enlace, reproduce el video al instante y guárdalo en su calidad original.",
+            "Funciona con videos individuales y carruseles con videos, cada uno con su botón de descarga.",
+            "Las cuentas privadas no son compatibles. Descarga solo con permiso.",
+        ],
+        "seo_reels_title": "Descargador de Reels de Instagram para perfiles públicos",
+        "seo_reels_paragraphs": [
+            "Descarga Reels de perfiles públicos en segundos con vista previa rápida.",
+            "Pega el enlace del Reel y obtén el video de inmediato en calidad original.",
+            "Ideal para creadores y marketers que necesitan acceso rápido a Reels públicos.",
+            "Las cuentas privadas no son compatibles. Respeta los derechos de autor.",
+        ],
+        "seo_photo_title": "Descargador de fotos de Instagram para publicaciones públicas",
+        "seo_photo_paragraphs": [
+            "Descarga fotos de Instagram de publicaciones públicas en alta calidad.",
+            "Compatible con fotos únicas y carruseles, cada imagen con su botón de descarga.",
+            "Pega el enlace, previsualiza todas las fotos y guárdalas rápidamente.",
+            "Las cuentas privadas no son compatibles. Descarga solo con permiso.",
+        ],
+    },
+    "sw": {
+        "seo_video_title": "Kipakua Video za Instagram kwa Posti za Umma",
+        "seo_video_paragraphs": [
+            "Pakua video za Instagram kutoka posti za umma na mwonekano safi pamoja na upakuaji wa moja kwa moja.",
+            "Bandika kiungo, tazama video mara moja na uihifadhi kwa ubora wa asili.",
+            "Hufanya kazi kwa video moja na carousels zenye video, kila kipengele kina kitufe chake.",
+            "Akaunti binafsi hazisaidiwi. Pakua tu kwa ruhusa.",
+        ],
+        "seo_reels_title": "Kipakua Reels za Instagram kwa Profaili za Umma",
+        "seo_reels_paragraphs": [
+            "Pakua Reels kutoka profaili za umma kwa sekunde chache.",
+            "Bandika kiungo cha Reel na upate video mara moja kwa ubora wa asili.",
+            "Bora kwa watayarishi na wauzaji wanaohitaji ufikiaji wa haraka wa Reels za umma.",
+            "Akaunti binafsi hazisaidiwi. Heshimu hakimiliki.",
+        ],
+        "seo_photo_title": "Kipakua Picha za Instagram kwa Posti za Umma",
+        "seo_photo_paragraphs": [
+            "Pakua picha za Instagram kutoka posti za umma kwa ubora wa juu.",
+            "Inasaidia picha moja na carousels nyingi, kila picha ina kitufe chake.",
+            "Bandika kiungo, tazama picha zote, na zihifadhi haraka.",
+            "Akaunti binafsi hazisaidiwi. Pakua tu kwa ruhusa.",
+        ],
+    },
+    "te": {
+        "seo_video_title": "పబ్లిక్ పోస్టుల కోసం Instagram వీడియో డౌన్‌లోడర్",
+        "seo_video_paragraphs": [
+            "పబ్లిక్ పోస్టుల నుండి Instagram వీడియోలను క్లియర్ ప్రివ్యూ మరియు డైరెక్ట్ డౌన్‌లోడ్‌తో పొందండి.",
+            "లింక్ పేస్ట్ చేస్తే వెంటనే వీడియో చూడొచ్చు, ఒరిజినల్ క్వాలిటీలో సేవ్ చేయొచ్చు.",
+            "సింగిల్ వీడియోలు మరియు వీడియో ఉన్న కారౌజెల్స్‌కు మద్దతు, ప్రతి ఐటెమ్‌కు డౌన్‌లోడ్ బటన్.",
+            "ప్రైవేట్ అకౌంట్లు సపోర్ట్ చేయబడవు. అనుమతి ఉన్నప్పుడు మాత్రమే డౌన్‌లోడ్ చేయండి.",
+        ],
+        "seo_reels_title": "పబ్లిక్ ప్రొఫైళ్ల కోసం Instagram రీల్స్ డౌన్‌లోడర్",
+        "seo_reels_paragraphs": [
+            "పబ్లిక్ ప్రొఫైళ్ల నుండి రీల్స్‌ను కొన్ని సెకన్లలో డౌన్‌లోడ్ చేయండి.",
+            "రీల్ లింక్ పేస్ట్ చేయగానే వీడియో ఒరిజినల్ క్వాలిటీలో వెంటనే లభిస్తుంది.",
+            "క్రియేటర్లు, మార్కెటర్లకు పబ్లిక్ రీల్స్‌కు త్వరిత యాక్సెస్.",
+            "ప్రైవేట్ అకౌంట్లు సపోర్ట్ చేయబడవు. కాపీరైట్‌ను గౌరవించండి.",
+        ],
+        "seo_photo_title": "పబ్లిక్ పోస్టుల కోసం Instagram ఫోటో డౌన్‌లోడర్",
+        "seo_photo_paragraphs": [
+            "పబ్లిక్ పోస్టుల నుండి Instagram ఫోటోలను హై క్వాలిటీలో డౌన్‌లోడ్ చేయండి.",
+            "సింగిల్ ఫోటో మరియు మల్టీ-ఫోటో కారౌజెల్స్‌కు మద్దతు, ప్రతి ఫోటోకు డౌన్‌లోడ్ బటన్.",
+            "లింక్ పేస్ట్ చేయండి, అన్ని ఫోటోలు ప్రివ్యూ చేసి వేగంగా సేవ్ చేయండి.",
+            "ప్రైవేట్ అకౌంట్లు సపోర్ట్ చేయబడవు. అనుమతి ఉన్నప్పుడు మాత్రమే డౌన్‌లోడ్ చేయండి.",
+        ],
+    },
+    "th": {
+        "seo_video_title": "ตัวดาวน์โหลดวิดีโอ Instagram สำหรับโพสต์สาธารณะ",
+        "seo_video_paragraphs": [
+            "ดาวน์โหลดวิดีโอ Instagram จากโพสต์สาธารณะพร้อมพรีวิวที่ชัดเจนและลิงก์ดาวน์โหลดตรง",
+            "วางลิงก์แล้วดูวิดีโอได้ทันทีและบันทึกคุณภาพต้นฉบับ",
+            "รองรับวิดีโอเดี่ยวและโพสต์แบบคารูเซลที่มีวิดีโอ ทุกชิ้นมีปุ่มดาวน์โหลด",
+            "ไม่รองรับบัญชีส่วนตัว ดาวน์โหลดเฉพาะเมื่อได้รับอนุญาต",
+        ],
+        "seo_reels_title": "ตัวดาวน์โหลด Instagram Reels สำหรับโปรไฟล์สาธารณะ",
+        "seo_reels_paragraphs": [
+            "ดาวน์โหลด Reels จากโปรไฟล์สาธารณะได้ภายในไม่กี่วินาที",
+            "วางลิงก์ Reel แล้วรับวิดีโอทันทีในคุณภาพต้นฉบับ",
+            "เหมาะสำหรับครีเอเตอร์และนักการตลาดที่ต้องการเข้าถึง Reels สาธารณะอย่างรวดเร็ว",
+            "ไม่รองรับบัญชีส่วนตัว โปรดเคารพลิขสิทธิ์",
+        ],
+        "seo_photo_title": "ตัวดาวน์โหลดรูปภาพ Instagram สำหรับโพสต์สาธารณะ",
+        "seo_photo_paragraphs": [
+            "ดาวน์โหลดรูปภาพ Instagram จากโพสต์สาธารณะในคุณภาพสูงพร้อมพรีวิว",
+            "รองรับรูปเดี่ยวและคารูเซลหลายรูป ทุกภาพมีปุ่มดาวน์โหลด",
+            "วางลิงก์ ดูรูปทั้งหมด แล้วบันทึกได้รวดเร็ว",
+            "ไม่รองรับบัญชีส่วนตัว ดาวน์โหลดเฉพาะเมื่อได้รับอนุญาต",
+        ],
+    },
+    "tr": {
+        "seo_video_title": "Herkese Açık Gönderiler için Instagram Video İndirici",
+        "seo_video_paragraphs": [
+            "Herkese açık Instagram videolarını temiz önizleme ve doğrudan indirme ile kaydedin.",
+            "Bağlantıyı yapıştırın, videoyu anında izleyin ve orijinal kalitede kaydedin.",
+            "Tek videolar ve video içeren karuseller desteklenir, her öğe için ayrı indirme düğmesi.",
+            "Özel hesaplar desteklenmez. Yalnızca izinli içerik indirin.",
+        ],
+        "seo_reels_title": "Herkese Açık Profiller için Instagram Reels İndirici",
+        "seo_reels_paragraphs": [
+            "Herkese açık profillerden Reels videolarını saniyeler içinde indirin.",
+            "Reel bağlantısını yapıştırın ve videoyu orijinal kalitede anında alın.",
+            "Creator ve pazarlamacılar için public Reels'e hızlı erişim sağlar.",
+            "Özel hesaplar desteklenmez. Telif haklarına saygı gösterin.",
+        ],
+        "seo_photo_title": "Herkese Açık Gönderiler için Instagram Fotoğraf İndirici",
+        "seo_photo_paragraphs": [
+            "Herkese açık gönderilerden Instagram fotoğraflarını yüksek kalitede indirin.",
+            "Tek fotoğraf ve çoklu fotoğraf karuselleri desteklenir, her fotoğraf için düğme vardır.",
+            "Bağlantıyı yapıştırın, tüm fotoğrafları önizleyin ve hızlıca kaydedin.",
+            "Özel hesaplar desteklenmez. Yalnızca izinli içerik indirin.",
+        ],
+    },
+    "uk": {
+        "seo_video_title": "Завантажувач відео Instagram для публічних постів",
+        "seo_video_paragraphs": [
+            "Завантажуйте відео з публічних постів Instagram з чистим переглядом і прямим завантаженням.",
+            "Вставте посилання, дивіться відео одразу та зберігайте в оригінальній якості.",
+            "Підтримуються одиночні відео та каруселі з відео, кожен елемент має кнопку завантаження.",
+            "Приватні акаунти не підтримуються. Завантажуйте лише за наявності дозволу.",
+        ],
+        "seo_reels_title": "Завантажувач Instagram Reels для публічних профілів",
+        "seo_reels_paragraphs": [
+            "Завантажуйте Reels з публічних профілів за кілька секунд.",
+            "Вставьте посилання на Reel і отримайте відео одразу в оригінальній якості.",
+            "Зручно для творців і маркетологів, яким потрібен швидкий доступ до публічних Reels.",
+            "Приватні акаунти не підтримуються. Поважайте авторські права.",
+        ],
+        "seo_photo_title": "Завантажувач фото Instagram для публічних постів",
+        "seo_photo_paragraphs": [
+            "Завантажуйте фото Instagram з публічних постів у високій якості.",
+            "Підтримуються одиночні фото і багатофoto-каруселі, кожне фото має власну кнопку.",
+            "Вставьте посилання, перегляньте всі фото та швидко збережіть.",
+            "Приватні акаунти не підтримуються. Завантажуйте лише за наявності дозволу.",
+        ],
+    },
+}
+
+for code, seo in SEO_I18N.items():
+    STRINGS.setdefault(code, {}).update(seo)
+
 MEDIA_URL_RE = re.compile(
     r"(?:https?://)?(?:www\.)?instagram\.com/(p|reel|reels|tv)/([^/?#]+)/?",
     re.IGNORECASE,
 )
 
 ALLOWED_HOST_SUFFIXES = ("cdninstagram.com", "fbcdn.net", "instagram.com")
+MEDIA_SLUGS = {
+    "video": "video-download",
+    "reels": "reels-download",
+    "photo": "photo-download",
+}
+MEDIA_ENDPOINTS = {
+    "video": "video_download",
+    "reels": "reels_download",
+    "photo": "photo_download",
+}
 
 
 def build_strings(lang: str) -> Dict[str, str]:
@@ -861,10 +1365,27 @@ def is_allowed_media_url(url: str) -> bool:
     return any(host == suffix or host.endswith(f".{suffix}") for suffix in ALLOWED_HOST_SUFFIXES)
 
 
+def normalize_media_type(value: str) -> str:
+    return value if value in MEDIA_SLUGS else "video"
+
+
+def page_meta(t: Dict[str, str], media_type: str) -> Tuple[str, str, str, List[str]]:
+    key = normalize_media_type(media_type)
+    page_title = t.get(f"title_{key}", t["title"])
+    page_description = t.get(f"meta_description_{key}", t["meta_description"])
+    seo_title = t.get(f"seo_{key}_title", t.get("seo_title", ""))
+    paragraphs = t.get(f"seo_{key}_paragraphs")
+    if not paragraphs:
+        paragraphs = [t.get("seo_p1", ""), t.get("seo_p2", "")]
+    seo_paragraphs = [p for p in paragraphs if p]
+    return page_title, page_description, seo_title, seo_paragraphs
+
+
 def render_index(
     lang: str,
     *,
     selected_type: str = "video",
+    page_slug: str = "",
     items: Optional[List[Dict[str, str]]] = None,
     error: Optional[str] = None,
     modal_show: bool = False,
@@ -872,6 +1393,9 @@ def render_index(
     modal_message: Optional[str] = None,
 ):
     t = build_strings(lang)
+    selected_type = normalize_media_type(selected_type)
+    page_title, page_description, seo_title, seo_paragraphs = page_meta(t, selected_type)
+    post_url = url_for(MEDIA_ENDPOINTS[selected_type], lang=lang)
     return render_template(
         "index.html",
         lang=lang,
@@ -881,6 +1405,12 @@ def render_index(
         base_url=base_url(),
         default_lang=DEFAULT_LANG,
         selected_type=selected_type,
+        page_slug=page_slug,
+        page_title=page_title,
+        page_description=page_description,
+        seo_title=seo_title,
+        seo_paragraphs=seo_paragraphs,
+        post_url=post_url,
         items=items or [],
         error=error,
         modal_show=modal_show,
@@ -893,27 +1423,26 @@ def render_index(
 def root():
     requested = request.args.get("lang", "").strip()
     target = requested if requested in LANGS else DEFAULT_LANG
-    return redirect(f"/{target}", code=302)
+    return redirect(f"/{target}/{MEDIA_SLUGS['video']}", code=302)
 
 
 @app.route("/<lang>")
 @app.route("/<lang>/")
 def index(lang: str):
     lang = get_lang(lang)
-    return render_index(lang)
+    return redirect(f"/{lang}/{MEDIA_SLUGS['video']}", code=302)
 
 
-@app.route("/<lang>/download", methods=["POST"])
-def download(lang: str):
+def process_download(lang: str, media_type: str):
     lang = get_lang(lang)
     t = build_strings(lang)
+    media_type = normalize_media_type(media_type)
+    page_slug = MEDIA_SLUGS[media_type]
 
     media_url = (request.form.get("media_url") or "").strip()
-    media_type = (request.form.get("media_type") or "video").strip()
-
     parsed = parse_media_url(media_url)
     if not parsed:
-        return render_index(lang, selected_type=media_type, error=t["error_invalid_link"])
+        return render_index(lang, selected_type=media_type, page_slug=page_slug, error=t["error_invalid_link"])
 
     url_kind, shortcode = parsed
 
@@ -926,6 +1455,7 @@ def download(lang: str):
             return render_index(
                 lang,
                 selected_type=media_type,
+                page_slug=page_slug,
                 modal_show=True,
                 modal_title=t["modal_private_title"],
                 modal_message=t["modal_private_body"],
@@ -935,6 +1465,7 @@ def download(lang: str):
             return render_index(
                 lang,
                 selected_type=media_type,
+                page_slug=page_slug,
                 modal_show=True,
                 modal_title=t["modal_mismatch_title"],
                 modal_message=t["modal_mismatch_reel"],
@@ -946,25 +1477,58 @@ def download(lang: str):
             return render_index(
                 lang,
                 selected_type=media_type,
+                page_slug=page_slug,
                 modal_show=True,
                 modal_title=t["modal_mismatch_title"],
                 modal_message=mismatch,
             )
 
-        return render_index(lang, selected_type=media_type, items=items)
+        return render_index(lang, selected_type=media_type, page_slug=page_slug, items=items)
 
     except LoginException:
         return render_index(
             lang,
             selected_type=media_type,
+            page_slug=page_slug,
             modal_show=True,
             modal_title=t["modal_private_title"],
             modal_message=t["modal_private_body"],
         )
     except ConnectionException as exc:
-        return render_index(lang, selected_type=media_type, error=f"Connection error: {exc}")
+        return render_index(lang, selected_type=media_type, page_slug=page_slug, error=f"Connection error: {exc}")
     except Exception as exc:  # pragma: no cover
-        return render_index(lang, selected_type=media_type, error=f"Unexpected error: {exc}")
+        return render_index(lang, selected_type=media_type, page_slug=page_slug, error=f"Unexpected error: {exc}")
+
+
+def media_page(lang: str, media_type: str):
+    lang = get_lang(lang)
+    media_type = normalize_media_type(media_type)
+    page_slug = MEDIA_SLUGS[media_type]
+    if request.method == "GET":
+        return render_index(lang, selected_type=media_type, page_slug=page_slug)
+    form_type = normalize_media_type(request.form.get("media_type") or media_type)
+    return process_download(lang, form_type)
+
+
+@app.route("/<lang>/video-download", methods=["GET", "POST"])
+def video_download(lang: str):
+    return media_page(lang, "video")
+
+
+@app.route("/<lang>/reels-download", methods=["GET", "POST"])
+def reels_download(lang: str):
+    return media_page(lang, "reels")
+
+
+@app.route("/<lang>/photo-download", methods=["GET", "POST"])
+def photo_download(lang: str):
+    return media_page(lang, "photo")
+
+
+@app.route("/<lang>/download", methods=["POST"])
+def download(lang: str):
+    media_type = normalize_media_type(request.form.get("media_type") or "video")
+    return process_download(lang, media_type)
 
 
 @app.route("/media-proxy")
