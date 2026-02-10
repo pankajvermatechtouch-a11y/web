@@ -56,9 +56,49 @@ body {
   background: linear-gradient(135deg, #ff5f6d, #ffc371);
 }
 
-.status {
-  font-size: 12px;
+.platforms {
+  display: flex;
+  gap: 8px;
+  background: #f3f4f7;
+  padding: 6px;
+  border-radius: 999px;
+}
+
+.platform {
+  border: none;
+  background: transparent;
   color: var(--muted);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.platform.active {
+  background: var(--panel);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
+.home-btn {
+  border: 1px solid var(--border);
+  background: #f3f4f7;
+  color: var(--accent);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .lang-select {
@@ -479,6 +519,35 @@ h1 {
 }
 
 @media (max-width: 640px) {
+  .topbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand language"
+      "home home";
+    align-items: center;
+    gap: 10px 12px;
+    padding: 16px;
+  }
+
+  .brand {
+    grid-area: brand;
+    justify-content: flex-start;
+  }
+
+  .lang-select {
+    grid-area: language;
+    justify-content: flex-end;
+  }
+
+  .home-btn {
+    grid-area: home;
+    justify-self: center;
+    padding: 6px 14px;
+  }
+}
+
+@media (max-width: 640px) {
   .page {
     padding: 16px;
   }
@@ -486,13 +555,4 @@ h1 {
   .card {
     padding: 24px 20px;
   }
-}
-.home-btn {
-  border: 1px solid var(--border);
-  background: #f3f4f7;
-  color: var(--accent);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-weight: 600;
-  text-decoration: none;
 }
