@@ -204,10 +204,14 @@
       targetInput.focus();
     });
 
-    form.addEventListener('submit', () => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
       loader.classList.add('spin');
       const loadingOverlay = document.getElementById('loadingOverlay');
       if (loadingOverlay) loadingOverlay.classList.add('show');
+      setTimeout(() => {
+        form.submit();
+      }, 80);
     });
 
     const modal = document.getElementById('statusModal');
