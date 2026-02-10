@@ -104,12 +104,12 @@
         {% if items %}
           <div class="results" id="results">
             <h2>{{ t.results }}</h2>
-            <div class="media-grid">
+            <div class="media-grid" data-mode="{{ selected_type or '' }}">
               {% for item in items %}
                 <div class="media-card" data-mode="{{ selected_type or '' }}">
                   <div class="media-frame">
                     {% if item.type == "video" %}
-                      <video class="media-preview media-video" controls playsinline src="{{ url_for('media_proxy', url=item.url) }}"></video>
+                      <video class="media-preview media-video" controls playsinline preload="metadata" src="{{ url_for('media_proxy', url=item.url) }}"></video>
                     {% else %}
                       <img class="media-preview media-image" src="{{ url_for('media_proxy', url=item.url) }}" alt="{{ t.preview_alt }}">
                     {% endif %}
@@ -156,6 +156,14 @@
     </div>
   </div>
 
+  <div class="loading-overlay" id="loadingOverlay" aria-live="polite" aria-busy="true">
+    <div class="loading-card">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <h3>Fetching media...</h3>
+      <p>Please wait while we load your preview.</p>
+    </div>
+  </div>
+
   <script>
     const tabs = document.querySelectorAll('.tab');
     const mediaType = document.getElementById('mediaType');
@@ -198,6 +206,8 @@
 
     form.addEventListener('submit', () => {
       loader.classList.add('spin');
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      if (loadingOverlay) loadingOverlay.classList.add('show');
     });
 
     const modal = document.getElementById('statusModal');
