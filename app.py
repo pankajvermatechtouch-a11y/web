@@ -1629,7 +1629,7 @@ def sitemap():
 
     xml_lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">',
     ]
     for url in urls:
         xml_lines.append("  <url>")
@@ -1638,6 +1638,7 @@ def sitemap():
     xml_lines.append("</urlset>")
 
     return Response("\n".join(xml_lines), mimetype="application/xml")
+
     ADS_TXT = ""  # Paste your AdSense line here later.
 
 @app.route("/ads.txt")
