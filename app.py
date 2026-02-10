@@ -1423,14 +1423,14 @@ def render_index(
 def root():
     requested = request.args.get("lang", "").strip()
     target = requested if requested in LANGS else DEFAULT_LANG
-    return redirect(f"/{target}/{MEDIA_SLUGS['video']}", code=302)
+    return redirect(f"/{target}", code=302)
 
 
 @app.route("/<lang>")
 @app.route("/<lang>/")
 def index(lang: str):
     lang = get_lang(lang)
-    return redirect(f"/{lang}/{MEDIA_SLUGS['video']}", code=302)
+    return render_index(lang, selected_type="video", page_slug="")
 
 
 def process_download(lang: str, media_type: str):
