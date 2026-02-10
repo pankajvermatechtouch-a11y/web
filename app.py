@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 import re
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
@@ -151,45 +152,6 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "seo_list_2": "Clean previews and one-click downloads",
         "seo_list_3": "Handles carousels with multiple items",
         "seo_list_4": "Privacy-aware: private accounts show a warning",
-        "video_long_html": (
-            "<h2 class=\"video-title\">Instagram Video Downloader</h2>"
-            "<p>Instagram is one of the most popular platforms for sharing short videos, reels, tutorials, and creative clips. Every day, millions of videos are uploaded, and many of them are worth saving for later. However, Instagram does not provide a direct option to download videos to your device. This is where an instagram video downloader becomes extremely useful.</p>"
-            "<p>This tool allows you to save Instagram videos directly to your phone, tablet, or computer in just a few seconds. You don’t need to install any application or create an account. Everything works online through your browser, making the process simple and fast for anyone.</p>"
-            "<h2>What is an Instagram Video Downloader?</h2>"
-            "<p>An instagram video downloader is an online utility designed to help users download public videos from Instagram using the video link. Instead of searching for the same video again and again, you can keep it saved on your device and watch it anytime, even without internet access.</p>"
-            "<p>The tool works with different types of Instagram video content such as reels, regular video posts, and IGTV videos. All you have to do is copy the link of the video and paste it into the downloader box. Within seconds, your video is ready to download in high quality.</p>"
-            "<h2>Why People Prefer Instagram Video Download Online Tools</h2>"
-            "<p>Many people come across useful videos on Instagram that they want to save for future reference. These could be cooking recipes, fitness tips, educational content, travel videos, or creative editing ideas. Without a download option, users often struggle to find the same video later.</p>"
-            "<p>Using an instagram video download online tool solves this problem. You can keep your favorite videos stored safely on your device. It is especially helpful for content creators, students, social media managers, and regular users who like collecting helpful or entertaining content.</p>"
-            "<h2>How This Tool Works</h2>"
-            "<ul class=\"step-list\">"
-            "<li><img src=\"/static/steps/step-1.webp\" alt=\"Copy Instagram link\" /><span>Open Instagram and copy the video link you want to download.</span></li>"
-            "<li><img src=\"/static/steps/step-2.webp\" alt=\"Paste Instagram link\" /><span>Paste the link into the input box on this page.</span></li>"
-            "<li><img src=\"/static/steps/step-3.webp\" alt=\"Download Instagram video\" /><span>Click on the search button. Now, click the download button and save it to your device.</span></li>"
-            "</ul>"
-            "<p>That’s it. The process takes only a few seconds and works on all devices.</p>"
-            "<h2>Key Features of This Instagram Video Download Tool</h2>"
-            "<p>This instagram video download tool is built to be simple, fast, and user-friendly. It focuses on giving users a smooth experience without unnecessary steps or distractions.</p>"
-            "<p>The tool does not ask for login details, which means your account stays safe and private. You don’t have to sign up or share any personal information. It works directly with the video URL and processes the download instantly.</p>"
-            "<p>Another important feature is video quality. Many Instagram videos are uploaded in high resolution, and this tool supports instagram video download 4k when the original video is available in that quality. You get the best version of the video without losing clarity.</p>"
-            "<p>It is also completely free to use. There are no hidden charges, subscriptions, or limits. Anyone can use this instagram video download free tool anytime.</p>"
-            "<h2>Benefits of Downloading Instagram Videos</h2>"
-            "<p>Downloading Instagram videos offers several practical benefits. You can watch videos anytime without depending on internet speed or availability. This is helpful when traveling or when you have limited data.</p>"
-            "<p>Saved videos are easy to share with friends through WhatsApp, email, or other platforms. You can also keep them as references for editing, learning, or inspiration. For content creators and social media managers, saving videos helps in studying trends, styles, and ideas without searching repeatedly.</p>"
-            "<p>Another advantage is that you don’t lose access to videos if they are deleted later from Instagram. Once downloaded, the video remains with you.</p>"
-            "<h2>Safe and Secure to Use</h2>"
-            "<p>Safety is a common concern when using online tools. This instagram video download online tool is designed to be secure because it does not require your Instagram credentials. It does not store your data or ask for permissions.</p>"
-            "<p>You simply paste the link, download the video, and leave the page. No tracking, no sign-up, and no risk to your account.</p>"
-            "<h2>Who Can Use This Tool?</h2>"
-            "<p>This tool is useful for a wide range of users. Students can save educational reels and tutorials for study purposes. Content creators can download videos for reference and inspiration. Social media managers can collect examples for planning posts and campaigns. Even regular users who simply enjoy watching reels can keep their favorite videos saved for offline viewing.</p>"
-            "<p>The tool is designed for everyone, regardless of technical knowledge. If you know how to copy and paste a link, you can use this tool without any difficulty.</p>"
-            "<h2>Why This Instagram Video Downloader is a Better Choice</h2>"
-            "<p>There are many tools available online, but most of them are filled with ads, redirects, or complicated steps. This instagram video downloader focuses on a clean and simple experience. You come to the page, paste the link, and download the video without confusion.</p>"
-            "<p>It works smoothly on mobile devices as well as desktops, so you are not restricted to any one platform. The fast processing speed and high-quality output make it a reliable choice for downloading Instagram videos anytime.</p>"
-            "<h2>Final Thoughts</h2>"
-            "<p>Instagram is full of valuable and entertaining video content, but without a download option, saving videos becomes difficult. An instagram video downloader solves this problem by allowing you to download videos quickly, safely, and in high quality.</p>"
-            "<p>Whether you want to save reels, tutorials, or creative clips, this tool makes the process effortless. Try it once, and you will find it much easier to keep your favorite Instagram videos saved on your device for future use.</p>"
-        ),
         "footer_contact": "Contact us",
         "footer_about": "About us",
         "footer_privacy": "Privacy policy",
@@ -1368,6 +1330,21 @@ def base_url() -> str:
     return request.url_root.rstrip("/")
 
 
+CONTENT_DIR = Path(__file__).resolve().parent / "static" / "content"
+
+
+def load_long_html(lang: str, media_type: str) -> str:
+    media_type = normalize_media_type(media_type)
+    candidates = [
+        CONTENT_DIR / lang / f"{media_type}.html",
+        CONTENT_DIR / DEFAULT_LANG / f"{media_type}.html",
+    ]
+    for path in candidates:
+        if path.is_file():
+            return path.read_text(encoding="utf-8")
+    return ""
+
+
 def safe_filename(name: str) -> str:
     cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", name).strip("_")
     return cleaned or "instagram_media"
@@ -1479,9 +1456,7 @@ def render_index(
     selected_type = normalize_media_type(selected_type)
     page_title, page_description, seo_title, seo_paragraphs = page_meta(t, selected_type)
     post_url = url_for(MEDIA_ENDPOINTS[selected_type], lang=lang)
-    video_long_html = ""
-    if selected_type == "video":
-        video_long_html = t.get("video_long_html", "")
+    long_html = load_long_html(lang, selected_type)
     return render_template(
         "index.html",
         lang=lang,
@@ -1496,7 +1471,7 @@ def render_index(
         page_description=page_description,
         seo_title=seo_title,
         seo_paragraphs=seo_paragraphs,
-        video_long_html=video_long_html,
+        long_html=long_html,
         post_url=post_url,
         items=items or [],
         error=error,
