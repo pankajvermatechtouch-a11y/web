@@ -6,12 +6,8 @@ Instagram's Terms of Use and applicable laws.
 """
 from __future__ import annotations
 
-import logging
 import os
 import re
-import smtplib
-import ssl
-from email.message import EmailMessage
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
@@ -42,7 +38,6 @@ ADS_TXT = ""  # Paste your AdSense line here later.
 CONTACT_TO = "pv50017@gmail.com"
 DEFAULT_LANG = "en"
 
-logger = logging.getLogger(__name__)
 LANG_ORDER = [
     "en",
     "ar",
@@ -169,13 +164,15 @@ STRINGS: Dict[str, Dict[str, str]] = {
             "<p>We’re constantly improving our tool to give you the best experience with speed, reliability, and privacy at the core.</p>"
         ),
         "page_contact_title": "Contact us",
-        "page_contact_body": "For support or inquiries, email: support@example.com",
+        "page_contact_body": "For support or inquiries, email: pv50017@gmail.com",
         "page_contact_html": (
             "<p>Have a question, suggestion, or facing an issue while downloading Instagram media? We’re here to help!</p>"
             "<p>Feel free to reach out to us anytime, and our team will get back to you as soon as possible.</p>"
             "<h2>Support Hours</h2>"
             "<p><strong>🕒 24/7</strong></p>"
             "<p>Your feedback helps us improve and serve you better.</p>"
+            "<h2>Email</h2>"
+            "<p><a href=\"mailto:pv50017@gmail.com\">pv50017@gmail.com</a></p>"
         ),
         "page_privacy_title": "Privacy policy",
         "page_privacy_body": "We do not store the media you download. Requests are processed in real time.",
@@ -1332,51 +1329,6 @@ def base_url() -> str:
     return request.url_root.rstrip("/")
 
 
-def send_contact_email(name: str, email: str, message: str) -> Tuple[bool, str]:
-    host = os.getenv("SMTP_HOST")
-    if not host:
-        return False, "Email is not configured yet."
-    port = int(os.getenv("SMTP_PORT", "587"))
-    user = os.getenv("SMTP_USER")
-    password = os.getenv("SMTP_PASS")
-    from_addr = os.getenv("SMTP_FROM") or user
-    if not from_addr:
-        return False, "Email is not configured yet."
-
-    msg = EmailMessage()
-    msg["Subject"] = f"New message from {STRINGS['en']['brand']}"
-    msg["From"] = from_addr
-    msg["To"] = CONTACT_TO
-    if email:
-        msg["Reply-To"] = email
-    msg.set_content(
-        f"Name: {name or '-'}\n"
-        f"Email: {email or '-'}\n\n"
-        f"Message:\n{message}"
-    )
-
-    try:
-        if port == 465:
-            context = ssl.create_default_context()
-            with smtplib.SMTP_SSL(host, port, context=context, timeout=20) as server:
-                if user and password:
-                    server.login(user, password)
-                server.send_message(msg)
-        else:
-            context = ssl.create_default_context()
-            with smtplib.SMTP(host, port, timeout=20) as server:
-                server.ehlo()
-                server.starttls(context=context)
-                server.ehlo()
-                if user and password:
-                    server.login(user, password)
-                server.send_message(msg)
-        return True, ""
-    except Exception as exc:
-        logger.exception("Contact email failed: %s", exc)
-        return False, "Unable to send message right now."
-
-
 def safe_filename(name: str) -> str:
     cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", name).strip("_")
     return cleaned or "instagram_media"
@@ -1689,24 +1641,10 @@ def about(lang: str):
     )
 
 
-@app.route("/<lang>/contact", methods=["GET", "POST"])
+@app.route("/<lang>/contact")
 def contact(lang: str):
     lang = get_lang(lang)
     t = build_strings(lang)
-    notice = None
-    error = None
-    if request.method == "POST":
-        name = (request.form.get("name") or "").strip()
-        email = (request.form.get("email") or "").strip()
-        message = (request.form.get("message") or "").strip()
-        if not message:
-            error = "Please enter a message."
-        else:
-            ok, err_msg = send_contact_email(name, email, message)
-            if ok:
-                notice = "Thanks! Your message has been sent."
-            else:
-                error = err_msg
     contact_url = f"{base_url()}/{lang}/contact"
     page_body = t.get("page_contact_html", t["page_contact_body"]).format(
         brand=t["brand"],
@@ -1723,8 +1661,6 @@ def contact(lang: str):
         page_body=page_body,
         page_slug="contact",
         default_lang=DEFAULT_LANG,
-        page_notice=notice,
-        page_error=error,
     )
 
 
