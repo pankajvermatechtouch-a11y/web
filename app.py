@@ -102,6 +102,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "This link is an image. Please select the Photo tab.",
         "modal_mismatch_photo": "This link is a video. Please select Video or Reels.",
         "modal_mismatch_reel": "This link is not a reel. Please select the Photo tab.",
+        "modal_temp_title": "Please try again",
+        "modal_temp_body": "Instagram temporarily blocked this request. Please wait a minute and try again.",
         "seo_title": "Fast Instagram Media Downloader for Public Posts",
         "seo_p1": "Use this Instagram downloader to save public videos, reels, and photos directly from post links.",
         "seo_p2": "Paste a link, preview the media, and download each item individually.",
@@ -1606,6 +1608,18 @@ def process_download(lang: str, media_type: str):
     except ConnectionException as exc:
         return render_index(lang, selected_type=media_type, page_slug=page_slug, error=f"Connection error: {exc}")
     except Exception as exc:  # pragma: no cover
+        if "Fetching Post metadata failed" in str(exc):
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                modal_show=True,
+                modal_title=t.get("modal_temp_title", "Please try again"),
+                modal_message=t.get(
+                    "modal_temp_body",
+                    "Instagram temporarily blocked this request. Please wait a minute and try again.",
+                ),
+            )
         return render_index(lang, selected_type=media_type, page_slug=page_slug, error=f"Unexpected error: {exc}")
 
 
