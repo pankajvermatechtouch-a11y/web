@@ -1760,9 +1760,9 @@ def sitemap():
         urls.append(f"{base}/{lang}/{MEDIA_SLUGS['video']}")
         urls.append(f"{base}/{lang}/{MEDIA_SLUGS['reels']}")
         urls.append(f"{base}/{lang}/{MEDIA_SLUGS['photo']}")
-        urls.append(f"{base}/{lang}/about")
-        urls.append(f"{base}/{lang}/contact")
-        urls.append(f"{base}/{lang}/privacy")
+        urls.append(f"{base}/{DEFAULT_LANG}/about")
+        urls.append(f"{base}/{DEFAULT_LANG}/contact")
+        urls.append(f"{base}/{DEFAULT_LANG}/privacy")
 
     xml_lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
