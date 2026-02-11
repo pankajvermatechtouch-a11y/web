@@ -101,7 +101,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_title": "Wrong Media Type",
         "modal_mismatch_video": "This link is an image. Please select the Photo tab.",
         "modal_mismatch_photo": "This link is a video. Please select Video or Reels.",
-        "modal_mismatch_reel": "This link is not a reel. Please select Video.",
+        "modal_mismatch_reel": "This link is not a reel. Please select the Photo tab.",
         "seo_title": "Fast Instagram Media Downloader for Public Posts",
         "seo_p1": "Use this Instagram downloader to save public videos, reels, and photos directly from post links.",
         "seo_p2": "Paste a link, preview the media, and download each item individually.",
