@@ -57,11 +57,36 @@ body {
   font-family: "Space Grotesk", "Manrope", sans-serif;
 }
 
-.brand-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff5f6d, #ffc371);
+.brand-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: #eef2ff;
+  border: 2px solid var(--accent);
+  position: relative;
+  display: inline-flex;
+}
+
+.brand-icon::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 3px;
+  width: 2px;
+  height: 8px;
+  background: var(--accent);
+}
+
+.brand-icon::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 7px;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(45deg);
 }
 
 .platforms {
