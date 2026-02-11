@@ -15,6 +15,7 @@
   <link rel="alternate" hreflang="x-default" href="{{ base_url }}/{{ default_lang }}/{{ page_slug }}">
   <link rel="stylesheet" href="/static/style.css">
   <meta name="google-site-verification" content="skYVDRL576GbZtagegU5Hy6uNPHslbcAf6fosJk-vVo" />
+  <meta name="robots" content="{% if lang != default_lang %}noindex,follow{% else %}index,follow{% endif %}">
 </head>
 <body>
   <div class="page">
