@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 import re
+import time
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
@@ -76,7 +77,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "meta_description_reels": "Instagram Reels downloader. Paste a Reel link to preview and download instantly.",
         "meta_description_photo": "Instagram photo downloader. Paste a link to preview and save images in high quality.",
         "meta_keywords": "instagram downloader, instagram video downloader, instagram reels downloader, instagram photo downloader, download instagram media",
-        "brand": "IG Video Downloader",
+        "brand": "FastDl App",
         "home": "Home",
         "status": "Public posts only",
         "language_label": "Language",
@@ -134,9 +135,9 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "footer_about": "About us",
         "footer_privacy": "Privacy policy",
         "footer_disclaimer": "This website is intended for educational and personal use only. All videos, photos, and media remain the property of their respective owners. We do not claim any rights over the content downloaded through this tool. All copyrights and trademarks belong to their rightful owners. Instagram and the Instagram logo are trademarks of Meta Platforms, Inc.",
-        "footer_copy": "Copyright © 2026 Media Vault. All rights reserved.",
+        "footer_copy": "Copyright © 2026 FastDl App. All rights reserved.",
         "page_about_title": "About us",
-        "page_about_body": "Media Vault provides a simple way to preview and download public Instagram media for personal use.",
+        "page_about_body": "{brand} provides a simple way to preview and download public Instagram media for personal use.",
         "page_about_html": (
             "<p>Welcome to {brand} — a fast, free, and easy tool designed to help you download Instagram photos, videos, reels, and stories in just a few clicks.</p>"
             "<p>Our goal is to make saving your favorite Instagram content simple, secure, and hassle-free. No sign-ups, no complicated steps — just paste the link and download instantly.</p>"
@@ -1395,6 +1396,20 @@ def make_loader() -> "instaloader.Instaloader":
     return loader
 
 
+def fetch_post_with_retry(
+    loader: "instaloader.Instaloader", shortcode: str, *, retries: int = 2, delay: float = 1.5
+) -> "instaloader.Post":
+    for attempt in range(retries + 1):
+        try:
+            return instaloader.Post.from_shortcode(loader.context, shortcode)
+        except Exception as exc:
+            if "Fetching Post metadata failed" in str(exc):
+                if attempt < retries:
+                    time.sleep(delay)
+                    continue
+            raise
+
+
 def parse_media_url(raw: str) -> Optional[Tuple[str, str]]:
     value = raw.strip()
     if not value:
@@ -1542,7 +1557,7 @@ def process_download(lang: str, media_type: str):
 
     try:
         loader = make_loader()
-        post = instaloader.Post.from_shortcode(loader.context, shortcode)
+        post = fetch_post_with_retry(loader, shortcode)
 
         owner_profile = getattr(post, "owner_profile", None)
         if owner_profile and getattr(owner_profile, "is_private", False):
