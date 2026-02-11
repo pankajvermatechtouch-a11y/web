@@ -126,7 +126,7 @@
                       <img class="media-preview media-image" src="{{ url_for('media_proxy', url=item.url) }}" alt="{{ t.preview_alt }}">
                     {% endif %}
                   </div>
-                  <a class="download-btn" href="{{ item.url }}" download="{{ item.name }}" target="_blank" rel="noopener">{{ t.download }}</a>
+                  <a class="download-btn" href="{{ url_for('download_file', url=item.url, name=item.name) }}">{{ t.download }}</a>
                 </div>
               {% endfor %}
             </div>
