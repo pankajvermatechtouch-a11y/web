@@ -621,6 +621,26 @@ h1 {
   margin: 0;
 }
 
+.share-section {
+  text-align: center;
+  margin: 20px auto 10px;
+  padding: 16px 12px;
+}
+
+.share-title {
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0 0 12px;
+  color: #1a1f2b;
+}
+
+.share-section .a2a_kit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 .modal {
   position: fixed;
   inset: 0;
