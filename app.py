@@ -69,13 +69,15 @@ LANGS = {
 STRINGS: Dict[str, Dict[str, str]] = {
     "en": {
         "title": "Instagram Media Downloader",
-        "title_video": "Instagram Video Downloader",
-        "title_reels": "Instagram Reels Downloader",
-        "title_photo": "Instagram Photo Downloader",
+        "home_title": "Instagram Downloader: Download Reels, Videos & Photos Easily",
+        "home_description": "You can use our tool FastDl App to download instagram reels, videos and photos in 4k free and without any signup.",
+        "title_video": "Instagram Video Downloader - Free & Easy",
+        "title_reels": "Instagram Reels Downloader - Free & Easy",
+        "title_photo": "Instagram Photos Downloader - Free & Easy",
         "meta_description": "Download Instagram videos, reels, and photos from public posts. Paste a link and get previews with direct downloads.",
-        "meta_description_video": "Instagram video downloader. Paste a link, preview the video, and save it in original quality.",
-        "meta_description_reels": "Instagram Reels downloader. Paste a Reel link to preview and download instantly.",
-        "meta_description_photo": "Instagram photo downloader. Paste a link to preview and save images in high quality.",
+        "meta_description_video": "Instagram video downloader that lets you download videos in 4k free and without any signup.",
+        "meta_description_reels": "Instagram reels downloader that lets you download reels in 4k free and without any signup.",
+        "meta_description_photo": "Instagram photo downloader that lets you download photos in 4k free and without any signup.",
         "meta_keywords": "instagram downloader, instagram video downloader, instagram reels downloader, instagram photo downloader, download instagram media",
         "brand": "FastDl App",
         "home": "Home",
@@ -189,13 +191,13 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "ar": {
         "title": "أداة تنزيل وسائط إنستغرام",
-        "title_video": "مُحمّل فيديو إنستغرام",
-        "title_reels": "مُحمّل ريلز إنستغرام",
-        "title_photo": "مُحمّل صور إنستغرام",
+        "title_video": "مُحمّل فيديو إنستغرام - Free & Easy",
+        "title_reels": "مُحمّل ريلز إنستغرام - Free & Easy",
+        "title_photo": "مُحمّل صور إنستغرام - Free & Easy",
         "meta_description": "حمّل فيديوهات وصور وريـلز إنستغرام من المنشورات العامة. الصق الرابط وشاهد المعاينة.",
-        "meta_description_video": "مُحمّل فيديو إنستغرام. الصق الرابط، شاهد المعاينة واحفظ بالجودة الأصلية.",
-        "meta_description_reels": "مُحمّل ريلز إنستغرام. الصق الرابط وحمّل فورًا.",
-        "meta_description_photo": "مُحمّل صور إنستغرام. الصق الرابط، شاهد المعاينة واحفظ بجودة عالية.",
+        "meta_description_video": "مُحمّل فيديو إنستغرام. الصق الرابط، شاهد المعاينة واحفظ بالجودة الأصلية. Instagram video downloader.",
+        "meta_description_reels": "مُحمّل ريلز إنستغرام. الصق الرابط وحمّل فورًا. Instagram reels downloader.",
+        "meta_description_photo": "مُحمّل صور إنستغرام. الصق الرابط، شاهد المعاينة واحفظ بجودة عالية. Instagram photo downloader.",
         "meta_keywords": "تحميل انستغرام, تنزيل ريلز, تحميل فيديو انستغram, تنزيل صور انستغram",
         "status": "المنشورات العامة فقط",
         "language_label": "اللغة",
@@ -226,13 +228,13 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "bn": {
         "title": "ইনস্টাগ্রাম মিডিয়া ডাউনলোডার",
-        "title_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার",
-        "title_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার",
-        "title_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার",
+        "title_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার - Free & Easy",
+        "title_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার - Free & Easy",
+        "title_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার - Free & Easy",
         "meta_description": "পাবলিক পোস্ট থেকে ইনস্টাগ্রাম ভিডিও, রিল এবং ছবি ডাউনলোড করুন। লিংক পেস্ট করে প্রিভিউ দেখুন।",
-        "meta_description_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার। লিংক পেস্ট করুন, প্রিভিউ দেখুন এবং অরিজিনাল কোয়ালিটিতে সেভ করুন।",
-        "meta_description_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার। লিংক পেস্ট করে সাথে সাথে ডাউনলোড করুন।",
-        "meta_description_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার। লিংক পেস্ট করে প্রিভিউ দেখুন এবং উচ্চমানের ছবি সেভ করুন।",
+        "meta_description_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার। লিংক পেস্ট করুন, প্রিভিউ দেখুন এবং অরিজিনাল কোয়ালিটিতে সেভ করুন। Instagram video downloader.",
+        "meta_description_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার। লিংক পেস্ট করে সাথে সাথে ডাউনলোড করুন। Instagram reels downloader.",
+        "meta_description_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার। লিংক পেস্ট করে প্রিভিউ দেখুন এবং উচ্চমানের ছবি সেভ করুন। Instagram photo downloader.",
         "meta_keywords": "instagram downloader, ইনস্টাগ্রাম ডাউনলোডার, রিল ডাউনলোড, ভিডিও ডাউনলোড",
         "status": "শুধু পাবলিক পোস্ট",
         "language_label": "ভাষা",
@@ -263,13 +265,13 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "zh": {
         "title": "Instagram 媒体下载器",
-        "title_video": "Instagram 视频下载器",
-        "title_reels": "Instagram Reels 下载器",
-        "title_photo": "Instagram 照片下载器",
+        "title_video": "Instagram 视频下载器 - Free & Easy",
+        "title_reels": "Instagram Reels 下载器 - Free & Easy",
+        "title_photo": "Instagram 照片下载器 - Free & Easy",
         "meta_description": "从公开帖子下载 Instagram 视频、Reels 和照片。粘贴链接即可预览并下载。",
-        "meta_description_video": "Instagram 视频下载器。粘贴链接、预览并保存原画质。",
-        "meta_description_reels": "Instagram Reels 下载器。粘贴链接即可立即下载。",
-        "meta_description_photo": "Instagram 照片下载器。粘贴链接、预览并保存高质量图片。",
+        "meta_description_video": "Instagram 视频下载器。粘贴链接、预览并保存原画质。 Instagram video downloader.",
+        "meta_description_reels": "Instagram Reels 下载器。粘贴链接即可立即下载。 Instagram reels downloader.",
+        "meta_description_photo": "Instagram 照片下载器。粘贴链接、预览并保存高质量图片。 Instagram photo downloader.",
         "meta_keywords": "instagram 下载, reels 下载, instagram 视频下载, instagram 图片下载",
         "status": "仅限公开帖子",
         "language_label": "语言",
@@ -300,13 +302,13 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "fr": {
         "title": "Téléchargeur de médias Instagram",
-        "title_video": "Téléchargeur vidéo Instagram",
-        "title_reels": "Téléchargeur Reels Instagram",
-        "title_photo": "Téléchargeur photo Instagram",
+        "title_video": "Téléchargeur vidéo Instagram - Free & Easy",
+        "title_reels": "Téléchargeur Reels Instagram - Free & Easy",
+        "title_photo": "Téléchargeur photo Instagram - Free & Easy",
         "meta_description": "Téléchargez vidéos, reels et photos Instagram depuis des posts publics. Collez le lien pour prévisualiser.",
-        "meta_description_video": "Téléchargeur vidéo Instagram. Collez le lien, prévisualisez et enregistrez en qualité d'origine.",
-        "meta_description_reels": "Téléchargeur Reels Instagram. Collez le lien et téléchargez instantanément.",
-        "meta_description_photo": "Téléchargeur photo Instagram. Collez le lien, prévisualisez et enregistrez en haute qualité.",
+        "meta_description_video": "Téléchargeur vidéo Instagram. Collez le lien, prévisualisez et enregistrez en qualité d'origine. Instagram video downloader.",
+        "meta_description_reels": "Téléchargeur Reels Instagram. Collez le lien et téléchargez instantanément. Instagram reels downloader.",
+        "meta_description_photo": "Téléchargeur photo Instagram. Collez le lien, prévisualisez et enregistrez en haute qualité. Instagram photo downloader.",
         "meta_keywords": "instagram downloader, telecharger instagram, reels instagram, video instagram",
         "status": "Publications publiques uniquement",
         "language_label": "Langue",
@@ -337,13 +339,13 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "de": {
         "title": "Instagram Medien-Downloader",
-        "title_video": "Instagram Video-Downloader",
-        "title_reels": "Instagram Reels Downloader",
-        "title_photo": "Instagram Foto-Downloader",
+        "title_video": "Instagram Video-Downloader - Free & Easy",
+        "title_reels": "Instagram Reels Downloader - Free & Easy",
+        "title_photo": "Instagram Foto-Downloader - Free & Easy",
         "meta_description": "Lade Instagram Videos, Reels und Fotos aus öffentlichen Posts. Link einfügen und Vorschau sehen.",
-        "meta_description_video": "Instagram Video-Downloader. Link einfügen, Vorschau ansehen und in Originalqualität speichern.",
-        "meta_description_reels": "Instagram Reels Downloader. Link einfügen und sofort herunterladen.",
-        "meta_description_photo": "Instagram Foto-Downloader. Link einfügen, Vorschau ansehen und in hoher Qualität speichern.",
+        "meta_description_video": "Instagram Video-Downloader. Link einfügen, Vorschau ansehen und in Originalqualität speichern. Instagram video downloader.",
+        "meta_description_reels": "Instagram Reels Downloader. Link einfügen und sofort herunterladen. Instagram reels downloader.",
+        "meta_description_photo": "Instagram Foto-Downloader. Link einfügen, Vorschau ansehen und in hoher Qualität speichern. Instagram photo downloader.",
         "meta_keywords": "instagram downloader, instagram video downloader, reels downloader, instagram foto",
         "status": "Nur öffentliche Beiträge",
         "language_label": "Sprache",
@@ -374,13 +376,13 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "hi": {
         "title": "इंस्टाग्राम मीडिया डाउनलोडर",
-        "title_video": "Instagram वीडियो डाउनलोडर",
-        "title_reels": "Instagram रील्स डाउनलोडर",
-        "title_photo": "Instagram फोटो डाउनलोडर",
+        "title_video": "Instagram वीडियो डाउनलोडर - Free & Easy",
+        "title_reels": "Instagram रील्स डाउनलोडर - Free & Easy",
+        "title_photo": "Instagram फोटो डाउनलोडर - Free & Easy",
         "meta_description": "पब्लिक पोस्ट से Instagram वीडियो, रील और फोटो डाउनलोड करें। लिंक पेस्ट करें और प्रिव्यू देखें।",
-        "meta_description_video": "Instagram वीडियो डाउनलोडर। लिंक पेस्ट करें, प्रिव्यू देखें और ओरिजिनल क्वालिटी में सेव करें।",
-        "meta_description_reels": "Instagram रील्स डाउनलोडर। लिंक पेस्ट करें और तुरंत डाउनलोड करें।",
-        "meta_description_photo": "Instagram फोटो डाउनलोडर। लिंक पेस्ट करें, प्रिव्यू देखें और हाई क्वालिटी में सेव करें।",
+        "meta_description_video": "Instagram वीडियो डाउनलोडर। लिंक पेस्ट करें, प्रिव्यू देखें और ओरिजिनल क्वालिटी में सेव करें। Instagram video downloader.",
+        "meta_description_reels": "Instagram रील्स डाउनलोडर। लिंक पेस्ट करें और तुरंत डाउनलोड करें। Instagram reels downloader.",
+        "meta_description_photo": "Instagram फोटो डाउनलोडर। लिंक पेस्ट करें, प्रिव्यू देखें और हाई क्वालिटी में सेव करें। Instagram photo downloader.",
         "meta_keywords": "instagram downloader, instagram video downloader, reels downloader, फोटो डाउनलोड",
         "status": "केवल सार्वजनिक पोस्ट",
         "language_label": "भाषा",
@@ -597,13 +599,13 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "pt": {
         "title": "Downloader de mídia do Instagram",
-        "title_video": "Downloader de vídeo do Instagram",
-        "title_reels": "Downloader de Reels do Instagram",
-        "title_photo": "Downloader de fotos do Instagram",
+        "title_video": "Downloader de vídeo do Instagram - Free & Easy",
+        "title_reels": "Downloader de Reels do Instagram - Free & Easy",
+        "title_photo": "Downloader de fotos do Instagram - Free & Easy",
         "meta_description": "Baixe vídeos, reels e fotos do Instagram de posts públicos. Cole o link e veja a prévia.",
-        "meta_description_video": "Downloader de vídeo do Instagram. Cole o link, pré-visualize e salve em qualidade original.",
-        "meta_description_reels": "Downloader de Reels do Instagram. Cole o link e faça o download instantâneo.",
-        "meta_description_photo": "Downloader de fotos do Instagram. Cole o link, pré-visualize e salve em alta qualidade.",
+        "meta_description_video": "Downloader de vídeo do Instagram. Cole o link, pré-visualize e salve em qualidade original. Instagram video downloader.",
+        "meta_description_reels": "Downloader de Reels do Instagram. Cole o link e faça o download instantâneo. Instagram reels downloader.",
+        "meta_description_photo": "Downloader de fotos do Instagram. Cole o link, pré-visualize e salve em alta qualidade. Instagram photo downloader.",
         "meta_keywords": "instagram downloader, baixar video instagram, baixar reels, baixar fotos instagram",
         "status": "Somente posts públicos",
         "language_label": "Idioma",
@@ -634,13 +636,13 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "ru": {
         "title": "Загрузчик медиа Instagram",
-        "title_video": "Загрузчик видео Instagram",
-        "title_reels": "Загрузчик Reels Instagram",
-        "title_photo": "Загрузчик фото Instagram",
+        "title_video": "Загрузчик видео Instagram - Free & Easy",
+        "title_reels": "Загрузчик Reels Instagram - Free & Easy",
+        "title_photo": "Загрузчик фото Instagram - Free & Easy",
         "meta_description": "Скачивайте видео, reels и фото Instagram из публичных постов. Вставьте ссылку для просмотра.",
-        "meta_description_video": "Загрузчик видео Instagram. Вставьте ссылку, посмотрите предпросмотр и сохраните в оригинальном качестве.",
-        "meta_description_reels": "Загрузчик Reels Instagram. Вставьте ссылку и скачайте сразу.",
-        "meta_description_photo": "Загрузчик фото Instagram. Вставьте ссылку, посмотрите предпросмотр и сохраните в высоком качестве.",
+        "meta_description_video": "Загрузчик видео Instagram. Вставьте ссылку, посмотрите предпросмотр и сохраните в оригинальном качестве. Instagram video downloader.",
+        "meta_description_reels": "Загрузчик Reels Instagram. Вставьте ссылку и скачайте сразу. Instagram reels downloader.",
+        "meta_description_photo": "Загрузчик фото Instagram. Вставьте ссылку, посмотрите предпросмотр и сохраните в высоком качестве. Instagram photo downloader.",
         "meta_keywords": "instagram downloader, скачать instagram, reels instagram, скачать фото",
         "status": "Только публичные посты",
         "language_label": "Язык",
@@ -671,13 +673,13 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "es": {
         "title": "Descargador de medios de Instagram",
-        "title_video": "Descargador de videos de Instagram",
-        "title_reels": "Descargador de Reels de Instagram",
-        "title_photo": "Descargador de fotos de Instagram",
+        "title_video": "Descargador de videos de Instagram - Free & Easy",
+        "title_reels": "Descargador de Reels de Instagram - Free & Easy",
+        "title_photo": "Descargador de fotos de Instagram - Free & Easy",
         "meta_description": "Descarga videos, reels y fotos de Instagram desde publicaciones públicas. Pega el enlace y previsualiza.",
-        "meta_description_video": "Descargador de videos de Instagram. Pega el enlace, previsualiza y guarda en calidad original.",
-        "meta_description_reels": "Descargador de Reels de Instagram. Pega el enlace y descarga al instante.",
-        "meta_description_photo": "Descargador de fotos de Instagram. Pega el enlace, previsualiza y guarda en alta calidad.",
+        "meta_description_video": "Descargador de videos de Instagram. Pega el enlace, previsualiza y guarda en calidad original. Instagram video downloader.",
+        "meta_description_reels": "Descargador de Reels de Instagram. Pega el enlace y descarga al instante. Instagram reels downloader.",
+        "meta_description_photo": "Descargador de fotos de Instagram. Pega el enlace, previsualiza y guarda en alta calidad. Instagram photo downloader.",
         "meta_keywords": "instagram downloader, descargar instagram, reels instagram, descargar fotos",
         "status": "Solo publicaciones públicas",
         "language_label": "Idioma",
@@ -1478,10 +1480,19 @@ def normalize_media_type(value: str) -> str:
     return value if value in MEDIA_SLUGS else "video"
 
 
-def page_meta(t: Dict[str, str], media_type: str) -> Tuple[str, str, str, List[str]]:
+def page_meta(
+    t: Dict[str, str],
+    media_type: str,
+    *,
+    is_home: bool = False,
+) -> Tuple[str, str, str, List[str]]:
     key = normalize_media_type(media_type)
-    page_title = t.get(f"title_{key}", t["title"])
-    page_description = t.get(f"meta_description_{key}", t["meta_description"])
+    if is_home:
+        page_title = t.get("home_title", t.get(f"title_{key}", t["title"]))
+        page_description = t.get("home_description", t.get(f"meta_description_{key}", t["meta_description"]))
+    else:
+        page_title = t.get(f"title_{key}", t["title"])
+        page_description = t.get(f"meta_description_{key}", t["meta_description"])
     seo_title = t.get(f"seo_{key}_title", t.get("seo_title", ""))
     paragraphs = t.get(f"seo_{key}_paragraphs")
     if not paragraphs:
@@ -1503,7 +1514,11 @@ def render_index(
 ):
     t = build_strings(lang)
     selected_type = normalize_media_type(selected_type)
-    page_title, page_description, seo_title, seo_paragraphs = page_meta(t, selected_type)
+    page_title, page_description, seo_title, seo_paragraphs = page_meta(
+        t,
+        selected_type,
+        is_home=(page_slug == ""),
+    )
     post_url = url_for(MEDIA_ENDPOINTS[selected_type], lang=lang)
     long_html = load_long_html(lang, selected_type)
     return render_template(
@@ -1534,9 +1549,8 @@ def render_index(
 def root():
     requested = request.args.get("lang", "").strip()
     target = requested if requested in LANGS else DEFAULT_LANG
-    response = redirect(f"/{target}", code=302)
-    response.headers["X-Robots-Tag"] = "noindex,follow"
-    return response
+    return redirect(f"/{target}", code=302)
+
 
 @app.route("/<lang>")
 @app.route("/<lang>/")
