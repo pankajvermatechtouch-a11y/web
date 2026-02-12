@@ -98,6 +98,7 @@
                 id="targetInput"
                 placeholder="{{ t.placeholder }}"
                 autocomplete="off"
+                value="{{ media_url }}"
                 required
               >
             </label>
@@ -185,7 +186,12 @@
     <div class="modal-card">
       <h2 id="modalTitle">{{ modal_title or '' }}</h2>
       <p>{{ modal_message or '' }}</p>
-      <button class="cta" type="button" id="closeModal">OK</button>
+      <div class="modal-actions">
+        {% if modal_retry %}
+          <button class="chip ghost" type="button" id="retryModal">Try again</button>
+        {% endif %}
+        <button class="cta" type="button" id="closeModal">OK</button>
+      </div>
     </div>
   </div>
 
@@ -249,8 +255,15 @@
 
     const modal = document.getElementById('statusModal');
     const closeModal = document.getElementById('closeModal');
+    const retryModal = document.getElementById('retryModal');
     if (modal.classList.contains('show')) {
       closeModal.addEventListener('click', () => modal.classList.remove('show'));
+      if (retryModal) {
+        retryModal.addEventListener('click', () => {
+          modal.classList.remove('show');
+          form.requestSubmit();
+        });
+      }
     }
 
     const langSelect = document.getElementById('langSelect');
