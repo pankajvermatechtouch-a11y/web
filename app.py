@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 import re
 import time
+from collections import deque
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
@@ -39,6 +40,12 @@ app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 ADS_TXT = ""  # Paste your AdSense line here later.
 CONTACT_TO = "pv50017@gmail.com"
 DEFAULT_LANG = "en"
+ 
+CACHE_TTL_SECONDS = 300
+POST_CACHE: Dict[str, Dict[str, object]] = {}
+RATE_LIMIT_WINDOW_SECONDS = 10
+RATE_LIMIT_MAX_REQUESTS = 6
+RATE_LIMITS: Dict[str, deque] = {}
 
 LANG_ORDER = [
     "en",
@@ -106,6 +113,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_reel": "This link is not a reel. Please select the Photo tab.",
         "modal_temp_title": "Please try again",
         "modal_temp_body": "Instagram temporarily blocked this request. Please wait a minute and try again.",
+        "modal_rate_title": "Please wait",
+        "modal_rate_body": "Too many requests. Please wait a few seconds and try again.",
         "seo_title": "Fast Instagram Media Downloader for Public Posts",
         "seo_p1": "Use this Instagram downloader to save public videos, reels, and photos directly from post links.",
         "seo_p2": "Paste a link, preview the media, and download each item individually.",
@@ -1414,6 +1423,39 @@ def fetch_post_with_retry(
             raise
 
 
+def get_client_ip() -> str:
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.remote_addr or "unknown"
+
+
+def is_rate_limited(ip: str) -> bool:
+    now = time.time()
+    bucket = RATE_LIMITS.setdefault(ip, deque())
+    while bucket and now - bucket[0] > RATE_LIMIT_WINDOW_SECONDS:
+        bucket.popleft()
+    if len(bucket) >= RATE_LIMIT_MAX_REQUESTS:
+        return True
+    bucket.append(now)
+    return False
+
+
+def get_cached_post(shortcode: str) -> Optional[Dict[str, object]]:
+    entry = POST_CACHE.get(shortcode)
+    if not entry:
+        return None
+    if entry.get("expires", 0) < time.time():
+        POST_CACHE.pop(shortcode, None)
+        return None
+    return entry
+
+
+def set_cached_post(shortcode: str, entry: Dict[str, object]) -> None:
+    entry["expires"] = time.time() + CACHE_TTL_SECONDS
+    POST_CACHE[shortcode] = entry
+
+
 def parse_media_url(raw: str) -> Optional[Tuple[str, str]]:
     value = raw.strip()
     if not value:
@@ -1507,10 +1549,12 @@ def render_index(
     selected_type: str = "video",
     page_slug: str = "",
     items: Optional[List[Dict[str, str]]] = None,
+    media_url: str = "",
     error: Optional[str] = None,
     modal_show: bool = False,
     modal_title: Optional[str] = None,
     modal_message: Optional[str] = None,
+    modal_retry: bool = False,
 ):
     t = build_strings(lang)
     selected_type = normalize_media_type(selected_type)
@@ -1538,10 +1582,12 @@ def render_index(
         long_html=long_html,
         post_url=post_url,
         items=items or [],
+        media_url=media_url,
         error=error,
         modal_show=modal_show,
         modal_title=modal_title,
         modal_message=modal_message,
+        modal_retry=modal_retry,
     )
 
 
@@ -1568,9 +1614,67 @@ def process_download(lang: str, media_type: str):
     media_url = (request.form.get("media_url") or "").strip()
     parsed = parse_media_url(media_url)
     if not parsed:
-        return render_index(lang, selected_type=media_type, page_slug=page_slug, error=t["error_invalid_link"])
+        return render_index(
+            lang,
+            selected_type=media_type,
+            page_slug=page_slug,
+            media_url=media_url,
+            error=t["error_invalid_link"],
+        )
 
     url_kind, shortcode = parsed
+
+    cached = get_cached_post(shortcode)
+    if cached:
+        if media_type == "reels" and not (url_kind == "reel" or cached.get("is_reel")):
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                modal_show=True,
+                modal_title=t["modal_mismatch_title"],
+                modal_message=t["modal_mismatch_reel"],
+            )
+
+        cached_items = (
+            cached.get("photo_items", [])
+            if media_type == "photo"
+            else cached.get("video_items", [])
+        )
+        if not cached_items:
+            mismatch = t["modal_mismatch_photo"] if media_type == "photo" else t["modal_mismatch_video"]
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                modal_show=True,
+                modal_title=t["modal_mismatch_title"],
+                modal_message=mismatch,
+            )
+
+        return render_index(
+            lang,
+            selected_type=media_type,
+            page_slug=page_slug,
+            media_url=media_url,
+            items=cached_items,
+        )
+
+    if is_rate_limited(get_client_ip()):
+        return render_index(
+            lang,
+            selected_type=media_type,
+            page_slug=page_slug,
+            media_url=media_url,
+            modal_show=True,
+            modal_title=t.get("modal_rate_title", "Please wait"),
+            modal_message=t.get(
+                "modal_rate_body",
+                "Too many requests. Please wait a few seconds and try again.",
+            ),
+        )
 
     try:
         loader = make_loader()
@@ -1582,60 +1686,96 @@ def process_download(lang: str, media_type: str):
                 lang,
                 selected_type=media_type,
                 page_slug=page_slug,
+                media_url=media_url,
                 modal_show=True,
                 modal_title=t["modal_private_title"],
                 modal_message=t["modal_private_body"],
             )
 
-        if media_type == "reels" and not (url_kind == "reel" or is_reel(post)):
+        is_reel_flag = is_reel(post)
+        video_items = extract_items(post, "video")
+        photo_items = extract_items(post, "photo")
+        set_cached_post(
+            shortcode,
+            {
+                "video_items": video_items,
+                "photo_items": photo_items,
+                "is_reel": is_reel_flag,
+            },
+        )
+
+        if media_type == "reels" and not (url_kind == "reel" or is_reel_flag):
             return render_index(
                 lang,
                 selected_type=media_type,
                 page_slug=page_slug,
+                media_url=media_url,
                 modal_show=True,
                 modal_title=t["modal_mismatch_title"],
                 modal_message=t["modal_mismatch_reel"],
             )
 
-        items = extract_items(post, media_type)
+        items = photo_items if media_type == "photo" else video_items
         if not items:
             mismatch = t["modal_mismatch_photo"] if media_type == "photo" else t["modal_mismatch_video"]
             return render_index(
                 lang,
                 selected_type=media_type,
                 page_slug=page_slug,
+                media_url=media_url,
                 modal_show=True,
                 modal_title=t["modal_mismatch_title"],
                 modal_message=mismatch,
             )
 
-        return render_index(lang, selected_type=media_type, page_slug=page_slug, items=items)
+        return render_index(
+            lang,
+            selected_type=media_type,
+            page_slug=page_slug,
+            media_url=media_url,
+            items=items,
+        )
 
     except LoginException:
         return render_index(
             lang,
             selected_type=media_type,
             page_slug=page_slug,
+            media_url=media_url,
             modal_show=True,
             modal_title=t["modal_private_title"],
             modal_message=t["modal_private_body"],
         )
     except ConnectionException as exc:
-        return render_index(lang, selected_type=media_type, page_slug=page_slug, error=f"Connection error: {exc}")
+        return render_index(
+            lang,
+            selected_type=media_type,
+            page_slug=page_slug,
+            media_url=media_url,
+            error=f"Connection error: {exc}",
+        )
     except Exception as exc:  # pragma: no cover
         if "Fetching Post metadata failed" in str(exc):
             return render_index(
                 lang,
                 selected_type=media_type,
                 page_slug=page_slug,
+                media_url=media_url,
                 modal_show=True,
                 modal_title=t.get("modal_temp_title", "Please try again"),
                 modal_message=t.get(
                     "modal_temp_body",
                     "Instagram temporarily blocked this request. Please wait a minute and try again.",
                 ),
+                modal_retry=True,
             )
-        return render_index(lang, selected_type=media_type, page_slug=page_slug, error=f"Unexpected error: {exc}")
+        return render_index(
+            lang,
+            selected_type=media_type,
+            page_slug=page_slug,
+            media_url=media_url,
+            error=f"Unexpected error: {exc}",
+        )
 
 
 def media_page(lang: str, media_type: str):
