@@ -1534,8 +1534,9 @@ def render_index(
 def root():
     requested = request.args.get("lang", "").strip()
     target = requested if requested in LANGS else DEFAULT_LANG
-    return redirect(f"/{target}", code=302)
-
+    response = redirect(f"/{target}", code=302)
+    response.headers["X-Robots-Tag"] = "noindex,follow"
+    return response
 
 @app.route("/<lang>")
 @app.route("/<lang>/")
