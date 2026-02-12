@@ -34,18 +34,36 @@ except ModuleNotFoundError as exc:  # pragma: no cover
         "Missing dependency: instaloader. Install with 'pip install -r requirements.txt'."
     ) from exc
 
+try:
+    import pymysql
+except ModuleNotFoundError:  # pragma: no cover
+    pymysql = None
+
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 ADS_TXT = ""  # Paste your AdSense line here later.
 CONTACT_TO = "pv50017@gmail.com"
 DEFAULT_LANG = "en"
- 
 CACHE_TTL_SECONDS = 300
 POST_CACHE: Dict[str, Dict[str, object]] = {}
 RATE_LIMIT_WINDOW_SECONDS = 10
 RATE_LIMIT_MAX_REQUESTS = 6
 RATE_LIMITS: Dict[str, deque] = {}
+STATS_KEY = os.environ.get("STATS_KEY", "5988")
+DB_HOST = os.environ.get("DB_HOST", "")
+DB_PORT = int(os.environ.get("DB_PORT", "3306") or 3306)
+DB_NAME = os.environ.get("DB_NAME", "")
+DB_USER = os.environ.get("DB_USER", "")
+DB_PASS = os.environ.get("DB_PASS", "")
+STATS: Dict[str, int] = {
+    "total_requests": 0,
+    "cache_hits": 0,
+    "rate_limited": 0,
+    "metadata_blocked": 0,
+    "invalid_links": 0,
+    "success": 0,
+}
 
 LANG_ORDER = [
     "en",
@@ -1456,6 +1474,81 @@ def set_cached_post(shortcode: str, entry: Dict[str, object]) -> None:
     POST_CACHE[shortcode] = entry
 
 
+def inc_stat(key: str) -> None:
+    STATS[key] = STATS.get(key, 0) + 1
+    inc_stat_db(key)
+
+
+def db_enabled() -> bool:
+    return bool(DB_HOST and DB_NAME and DB_USER and DB_PASS and pymysql)
+
+
+def get_db_connection():
+    if not db_enabled():
+        return None
+    return pymysql.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASS,
+        database=DB_NAME,
+        port=DB_PORT,
+        connect_timeout=5,
+        charset="utf8mb4",
+        autocommit=True,
+    )
+
+
+def ensure_stats_table(conn) -> None:
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS stats (
+                name VARCHAR(64) PRIMARY KEY,
+                value BIGINT NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """
+        )
+
+
+def inc_stat_db(key: str) -> None:
+    if not db_enabled():
+        return
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return
+        ensure_stats_table(conn)
+        with conn.cursor() as cursor:
+            cursor.execute(
+                """
+                INSERT INTO stats (name, value)
+                VALUES (%s, 1)
+                ON DUPLICATE KEY UPDATE value = value + 1
+                """,
+                (key,),
+            )
+        conn.close()
+    except Exception:
+        pass
+
+
+def load_stats_db() -> Optional[Dict[str, int]]:
+    if not db_enabled():
+        return None
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return None
+        ensure_stats_table(conn)
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT name, value FROM stats")
+            rows = cursor.fetchall()
+        conn.close()
+        return {row[0]: int(row[1]) for row in rows}
+    except Exception:
+        return None
+
+
 def parse_media_url(raw: str) -> Optional[Tuple[str, str]]:
     value = raw.strip()
     if not value:
@@ -1611,9 +1704,11 @@ def process_download(lang: str, media_type: str):
     media_type = normalize_media_type(media_type)
     page_slug = MEDIA_SLUGS[media_type]
 
+    inc_stat("total_requests")
     media_url = (request.form.get("media_url") or "").strip()
     parsed = parse_media_url(media_url)
     if not parsed:
+        inc_stat("invalid_links")
         return render_index(
             lang,
             selected_type=media_type,
@@ -1626,6 +1721,7 @@ def process_download(lang: str, media_type: str):
 
     cached = get_cached_post(shortcode)
     if cached:
+        inc_stat("cache_hits")
         if media_type == "reels" and not (url_kind == "reel" or cached.get("is_reel")):
             return render_index(
                 lang,
@@ -1654,6 +1750,7 @@ def process_download(lang: str, media_type: str):
                 modal_message=mismatch,
             )
 
+        inc_stat("success")
         return render_index(
             lang,
             selected_type=media_type,
@@ -1663,6 +1760,7 @@ def process_download(lang: str, media_type: str):
         )
 
     if is_rate_limited(get_client_ip()):
+        inc_stat("rate_limited")
         return render_index(
             lang,
             selected_type=media_type,
@@ -1728,6 +1826,7 @@ def process_download(lang: str, media_type: str):
                 modal_message=mismatch,
             )
 
+        inc_stat("success")
         return render_index(
             lang,
             selected_type=media_type,
@@ -1756,6 +1855,7 @@ def process_download(lang: str, media_type: str):
         )
     except Exception as exc:  # pragma: no cover
         if "Fetching Post metadata failed" in str(exc):
+            inc_stat("metadata_blocked")
             return render_index(
                 lang,
                 selected_type=media_type,
@@ -1949,6 +2049,32 @@ def sitemap():
 @app.route("/ads.txt")
 def ads_txt():
     return Response(ADS_TXT + "\n", mimetype="text/plain")
+
+
+@app.route("/stats")
+def stats():
+    key = (request.args.get("key") or "").strip()
+    if not key or key != STATS_KEY:
+        abort(404)
+    data = STATS.copy()
+    db_data = load_stats_db()
+    if db_data:
+        data.update(db_data)
+    rows = "".join(
+        f"<tr><th style='text-align:left;padding:6px 10px'>{name}</th>"
+        f"<td style='padding:6px 10px'>{value}</td></tr>"
+        for name, value in data.items()
+    )
+    html = (
+        "<!doctype html><html><head><meta charset='utf-8'>"
+        "<title>Stats</title></head><body style='font-family:Arial,sans-serif'>"
+        "<h1>Stats</h1>"
+        "<table border='1' cellpadding='0' cellspacing='0' style='border-collapse:collapse'>"
+        f"{rows}</table></body></html>"
+    )
+    response = Response(html, mimetype="text/html")
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return response
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
