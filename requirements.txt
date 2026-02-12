@@ -2,3 +2,4 @@ Flask>=2.3
 instaloader>=4.10
 requests>=2.31
 gunicorn>=21.2
+PyMySQL>=1.1
