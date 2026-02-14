@@ -2051,6 +2051,12 @@ def ads_txt():
     return Response(ADS_TXT + "\n", mimetype="text/plain")
 
 
+@app.route("/robots.txt")
+def robots_txt():
+    content = "User-agent: *\nAllow: /\nSitemap: https://fastdlapp.cc/sitemap.xml\n"
+    return Response(content, mimetype="text/plain")
+
+
 @app.route("/stats")
 def stats():
     key = (request.args.get("key") or "").strip()
