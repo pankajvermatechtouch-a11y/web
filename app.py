@@ -218,6 +218,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "ar": {
         "title": "أداة تنزيل وسائط إنستغرام",
+        "home_title": "مُحمّل إنستغرام: حمّل الريلز والفيديوهات والصور بسهولة",
+        "home_description": "يمكنك استخدام أداتنا FastDl App لتنزيل ريلز وفيديوهات وصور إنستغرام بدقة 4K مجانًا وبدون تسجيل.",
         "title_video": "مُحمّل فيديو إنستغرام - Free & Easy",
         "title_reels": "مُحمّل ريلز إنستغرام - Free & Easy",
         "title_photo": "مُحمّل صور إنستغرام - Free & Easy",
@@ -255,6 +257,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "bn": {
         "title": "ইনস্টাগ্রাম মিডিয়া ডাউনলোডার",
+        "home_title": "Instagram Downloader: রিলস, ভিডিও ও ছবি সহজে ডাউনলোড করুন",
+        "home_description": "আমাদের FastDl App টুল দিয়ে আপনি Instagram রিলস, ভিডিও ও ছবি 4K-তে ফ্রি এবং সাইন-আপ ছাড়াই ডাউনলোড করতে পারবেন।",
         "title_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার - Free & Easy",
         "title_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার - Free & Easy",
         "title_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার - Free & Easy",
@@ -292,6 +296,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "zh": {
         "title": "Instagram 媒体下载器",
+        "home_title": "Instagram Downloader：轻松下载 Reels、视频和照片",
+        "home_description": "使用我们的 FastDl App，可免费、无需注册下载 Instagram Reels、视频和照片，最高 4K。",
         "title_video": "Instagram 视频下载器 - Free & Easy",
         "title_reels": "Instagram Reels 下载器 - Free & Easy",
         "title_photo": "Instagram 照片下载器 - Free & Easy",
@@ -329,6 +335,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "fr": {
         "title": "Téléchargeur de médias Instagram",
+        "home_title": "Instagram Downloader : téléchargez Reels, vidéos et photos facilement",
+        "home_description": "Avec notre outil FastDl App, vous pouvez télécharger des Reels, vidéos et photos Instagram en 4K gratuitement et sans inscription.",
         "title_video": "Téléchargeur vidéo Instagram - Free & Easy",
         "title_reels": "Téléchargeur Reels Instagram - Free & Easy",
         "title_photo": "Téléchargeur photo Instagram - Free & Easy",
@@ -366,6 +374,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "de": {
         "title": "Instagram Medien-Downloader",
+        "home_title": "Instagram Downloader: Reels, Videos & Fotos einfach herunterladen",
+        "home_description": "Mit unserem Tool FastDl App kannst du Instagram Reels, Videos und Fotos in 4K kostenlos und ohne Anmeldung herunterladen.",
         "title_video": "Instagram Video-Downloader - Free & Easy",
         "title_reels": "Instagram Reels Downloader - Free & Easy",
         "title_photo": "Instagram Foto-Downloader - Free & Easy",
@@ -403,6 +413,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "hi": {
         "title": "इंस्टाग्राम मीडिया डाउनलोडर",
+        "home_title": "Instagram Downloader: रील्स, वीडियो और फोटो आसानी से डाउनलोड करें",
+        "home_description": "हमारे टूल FastDl App से आप Instagram रील्स, वीडियो और फोटो 4K में मुफ्त और बिना साइन-अप डाउनलोड कर सकते हैं।",
         "title_video": "Instagram वीडियो डाउनलोडर - Free & Easy",
         "title_reels": "Instagram रील्स डाउनलोडर - Free & Easy",
         "title_photo": "Instagram फोटो डाउनलोडर - Free & Easy",
@@ -626,6 +638,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "pt": {
         "title": "Downloader de mídia do Instagram",
+        "home_title": "Instagram Downloader: baixe Reels, vídeos e fotos facilmente",
+        "home_description": "Com nossa ferramenta FastDl App, você pode baixar Reels, vídeos e fotos do Instagram em 4K grátis e sem cadastro.",
         "title_video": "Downloader de vídeo do Instagram - Free & Easy",
         "title_reels": "Downloader de Reels do Instagram - Free & Easy",
         "title_photo": "Downloader de fotos do Instagram - Free & Easy",
@@ -663,6 +677,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "ru": {
         "title": "Загрузчик медиа Instagram",
+        "home_title": "Instagram Downloader: скачайте Reels, видео и фото легко",
+        "home_description": "С помощью нашего инструмента FastDl App вы можете скачать Reels, видео и фото из Instagram в 4K бесплатно и без регистрации.",
         "title_video": "Загрузчик видео Instagram - Free & Easy",
         "title_reels": "Загрузчик Reels Instagram - Free & Easy",
         "title_photo": "Загрузчик фото Instagram - Free & Easy",
@@ -700,6 +716,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "es": {
         "title": "Descargador de medios de Instagram",
+        "home_title": "Instagram Downloader: descarga Reels, videos y fotos fácilmente",
+        "home_description": "Con nuestra herramienta FastDl App puedes descargar Reels, videos y fotos de Instagram en 4K gratis y sin registro.",
         "title_video": "Descargador de videos de Instagram - Free & Easy",
         "title_reels": "Descargador de Reels de Instagram - Free & Easy",
         "title_photo": "Descargador de fotos de Instagram - Free & Easy",
@@ -1620,11 +1638,23 @@ def page_meta(
     media_type: str,
     *,
     is_home: bool = False,
+    lang: str = DEFAULT_LANG,
 ) -> Tuple[str, str, str, List[str]]:
     key = normalize_media_type(media_type)
     if is_home:
-        page_title = t.get("home_title", t.get(f"title_{key}", t["title"]))
-        page_description = t.get("home_description", t.get(f"meta_description_{key}", t["meta_description"]))
+        if lang != DEFAULT_LANG:
+            lang_strings = STRINGS.get(lang, {})
+            if "home_title" in lang_strings:
+                page_title = lang_strings["home_title"]
+            else:
+                page_title = t.get(f"title_{key}", t["title"])
+            if "home_description" in lang_strings:
+                page_description = lang_strings["home_description"]
+            else:
+                page_description = t.get(f"meta_description_{key}", t["meta_description"])
+        else:
+            page_title = t.get("home_title", t.get(f"title_{key}", t["title"]))
+            page_description = t.get("home_description", t.get(f"meta_description_{key}", t["meta_description"]))
     else:
         page_title = t.get(f"title_{key}", t["title"])
         page_description = t.get(f"meta_description_{key}", t["meta_description"])
@@ -1655,6 +1685,7 @@ def render_index(
         t,
         selected_type,
         is_home=(page_slug == ""),
+        lang=lang,
     )
     post_url = url_for(MEDIA_ENDPOINTS[selected_type], lang=lang)
     long_html = load_long_html(lang, selected_type)
