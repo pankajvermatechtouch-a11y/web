@@ -238,7 +238,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "bn": {
         "title": "ইনস্টাগ্রাম মিডিয়া ডাউনলোডার",
-        "home_title": "Instagram Downloader: রিলস, ভিডিও ও ছবি সহজে ডাউনলোড করুন",
+        "home_title": "ইনস্টাগ্রাম ডাউনলোডার: রিলস, ভিডিও ও ছবি সহজে ডাউনলোড করুন",
         "home_description": "আমাদের FastDl App টুল দিয়ে আপনি Instagram রিলস, ভিডিও ও ছবি 4K-তে ফ্রি এবং সাইন-আপ ছাড়াই ডাউনলোড করতে পারবেন।",
         "title_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার - Free & Easy",
         "title_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার - Free & Easy",
@@ -277,7 +277,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "zh": {
         "title": "Instagram 媒体下载器",
-        "home_title": "Instagram Downloader：轻松下载 Reels、视频和照片",
+        "home_title": "Instagram 下载器：轻松下载 Reels、视频和照片",
         "home_description": "使用我们的 FastDl App，可免费、无需注册下载 Instagram Reels、视频和照片，最高 4K。",
         "title_video": "Instagram 视频下载器 - Free & Easy",
         "title_reels": "Instagram Reels 下载器 - Free & Easy",
@@ -316,7 +316,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "fr": {
         "title": "Téléchargeur de médias Instagram",
-        "home_title": "Instagram Downloader : téléchargez Reels, vidéos et photos facilement",
+        "home_title": "Téléchargeur Instagram: téléchargez Reels, vidéos et photos facilement",
         "home_description": "Avec notre outil FastDl App, vous pouvez télécharger des Reels, vidéos et photos Instagram en 4K gratuitement et sans inscription.",
         "title_video": "Téléchargeur vidéo Instagram - Free & Easy",
         "title_reels": "Téléchargeur Reels Instagram - Free & Easy",
@@ -394,7 +394,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "hi": {
         "title": "इंस्टाग्राम मीडिया डाउनलोडर",
-        "home_title": "Instagram Downloader: रील्स, वीडियो और फोटो आसानी से डाउनलोड करें",
+        "home_title": "इंस्टाग्राम डाउनलोडर: रील्स, वीडियो और फोटो आसानी से डाउनलोड करें",
         "home_description": "हमारे टूल FastDl App से आप Instagram रील्स, वीडियो और फोटो 4K में मुफ्त और बिना साइन-अप डाउनलोड कर सकते हैं।",
         "title_video": "Instagram वीडियो डाउनलोडर - Free & Easy",
         "title_reels": "Instagram रील्स डाउनलोडर - Free & Easy",
