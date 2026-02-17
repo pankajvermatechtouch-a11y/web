@@ -12,6 +12,7 @@ import time
 from collections import deque
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 import requests
@@ -237,7 +238,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "bn": {
         "title": "ইনস্টাগ্রাম মিডিয়া ডাউনলোডার",
-        "home_title": "ইনস্টাগ্রাম ডাউনলোডার: রিলস, ভিডিও ও ছবি সহজে ডাউনলোড করুন",
+        "home_title": "Instagram Downloader: রিলস, ভিডিও ও ছবি সহজে ডাউনলোড করুন",
         "home_description": "আমাদের FastDl App টুল দিয়ে আপনি Instagram রিলস, ভিডিও ও ছবি 4K-তে ফ্রি এবং সাইন-আপ ছাড়াই ডাউনলোড করতে পারবেন।",
         "title_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার - Free & Easy",
         "title_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার - Free & Easy",
@@ -315,7 +316,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "fr": {
         "title": "Téléchargeur de médias Instagram",
-        "home_title": "Téléchargeur Instagram: téléchargez Reels, vidéos et photos facilement",
+        "home_title": "Instagram Downloader : téléchargez Reels, vidéos et photos facilement",
         "home_description": "Avec notre outil FastDl App, vous pouvez télécharger des Reels, vidéos et photos Instagram en 4K gratuitement et sans inscription.",
         "title_video": "Téléchargeur vidéo Instagram - Free & Easy",
         "title_reels": "Téléchargeur Reels Instagram - Free & Easy",
@@ -393,7 +394,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
     },
     "hi": {
         "title": "इंस्टाग्राम मीडिया डाउनलोडर",
-        "home_title": "इंस्टाग्राम डाउनलोडर: रील्स, वीडियो और फोटो आसानी से डाउनलोड करें",
+        "home_title": "Instagram Downloader: रील्स, वीडियो और फोटो आसानी से डाउनलोड करें",
         "home_description": "हमारे टूल FastDl App से आप Instagram रील्स, वीडियो और फोटो 4K में मुफ्त और बिना साइन-अप डाउनलोड कर सकते हैं।",
         "title_video": "Instagram वीडियो डाउनलोडर - Free & Easy",
         "title_reels": "Instagram रील्स डाउनलोडर - Free & Easy",
@@ -1567,25 +1568,33 @@ def privacy(lang: str):
 @app.route("/sitemap.xml")
 def sitemap():
     base = base_url()
-    urls: List[str] = []
+    urls: List[Tuple[str, str]] = []
 
     for lang in LANG_ORDER:
-        urls.append(f"{base}/{lang}")
-        urls.append(f"{base}/{lang}/{MEDIA_SLUGS['video']}")
-        urls.append(f"{base}/{lang}/{MEDIA_SLUGS['reels']}")
-        urls.append(f"{base}/{lang}/{MEDIA_SLUGS['photo']}")
+        urls.append((f"{base}/{lang}", "1.0" if lang == DEFAULT_LANG else "0.8"))
+        urls.append((f"{base}/{lang}/{MEDIA_SLUGS['video']}", "0.8"))
+        urls.append((f"{base}/{lang}/{MEDIA_SLUGS['reels']}", "0.8"))
+        urls.append((f"{base}/{lang}/{MEDIA_SLUGS['photo']}", "0.8"))
         
-    urls.append(f"{base}/{DEFAULT_LANG}/about")
-    urls.append(f"{base}/{DEFAULT_LANG}/contact")
-    urls.append(f"{base}/{DEFAULT_LANG}/privacy")
+    urls.append((f"{base}/{DEFAULT_LANG}/about", "0.3"))
+    urls.append((f"{base}/{DEFAULT_LANG}/contact", "0.3"))
+    urls.append((f"{base}/{DEFAULT_LANG}/privacy", "0.3"))
+
+    lastmod = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+    lastmod = f"{lastmod[:-2]}:{lastmod[-2:]}"
 
     xml_lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" '
+        'xsi:schemaLocation="https://www.sitemaps.org/schemas/sitemap/0.9 '
+        'https://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">',
     ]
-    for url in urls:
+    for url, priority in urls:
         xml_lines.append("  <url>")
         xml_lines.append(f"    <loc>{url}</loc>")
+        xml_lines.append(f"    <lastmod>{lastmod}</lastmod>")
+        xml_lines.append(f"    <priority>{priority}</priority>")
         xml_lines.append("  </url>")
     xml_lines.append("</urlset>")
 
