@@ -243,6 +243,20 @@ body {
   border-radius: 50%;
 }
 
+.icon-dp {
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  position: relative;
+}
+
+.icon-dp::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
 .content {
   display: flex;
   justify-content: center;
