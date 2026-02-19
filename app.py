@@ -1434,6 +1434,21 @@ def process_download(lang: str, media_type: str):
                 modal_retry=True,
             )
         except ConnectionException as exc:
+            if "429" in str(exc) or "Too Many Requests" in str(exc):
+                inc_stat("metadata_blocked")
+                return render_index(
+                    lang,
+                    selected_type=media_type,
+                    page_slug=page_slug,
+                    media_url=media_url,
+                    modal_show=True,
+                    modal_title=t.get("modal_temp_title", "Please try again"),
+                    modal_message=t.get(
+                        "modal_temp_body",
+                        "Instagram temporarily blocked this request. Please wait a minute and try again.",
+                    ),
+                    modal_retry=True,
+                )
             return render_index(
                 lang,
                 selected_type=media_type,
@@ -1604,6 +1619,21 @@ def process_download(lang: str, media_type: str):
             modal_retry=True,
         )
     except ConnectionException as exc:
+        if "429" in str(exc) or "Too Many Requests" in str(exc):
+            inc_stat("metadata_blocked")
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                modal_show=True,
+                modal_title=t.get("modal_temp_title", "Please try again"),
+                modal_message=t.get(
+                    "modal_temp_body",
+                    "Instagram temporarily blocked this request. Please wait a minute and try again.",
+                ),
+                modal_retry=True,
+            )
         return render_index(
             lang,
             selected_type=media_type,
