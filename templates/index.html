@@ -71,10 +71,6 @@
         <span class="tab-icon icon-photo" aria-hidden="true"></span>
         {{ t.tab_photo }}
       </button>
-      <button class="tab{% if selected_type == 'dp' %} active{% endif %}" type="button" data-type="dp" data-label="{{ t.headline_dp }}">
-        <span class="tab-icon icon-dp" aria-hidden="true"></span>
-        {{ t.tab_dp }}
-      </button>
     </nav>
 
     <main class="content">
@@ -83,7 +79,6 @@
         <h1 id="headline">
           {% if selected_type == 'reels' %}{{ t.headline_reels }}
           {% elif selected_type == 'photo' %}{{ t.headline_photo }}
-          {% elif selected_type == 'dp' %}{{ t.headline_dp }}
           {% else %}{{ t.headline_video }}
           {% endif %}
         </h1>
@@ -103,7 +98,7 @@
                 type="text"
                 name="media_url"
                 id="targetInput"
-                placeholder="{% if selected_type == 'dp' %}{{ t.placeholder_dp }}{% else %}{{ t.placeholder }}{% endif %}"
+                placeholder="{{ t.placeholder }}"
                 autocomplete="off"
                 value="{{ media_url }}"
                 required
@@ -219,8 +214,7 @@
     const slugMap = {
       video: 'video-download',
       reels: 'reels-download',
-      photo: 'photo-download',
-      dp: 'dp-download'
+      photo: 'photo-download'
     };
 
     tabs.forEach(tab => {
