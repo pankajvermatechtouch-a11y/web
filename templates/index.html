@@ -28,8 +28,6 @@
   <link rel="stylesheet" href="/static/style.css">
   <meta name="google-site-verification" content="skYVDRL576GbZtagegU5Hy6uNPHslbcAf6fosJk-vVo" />
   <meta name="ahrefs-site-verification" content="5ab57043805a50cbb905d990ffc807bfbb0470536957b36f6f4ddb7472abfb62">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2898105709870168"
-     crossorigin="anonymous"></script>
 </head>
 <body data-lang="{{ lang }}" data-page-slug="{{ page_slug }}">
   <div class="page">
@@ -71,6 +69,10 @@
         <span class="tab-icon icon-photo" aria-hidden="true"></span>
         {{ t.tab_photo }}
       </button>
+      <button class="tab{% if selected_type == 'dp' %} active{% endif %}" type="button" data-type="dp" data-label="{{ t.headline_dp }}">
+        <span class="tab-icon icon-dp" aria-hidden="true"></span>
+        {{ t.tab_dp }}
+      </button>
     </nav>
 
     <main class="content">
@@ -79,6 +81,7 @@
         <h1 id="headline">
           {% if selected_type == 'reels' %}{{ t.headline_reels }}
           {% elif selected_type == 'photo' %}{{ t.headline_photo }}
+          {% elif selected_type == 'dp' %}{{ t.headline_dp }}
           {% else %}{{ t.headline_video }}
           {% endif %}
         </h1>
@@ -98,7 +101,7 @@
                 type="text"
                 name="media_url"
                 id="targetInput"
-                placeholder="{{ t.placeholder }}"
+                placeholder="{% if selected_type == 'dp' %}{{ t.placeholder_dp }}{% else %}{{ t.placeholder }}{% endif %}"
                 autocomplete="off"
                 value="{{ media_url }}"
                 required
@@ -214,7 +217,8 @@
     const slugMap = {
       video: 'video-download',
       reels: 'reels-download',
-      photo: 'photo-download'
+      photo: 'photo-download',
+      dp: 'dp-download'
     };
 
     tabs.forEach(tab => {
