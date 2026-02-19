@@ -29,7 +29,7 @@ from flask import (
 
 try:
     import instaloader
-    from instaloader.exceptions import ConnectionException, LoginException
+    from instaloader.exceptions import ConnectionException, LoginException, TooManyRequestsException
 except ModuleNotFoundError as exc:  # pragma: no cover
     raise SystemExit(
         "Missing dependency: instaloader. Install with 'pip install -r requirements.txt'."
@@ -1030,7 +1030,11 @@ def make_loader() -> "instaloader.Instaloader":
         compress_json=False,
         quiet=True,
     )
-    loader.context.max_connection_attempts = 3
+    loader.context.max_connection_attempts = 1
+    if hasattr(loader.context, "sleep"):
+        loader.context.sleep = lambda *_args, **_kwargs: None
+    if hasattr(loader.context, "do_sleep"):
+        loader.context.do_sleep = lambda *_args, **_kwargs: None
     return loader
 
 
@@ -1414,6 +1418,21 @@ def process_download(lang: str, media_type: str):
                 modal_title=t["modal_private_title"],
                 modal_message=t["modal_private_body"],
             )
+        except TooManyRequestsException:
+            inc_stat("metadata_blocked")
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                modal_show=True,
+                modal_title=t.get("modal_temp_title", "Please try again"),
+                modal_message=t.get(
+                    "modal_temp_body",
+                    "Instagram temporarily blocked this request. Please wait a minute and try again.",
+                ),
+                modal_retry=True,
+            )
         except ConnectionException as exc:
             return render_index(
                 lang,
@@ -1568,6 +1587,21 @@ def process_download(lang: str, media_type: str):
             modal_show=True,
             modal_title=t["modal_private_title"],
             modal_message=t["modal_private_body"],
+        )
+    except TooManyRequestsException:
+        inc_stat("metadata_blocked")
+        return render_index(
+            lang,
+            selected_type=media_type,
+            page_slug=page_slug,
+            media_url=media_url,
+            modal_show=True,
+            modal_title=t.get("modal_temp_title", "Please try again"),
+            modal_message=t.get(
+                "modal_temp_body",
+                "Instagram temporarily blocked this request. Please wait a minute and try again.",
+            ),
+            modal_retry=True,
         )
     except ConnectionException as exc:
         return render_index(
