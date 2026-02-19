@@ -100,10 +100,12 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Instagram Video Downloader - Free & Easy",
         "title_reels": "Instagram Reels Downloader - Free & Easy",
         "title_photo": "Instagram Photos Downloader - Free & Easy",
+        "title_dp": "تنزيل الصورة الشخصية لإنستغرام - مجاني وسهل",
         "meta_description": "Download Instagram videos, reels, and photos from public posts. Paste a link and get previews with direct downloads.",
         "meta_description_video": "Instagram video downloader that lets you download videos in 4k free and without any signup.",
         "meta_description_reels": "Instagram reels downloader that lets you download reels in 4k free and without any signup.",
         "meta_description_photo": "Instagram photo downloader that lets you download photos in 4k free and without any signup.",
+        "meta_description_dp": "Instagram DP downloader that lets you download profile pictures in 4k free and without any signup.",
         "meta_keywords": "instagram downloader, instagram video downloader, instagram reels downloader, instagram photo downloader, download instagram media",
         "brand": "FastDl App",
         "home": "Home",
@@ -112,18 +114,22 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "tab_video": "Video",
         "tab_reels": "Reels",
         "tab_photo": "Photo",
+        "tab_dp": "DP",
         "kicker": "Download all Instagram stuff here",
         "headline_video": "Instagram Video Downloader",
         "headline_reels": "Instagram Reels Downloader",
         "headline_photo": "Instagram Photo Downloader",
+        "headline_dp": "Instagram DP Downloader",
         "sub": "Paste a public post or reel link. Private accounts will show a privacy alert.",
         "placeholder": "Paste Instagram post or reel link",
+        "placeholder_dp": "Paste Instagram profile link",
         "paste": "Paste",
         "clear": "Clear",
         "search": "Search",
         "results": "Results",
         "download": "Download",
         "error_invalid_link": "Please paste a valid Instagram post or reel link.",
+        "error_invalid_profile": "Please paste a valid Instagram profile link.",
         "modal_private_title": "Private Account",
         "modal_private_body": "This Instagram account is private. Media cannot be downloaded.",
         "modal_mismatch_title": "Wrong Media Type",
@@ -204,22 +210,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "مُحمّل فيديو إنستغرام - Free & Easy",
         "title_reels": "مُحمّل ريلز إنستغرام - Free & Easy",
         "title_photo": "مُحمّل صور إنستغرام - Free & Easy",
+        "title_dp": "تحميل صورة الملف الشخصي على إنستغرام - مجاناً وبسهولة",
         "meta_description": "حمّل فيديوهات وصور وريـلز إنستغرام من المنشورات العامة. الصق الرابط وشاهد المعاينة.",
         "meta_description_video": "مُحمّل فيديو إنستغرام. الصق الرابط، شاهد المعاينة واحفظ بالجودة الأصلية. Instagram video downloader.",
         "meta_description_reels": "مُحمّل ريلز إنستغرام. الصق الرابط وحمّل فورًا. Instagram reels downloader.",
         "meta_description_photo": "مُحمّل صور إنستغرام. الصق الرابط، شاهد المعاينة واحفظ بجودة عالية. Instagram photo downloader.",
+        "meta_description_dp": "مُحمّل الصورة الشخصية لإنستغرام. الصق رابط الملف الشخصي لتنزيل الصورة.",
         "meta_keywords": "تحميل انستغرام, تنزيل ريلز, تحميل فيديو انستغram, تنزيل صور انستغram",
         "status": "المنشورات العامة فقط",
         "language_label": "اللغة",
         "tab_video": "فيديو",
         "tab_reels": "ريلز",
         "tab_photo": "صور",
+        "tab_dp": "الصورة الشخصية",
         "kicker": "حمّل كل محتوى إنستغرام هنا",
         "headline_video": "أداة تنزيل فيديو إنستغرام",
         "headline_reels": "أداة تنزيل ريلز إنستغرام",
         "headline_photo": "أداة تنزيل صور إنستغرام",
+        "headline_dp": "تحميل صورة الملف الشخصي على إنستغرام",
         "sub": "الصق رابط منشور عام أو ريلز. الحسابات الخاصة ستعرض تنبيهًا.",
         "placeholder": "الصق رابط منشور أو ريلز إنستغram",
+        "placeholder_dp": "الصق رابط الملف الشخصي في إنستغرام",
         "paste": "لصق",
         "clear": "مسح",
         "search": "بحث",
@@ -231,6 +242,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "هذا الرابط لصورة. اختر تبويب الصور.",
         "modal_mismatch_photo": "هذا الرابط لفيديو. اختر الفيديو أو الريلز.",
         "modal_mismatch_reel": "هذا الرابط ليس ريلز. اختر الفيديو.",
+        "error_invalid_profile": "يرجى لصق رابط ملف شخصي صالح على إنستغرام.",
         "seo_title": "أداة سريعة لتنزيل وسائط إنستغرام من المنشورات العامة",
         "footer_contact": "اتصل بنا",
         "footer_about": "من نحن",
@@ -243,22 +255,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার - Free & Easy",
         "title_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার - Free & Easy",
         "title_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার - Free & Easy",
+        "title_dp": "Instagram DP ডাউনলোড – ফ্রি এবং সহজ",
         "meta_description": "পাবলিক পোস্ট থেকে ইনস্টাগ্রাম ভিডিও, রিল এবং ছবি ডাউনলোড করুন। লিংক পেস্ট করে প্রিভিউ দেখুন।",
         "meta_description_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার। লিংক পেস্ট করুন, প্রিভিউ দেখুন এবং অরিজিনাল কোয়ালিটিতে সেভ করুন। Instagram video downloader.",
         "meta_description_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার। লিংক পেস্ট করে সাথে সাথে ডাউনলোড করুন। Instagram reels downloader.",
         "meta_description_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার। লিংক পেস্ট করে প্রিভিউ দেখুন এবং উচ্চমানের ছবি সেভ করুন। Instagram photo downloader.",
+        "meta_description_dp": "ইনস্টাগ্রাম প্রোফাইল ছবি ডাউনলোডার। প্রোফাইল লিংক পেস্ট করে ছবি ডাউনলোড করুন।",
         "meta_keywords": "instagram downloader, ইনস্টাগ্রাম ডাউনলোডার, রিল ডাউনলোড, ভিডিও ডাউনলোড",
         "status": "শুধু পাবলিক পোস্ট",
         "language_label": "ভাষা",
         "tab_video": "ভিডিও",
         "tab_reels": "রিলস",
         "tab_photo": "ফটো",
+        "tab_dp": "ডিপি",
         "kicker": "সব ইনস্টাগ্রাম কনটেন্ট এখানে ডাউনলোড করুন",
         "headline_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার",
         "headline_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার",
         "headline_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার",
+        "headline_dp": "Instagram ডিপি ডাউনলোড",
         "sub": "পাবলিক পোস্ট বা রিল লিংক পেস্ট করুন। প্রাইভেট অ্যাকাউন্টে সতর্কতা দেখাবে।",
         "placeholder": "ইনস্টাগ্রাম পোস্ট বা রিল লিংক পেস্ট করুন",
+        "placeholder_dp": "ইনস্টাগ্রাম প্রোফাইল লিংক পেস্ট করুন",
         "paste": "পেস্ট",
         "clear": "মুছুন",
         "search": "সার্চ",
@@ -270,6 +287,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "এই লিংকটি ছবি। ফটো ট্যাব নির্বাচন করুন।",
         "modal_mismatch_photo": "এই লিংকটি ভিডিও। ভিডিও বা রিলস ট্যাব নির্বাচন করুন।",
         "modal_mismatch_reel": "এই লিংকটি রিল নয়। ভিডিও নির্বাচন করুন।",
+        "error_invalid_profile": "দয়া করে একটি সঠিক ইনস্টাগ্রাম প্রোফাইল লিংক পেস্ট করুন।",
         "seo_title": "পাবলিক পোস্টের জন্য দ্রুত ইনস্টাগ্রাম ডাউনলোডার",
         "footer_contact": "যোগাযোগ",
         "footer_about": "আমাদের সম্পর্কে",
@@ -282,22 +300,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Instagram 视频下载器 - Free & Easy",
         "title_reels": "Instagram Reels 下载器 - Free & Easy",
         "title_photo": "Instagram 照片下载器 - Free & Easy",
+        "title_dp": "Instagram 头像下载 – 免费且简单",
         "meta_description": "从公开帖子下载 Instagram 视频、Reels 和照片。粘贴链接即可预览并下载。",
         "meta_description_video": "Instagram 视频下载器。粘贴链接、预览并保存原画质。 Instagram video downloader.",
         "meta_description_reels": "Instagram Reels 下载器。粘贴链接即可立即下载。 Instagram reels downloader.",
         "meta_description_photo": "Instagram 照片下载器。粘贴链接、预览并保存高质量图片。 Instagram photo downloader.",
+        "meta_description_dp": "Instagram 头像下载器。粘贴个人主页链接即可下载头像。",
         "meta_keywords": "instagram 下载, reels 下载, instagram 视频下载, instagram 图片下载",
         "status": "仅限公开帖子",
         "language_label": "语言",
         "tab_video": "视频",
         "tab_reels": "Reels",
         "tab_photo": "照片",
+        "tab_dp": "头像",
         "kicker": "在这里下载所有 Instagram 内容",
         "headline_video": "Instagram 视频下载器",
         "headline_reels": "Instagram Reels 下载器",
         "headline_photo": "Instagram 照片下载器",
+        "headline_dp": "Instagram 头像下载",
         "sub": "粘贴公开帖子或 Reels 链接。私密账号会显示提示。",
         "placeholder": "粘贴 Instagram 帖子或 Reels 链接",
+        "placeholder_dp": "粘贴 Instagram 个人主页链接",
         "paste": "粘贴",
         "clear": "清除",
         "search": "搜索",
@@ -309,6 +332,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "该链接是图片，请选择照片标签。",
         "modal_mismatch_photo": "该链接是视频，请选择视频或 Reels 标签。",
         "modal_mismatch_reel": "该链接不是 Reels，请选择视频。",
+        "error_invalid_profile": "请粘贴有效的 Instagram 个人主页链接。",
         "seo_title": "快速 Instagram 公开帖下载器",
         "footer_contact": "联系我们",
         "footer_about": "关于我们",
@@ -321,22 +345,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Téléchargeur vidéo Instagram - Free & Easy",
         "title_reels": "Téléchargeur Reels Instagram - Free & Easy",
         "title_photo": "Téléchargeur photo Instagram - Free & Easy",
+        "title_dp": "Téléchargement de photo de profil Instagram – Gratuit et facile",
         "meta_description": "Téléchargez vidéos, reels et photos Instagram depuis des posts publics. Collez le lien pour prévisualiser.",
         "meta_description_video": "Téléchargeur vidéo Instagram. Collez le lien, prévisualisez et enregistrez en qualité d'origine. Instagram video downloader.",
         "meta_description_reels": "Téléchargeur Reels Instagram. Collez le lien et téléchargez instantanément. Instagram reels downloader.",
         "meta_description_photo": "Téléchargeur photo Instagram. Collez le lien, prévisualisez et enregistrez en haute qualité. Instagram photo downloader.",
+        "meta_description_dp": "Téléchargeur de photo de profil Instagram. Collez le lien du profil pour télécharger la photo.",
         "meta_keywords": "instagram downloader, telecharger instagram, reels instagram, video instagram",
         "status": "Publications publiques uniquement",
         "language_label": "Langue",
         "tab_video": "Vidéo",
         "tab_reels": "Reels",
         "tab_photo": "Photo",
+        "tab_dp": "Photo de profil",
         "kicker": "Téléchargez tout le contenu Instagram ici",
         "headline_video": "Téléchargeur vidéo Instagram",
         "headline_reels": "Téléchargeur Reels Instagram",
         "headline_photo": "Téléchargeur photo Instagram",
+        "headline_dp": "Téléchargement de la photo de profil Instagram",
         "sub": "Collez un lien de post ou reel public. Les comptes privés afficheront une alerte.",
         "placeholder": "Collez un lien de post ou reel Instagram",
+        "placeholder_dp": "Collez le lien du profil Instagram",
         "paste": "Coller",
         "clear": "Effacer",
         "search": "Rechercher",
@@ -348,6 +377,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "Ce lien est une image. Sélectionnez l’onglet Photo.",
         "modal_mismatch_photo": "Ce lien est une vidéo. Sélectionnez Vidéo ou Reels.",
         "modal_mismatch_reel": "Ce lien n’est pas un reel. Sélectionnez Vidéo.",
+        "error_invalid_profile": "Veuillez coller un lien de profil Instagram valide.",
         "seo_title": "Téléchargeur Instagram rapide pour posts publics",
         "footer_contact": "Contact",
         "footer_about": "À propos",
@@ -360,22 +390,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Instagram Video-Downloader - Free & Easy",
         "title_reels": "Instagram Reels Downloader - Free & Easy",
         "title_photo": "Instagram Foto-Downloader - Free & Easy",
+        "title_dp": "Instagram profielfoto downloaden – Gratis en eenvoudig",
         "meta_description": "Lade Instagram Videos, Reels und Fotos aus öffentlichen Posts. Link einfügen und Vorschau sehen.",
         "meta_description_video": "Instagram Video-Downloader. Link einfügen, Vorschau ansehen und in Originalqualität speichern. Instagram video downloader.",
         "meta_description_reels": "Instagram Reels Downloader. Link einfügen und sofort herunterladen. Instagram reels downloader.",
         "meta_description_photo": "Instagram Foto-Downloader. Link einfügen, Vorschau ansehen und in hoher Qualität speichern. Instagram photo downloader.",
+        "meta_description_dp": "Instagram Profilbild-Downloader. Profil-Link einfügen, um das Profilbild herunterzuladen.",
         "meta_keywords": "instagram downloader, instagram video downloader, reels downloader, instagram foto",
         "status": "Nur öffentliche Beiträge",
         "language_label": "Sprache",
         "tab_video": "Video",
         "tab_reels": "Reels",
         "tab_photo": "Foto",
+        "tab_dp": "Profilbild",
         "kicker": "Alle Instagram-Inhalte hier herunterladen",
         "headline_video": "Instagram Video Downloader",
         "headline_reels": "Instagram Reels Downloader",
         "headline_photo": "Instagram Foto Downloader",
+        "headline_dp": "Instagram Profilbild herunterladen",
         "sub": "Füge einen öffentlichen Post- oder Reel-Link ein. Private Konten zeigen eine Warnung.",
         "placeholder": "Instagram Post- oder Reel-Link einfügen",
+        "placeholder_dp": "Instagram-Profil-Link einfügen",
         "paste": "Einfügen",
         "clear": "Löschen",
         "search": "Suchen",
@@ -387,6 +422,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "Dieser Link ist ein Bild. Bitte Foto-Tab wählen.",
         "modal_mismatch_photo": "Dieser Link ist ein Video. Bitte Video oder Reels wählen.",
         "modal_mismatch_reel": "Dieser Link ist kein Reel. Bitte Video wählen.",
+        "error_invalid_profile": "Bitte einen gültigen Instagram-Profil-Link einfügen.",
         "seo_title": "Schneller Instagram Downloader für öffentliche Posts",
         "footer_contact": "Kontakt",
         "footer_about": "Über uns",
@@ -399,22 +435,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Instagram वीडियो डाउनलोडर - Free & Easy",
         "title_reels": "Instagram रील्स डाउनलोडर - Free & Easy",
         "title_photo": "Instagram फोटो डाउनलोडर - Free & Easy",
+        "title_dp": "इंस्टाग्राम डीपी डाउनलोड – फ्री और आसान",
         "meta_description": "पब्लिक पोस्ट से Instagram वीडियो, रील और फोटो डाउनलोड करें। लिंक पेस्ट करें और प्रिव्यू देखें।",
         "meta_description_video": "Instagram वीडियो डाउनलोडर। लिंक पेस्ट करें, प्रिव्यू देखें और ओरिजिनल क्वालिटी में सेव करें। Instagram video downloader.",
         "meta_description_reels": "Instagram रील्स डाउनलोडर। लिंक पेस्ट करें और तुरंत डाउनलोड करें। Instagram reels downloader.",
         "meta_description_photo": "Instagram फोटो डाउनलोडर। लिंक पेस्ट करें, प्रिव्यू देखें और हाई क्वालिटी में सेव करें। Instagram photo downloader.",
+        "meta_description_dp": "Instagram प्रोफाइल फोटो डाउनलोडर। प्रोफाइल लिंक पेस्ट करके फोटो डाउनलोड करें।",
         "meta_keywords": "instagram downloader, instagram video downloader, reels downloader, फोटो डाउनलोड",
         "status": "केवल सार्वजनिक पोस्ट",
         "language_label": "भाषा",
         "tab_video": "वीडियो",
         "tab_reels": "रील्स",
         "tab_photo": "फोटो",
+        "tab_dp": "प्रोफाइल फोटो",
         "kicker": "यहाँ सभी Instagram कंटेंट डाउनलोड करें",
         "headline_video": "Instagram वीडियो डाउनलोडर",
         "headline_reels": "Instagram रील्स डाउनलोडर",
         "headline_photo": "Instagram फोटो डाउनलोडर",
+        "headline_dp": "इंस्टाग्राम डीपी डाउनलोड",
         "sub": "पब्लिक पोस्ट या रील लिंक पेस्ट करें। प्राइवेट अकाउंट पर चेतावनी दिखेगी।",
         "placeholder": "Instagram पोस्ट या रील लिंक पेस्ट करें",
+        "placeholder_dp": "Instagram प्रोफाइल लिंक पेस्ट करें",
         "paste": "पेस्ट",
         "clear": "क्लियर",
         "search": "सर्च",
@@ -426,6 +467,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "यह लिंक फोटो का है। फोटो टैब चुनें।",
         "modal_mismatch_photo": "यह लिंक वीडियो का है। वीडियो या रील्स टैब चुनें।",
         "modal_mismatch_reel": "यह लिंक रील नहीं है। वीडियो चुनें।",
+        "error_invalid_profile": "कृपया एक मान्य Instagram प्रोफाइल लिंक पेस्ट करें।",
         "seo_title": "पब्लिक पोस्ट के लिए तेज़ Instagram डाउनलोडर",
         "footer_contact": "संपर्क करें",
         "footer_about": "हमारे बारे में",
@@ -624,22 +666,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Downloader de vídeo do Instagram - Free & Easy",
         "title_reels": "Downloader de Reels do Instagram - Free & Easy",
         "title_photo": "Downloader de fotos do Instagram - Free & Easy",
+        "title_dp": "Загрузчик фото профиля Instagram - Бесплатно и легко",
         "meta_description": "Baixe vídeos, reels e fotos do Instagram de posts públicos. Cole o link e veja a prévia.",
         "meta_description_video": "Downloader de vídeo do Instagram. Cole o link, pré-visualize e salve em qualidade original. Instagram video downloader.",
         "meta_description_reels": "Downloader de Reels do Instagram. Cole o link e faça o download instantâneo. Instagram reels downloader.",
         "meta_description_photo": "Downloader de fotos do Instagram. Cole o link, pré-visualize e salve em alta qualidade. Instagram photo downloader.",
+        "meta_description_dp": "Downloader de foto de perfil do Instagram. Cole o link do perfil para baixar a foto.",
         "meta_keywords": "instagram downloader, baixar video instagram, baixar reels, baixar fotos instagram",
         "status": "Somente posts públicos",
         "language_label": "Idioma",
         "tab_video": "Vídeo",
         "tab_reels": "Reels",
         "tab_photo": "Foto",
+        "tab_dp": "Foto de perfil",
         "kicker": "Baixe todo o conteúdo do Instagram aqui",
         "headline_video": "Downloader de vídeos do Instagram",
         "headline_reels": "Downloader de Reels do Instagram",
         "headline_photo": "Downloader de fotos do Instagram",
+        "headline_dp": "Downloader de foto de perfil do Instagram",
         "sub": "Cole um link de post ou reels público. Contas privadas mostrarão um alerta.",
         "placeholder": "Cole o link do post ou reels do Instagram",
+        "placeholder_dp": "Cole o link do perfil do Instagram",
         "paste": "Colar",
         "clear": "Limpar",
         "search": "Buscar",
@@ -651,6 +698,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "Este link é uma imagem. Selecione a aba Foto.",
         "modal_mismatch_photo": "Este link é um vídeo. Selecione Vídeo ou Reels.",
         "modal_mismatch_reel": "Este link não é reels. Selecione Vídeo.",
+        "error_invalid_profile": "Cole um link de perfil do Instagram válido.",
         "seo_title": "Downloader rápido do Instagram para posts públicos",
         "footer_contact": "Contato",
         "footer_about": "Sobre nós",
@@ -663,22 +711,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Загрузчик видео Instagram - Free & Easy",
         "title_reels": "Загрузчик Reels Instagram - Free & Easy",
         "title_photo": "Загрузчик фото Instagram - Free & Easy",
+        "title_dp": "Descargador de foto de perfil de Instagram - Gratis y fácil",
         "meta_description": "Скачивайте видео, reels и фото Instagram из публичных постов. Вставьте ссылку для просмотра.",
         "meta_description_video": "Загрузчик видео Instagram. Вставьте ссылку, посмотрите предпросмотр и сохраните в оригинальном качестве. Instagram video downloader.",
         "meta_description_reels": "Загрузчик Reels Instagram. Вставьте ссылку и скачайте сразу. Instagram reels downloader.",
         "meta_description_photo": "Загрузчик фото Instagram. Вставьте ссылку, посмотрите предпросмотр и сохраните в высоком качестве. Instagram photo downloader.",
+        "meta_description_dp": "Загрузчик фото профиля Instagram. Вставьте ссылку на профиль, чтобы скачать фото.",
         "meta_keywords": "instagram downloader, скачать instagram, reels instagram, скачать фото",
         "status": "Только публичные посты",
         "language_label": "Язык",
         "tab_video": "Видео",
         "tab_reels": "Reels",
         "tab_photo": "Фото",
+        "tab_dp": "Фото профиля",
         "kicker": "Скачивайте весь контент Instagram здесь",
         "headline_video": "Загрузчик видео Instagram",
         "headline_reels": "Загрузчик Reels Instagram",
         "headline_photo": "Загрузчик фото Instagram",
+        "headline_dp": "Загрузчик фото профиля Instagram",
         "sub": "Вставьте ссылку на публичный пост или reels. Приватные аккаунты покажут предупреждение.",
         "placeholder": "Вставьте ссылку на пост или reels Instagram",
+        "placeholder_dp": "Вставьте ссылку на профиль Instagram",
         "paste": "Вставить",
         "clear": "Очистить",
         "search": "Поиск",
@@ -690,6 +743,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "Это изображение. Выберите вкладку Фото.",
         "modal_mismatch_photo": "Это видео. Выберите Видео или Reels.",
         "modal_mismatch_reel": "Это не reels. Выберите Видео.",
+        "error_invalid_profile": "Пожалуйста, вставьте корректную ссылку на профиль Instagram.",
         "seo_title": "Быстрый загрузчик Instagram для публичных постов",
         "footer_contact": "Контакты",
         "footer_about": "О нас",
@@ -702,22 +756,27 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Descargador de videos de Instagram - Free & Easy",
         "title_reels": "Descargador de Reels de Instagram - Free & Easy",
         "title_photo": "Descargador de fotos de Instagram - Free & Easy",
+        "title_dp": "Instagram DP Downloader - Free & Easy",
         "meta_description": "Descarga videos, reels y fotos de Instagram desde publicaciones públicas. Pega el enlace y previsualiza.",
         "meta_description_video": "Descargador de videos de Instagram. Pega el enlace, previsualiza y guarda en calidad original. Instagram video downloader.",
         "meta_description_reels": "Descargador de Reels de Instagram. Pega el enlace y descarga al instante. Instagram reels downloader.",
         "meta_description_photo": "Descargador de fotos de Instagram. Pega el enlace, previsualiza y guarda en alta calidad. Instagram photo downloader.",
+        "meta_description_dp": "Descargador de foto de perfil de Instagram. Pega el enlace del perfil para descargar la foto.",
         "meta_keywords": "instagram downloader, descargar instagram, reels instagram, descargar fotos",
         "status": "Solo publicaciones públicas",
         "language_label": "Idioma",
         "tab_video": "Video",
         "tab_reels": "Reels",
         "tab_photo": "Foto",
+        "tab_dp": "Foto de perfil",
         "kicker": "Descarga todo el contenido de Instagram aquí",
         "headline_video": "Descargador de videos de Instagram",
         "headline_reels": "Descargador de Reels de Instagram",
         "headline_photo": "Descargador de fotos de Instagram",
+        "headline_dp": "Descargador de foto de perfil de Instagram",
         "sub": "Pega un enlace de publicación o reel público. Las cuentas privadas mostrarán una alerta.",
         "placeholder": "Pega el enlace de publicación o reel de Instagram",
+        "placeholder_dp": "Pega el enlace del perfil de Instagram",
         "paste": "Pegar",
         "clear": "Borrar",
         "search": "Buscar",
@@ -729,6 +788,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "modal_mismatch_video": "Este enlace es una imagen. Selecciona la pestaña Foto.",
         "modal_mismatch_photo": "Este enlace es un video. Selecciona Video o Reels.",
         "modal_mismatch_reel": "Este enlace no es un reel. Selecciona Video.",
+        "error_invalid_profile": "Pega un enlace de perfil de Instagram válido.",
         "seo_title": "Descargador rápido de Instagram para publicaciones públicas",
         "footer_contact": "Contacto",
         "footer_about": "Sobre nosotros",
@@ -895,17 +955,31 @@ MEDIA_URL_RE = re.compile(
     r"(?:https?://)?(?:www\.)?instagram\.com/(p|reel|reels|tv)/([^/?#]+)/?",
     re.IGNORECASE,
 )
+PROFILE_RESERVED = {
+    "p",
+    "reel",
+    "reels",
+    "tv",
+    "stories",
+    "explore",
+    "accounts",
+    "about",
+    "help",
+    "privacy",
+}
 
 ALLOWED_HOST_SUFFIXES = ("cdninstagram.com", "fbcdn.net", "instagram.com")
 MEDIA_SLUGS = {
     "video": "video-download",
     "reels": "reels-download",
     "photo": "photo-download",
+    "dp": "dp-download",
 }
 MEDIA_ENDPOINTS = {
     "video": "video_download",
     "reels": "reels_download",
     "photo": "photo_download",
+    "dp": "dp_download",
 }
 
 
@@ -1096,6 +1170,25 @@ def parse_media_url(raw: str) -> Optional[Tuple[str, str]]:
     return kind, shortcode
 
 
+def parse_profile_url(raw: str) -> Optional[str]:
+    value = raw.strip()
+    if not value:
+        return None
+    if not value.startswith("http"):
+        value = f"https://{value}"
+    parsed = urlparse(value)
+    host = parsed.hostname or ""
+    if "instagram.com" not in host:
+        return None
+    path = parsed.path.strip("/")
+    if not path:
+        return None
+    username = path.split("/")[0]
+    if not username or username.lower() in PROFILE_RESERVED:
+        return None
+    return username
+
+
 def is_reel(post: "instaloader.Post") -> bool:
     product_type = getattr(post, "product_type", None)
     if product_type:
@@ -1252,6 +1345,91 @@ def process_download(lang: str, media_type: str):
 
     inc_stat("total_requests")
     media_url = (request.form.get("media_url") or "").strip()
+    if media_type == "dp":
+        username = parse_profile_url(media_url)
+        if not username:
+            inc_stat("invalid_links")
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                error=t["error_invalid_profile"],
+            )
+
+        if is_rate_limited(get_client_ip()):
+            inc_stat("rate_limited")
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                modal_show=True,
+                modal_title=t.get("modal_rate_title", "Please wait"),
+                modal_message=t.get(
+                    "modal_rate_body",
+                    "Too many requests. Please wait a few seconds and try again.",
+                ),
+            )
+
+        try:
+            loader = make_loader()
+            profile = instaloader.Profile.from_username(loader.context, username)
+            if getattr(profile, "is_private", False):
+                return render_index(
+                    lang,
+                    selected_type=media_type,
+                    page_slug=page_slug,
+                    media_url=media_url,
+                    modal_show=True,
+                    modal_title=t["modal_private_title"],
+                    modal_message=t["modal_private_body"],
+                )
+            pic_url = getattr(profile, "profile_pic_url", None)
+            if not pic_url:
+                inc_stat("invalid_links")
+                return render_index(
+                    lang,
+                    selected_type=media_type,
+                    page_slug=page_slug,
+                    media_url=media_url,
+                    error=t["error_invalid_profile"],
+                )
+            items = [{"type": "photo", "url": pic_url, "name": safe_filename(f"{username}_dp.jpg")}]
+            inc_stat("success")
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                items=items,
+            )
+        except LoginException:
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                modal_show=True,
+                modal_title=t["modal_private_title"],
+                modal_message=t["modal_private_body"],
+            )
+        except ConnectionException as exc:
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                error=f"Connection error: {exc}",
+            )
+        except Exception as exc:  # pragma: no cover
+            return render_index(
+                lang,
+                selected_type=media_type,
+                page_slug=page_slug,
+                media_url=media_url,
+                error=f"Unexpected error: {exc}",
+            )
     parsed = parse_media_url(media_url)
     if not parsed:
         inc_stat("invalid_links")
@@ -1449,6 +1627,11 @@ def photo_download(lang: str):
     return media_page(lang, "photo")
 
 
+@app.route("/<lang>/dp-download", methods=["GET", "POST"])
+def dp_download(lang: str):
+    return media_page(lang, "dp")
+
+
 @app.route("/<lang>/download", methods=["POST"])
 def download(lang: str):
     media_type = normalize_media_type(request.form.get("media_type") or "video")
@@ -1575,6 +1758,7 @@ def sitemap():
         urls.append((f"{base}/{lang}/{MEDIA_SLUGS['video']}", "0.8"))
         urls.append((f"{base}/{lang}/{MEDIA_SLUGS['reels']}", "0.8"))
         urls.append((f"{base}/{lang}/{MEDIA_SLUGS['photo']}", "0.8"))
+        urls.append((f"{base}/{lang}/{MEDIA_SLUGS['dp']}", "0.8"))
         
     urls.append((f"{base}/{DEFAULT_LANG}/about", "0.3"))
     urls.append((f"{base}/{DEFAULT_LANG}/contact", "0.3"))
