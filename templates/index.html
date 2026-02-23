@@ -71,10 +71,6 @@
         <span class="tab-icon icon-photo" aria-hidden="true"></span>
         {{ t.tab_photo }}
       </button>
-      <button class="tab{% if selected_type == 'audio' %} active{% endif %}" type="button" data-type="audio" data-label="{{ t.headline_audio }}">
-        <span class="tab-icon icon-audio" aria-hidden="true"></span>
-        {{ t.tab_audio }}
-      </button>
     </nav>
 
     <main class="content">
@@ -83,7 +79,6 @@
         <h1 id="headline">
           {% if selected_type == 'reels' %}{{ t.headline_reels }}
           {% elif selected_type == 'photo' %}{{ t.headline_photo }}
-          {% elif selected_type == 'audio' %}{{ t.headline_audio }}
           {% else %}{{ t.headline_video }}
           {% endif %}
         </h1>
@@ -134,9 +129,7 @@
                       <img class="media-preview media-image" src="{{ url_for('media_proxy', url=item.url) }}" alt="{{ t.preview_alt }}">
                     {% endif %}
                   </div>
-                  <a class="download-btn" href="{{ item.download_url if item.download_url is defined else url_for('download_file', url=item.url, name=item.name) }}">
-                    {{ item.download_label if item.download_label is defined else (t.download_mp3 if selected_type == 'audio' else t.download) }}
-                  </a>
+                  <a class="download-btn" href="{{ url_for('download_file', url=item.url, name=item.name) }}">{{ t.download }}</a>
                 </div>
               {% endfor %}
             </div>
@@ -221,8 +214,7 @@
     const slugMap = {
       video: 'video-download',
       reels: 'reels-download',
-      photo: 'photo-download',
-      audio: 'audio-download'
+      photo: 'photo-download'
     };
 
     tabs.forEach(tab => {
