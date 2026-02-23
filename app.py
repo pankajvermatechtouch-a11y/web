@@ -9,6 +9,9 @@ from __future__ import annotations
 import os
 import re
 import time
+import tempfile
+import shutil
+import subprocess
 from collections import deque
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -19,6 +22,7 @@ import requests
 from flask import (
     Flask,
     Response,
+    after_this_request,
     abort,
     redirect,
     render_template,
@@ -67,6 +71,8 @@ STATS: Dict[str, int] = {
     "success": 0,
 }
 
+FFMPEG_AVAILABLE = shutil.which("ffmpeg") is not None
+
 LANG_ORDER = [
     "en",
     "hi",
@@ -101,10 +107,12 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Instagram Video Downloader - Free & Easy",
         "title_reels": "Instagram Reels Downloader - Free & Easy",
         "title_photo": "Instagram Photos Downloader - Free & Easy",
+        "title_audio": "Instagram Audio Downloader - Free & Easy",
         "meta_description": "Download Instagram videos, reels, and photos from public posts. Paste a link and get previews with direct downloads.",
         "meta_description_video": "Instagram video downloader that lets you download videos in 4k free and without any signup.",
         "meta_description_reels": "Instagram reels downloader that lets you download reels in 4k free and without any signup.",
         "meta_description_photo": "Instagram photo downloader that lets you download photos in 4k free and without any signup.",
+        "meta_description_audio": "Instagram audio downloader that lets you download MP3 audio from reels and videos.",
         "meta_keywords": "instagram downloader, instagram video downloader, instagram reels downloader, instagram photo downloader, download instagram media",
         "brand": "FastDl App",
         "home": "Home",
@@ -113,10 +121,12 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "tab_video": "Video",
         "tab_reels": "Reels",
         "tab_photo": "Photo",
+        "tab_audio": "Audio",
         "kicker": "Download all Instagram stuff here",
         "headline_video": "Instagram Video Downloader",
         "headline_reels": "Instagram Reels Downloader",
         "headline_photo": "Instagram Photo Downloader",
+        "headline_audio": "Instagram Audio Downloader",
         "sub": "Paste a public post or reel link. Private accounts will show a privacy alert.",
         "placeholder": "Paste Instagram post or reel link",
         "paste": "Paste",
@@ -124,7 +134,10 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "Search",
         "results": "Results",
         "download": "Download",
+        "error_audio_unavailable": "Audio-Download ist derzeit nicht verfügbar.",
+        "download_mp3": "Download MP3",
         "error_invalid_link": "Please paste a valid Instagram post or reel link.",
+        "error_audio_unavailable": "Audio download is not available right now.",
         "modal_private_title": "Private Account",
         "modal_private_body": "This Instagram account is private. Media cannot be downloaded.",
         "modal_mismatch_title": "Wrong Media Type",
@@ -205,20 +218,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "مُحمّل فيديو إنستغرام - Free & Easy",
         "title_reels": "مُحمّل ريلز إنستغرام - Free & Easy",
         "title_photo": "مُحمّل صور إنستغرام - Free & Easy",
+        "title_audio": "مُحمّل صوت إنستغرام - Free & Easy",
         "meta_description": "حمّل فيديوهات وصور وريـلز إنستغرام من المنشورات العامة. الصق الرابط وشاهد المعاينة.",
         "meta_description_video": "مُحمّل فيديو إنستغرام. الصق الرابط، شاهد المعاينة واحفظ بالجودة الأصلية. Instagram video downloader.",
         "meta_description_reels": "مُحمّل ريلز إنستغرام. الصق الرابط وحمّل فورًا. Instagram reels downloader.",
         "meta_description_photo": "مُحمّل صور إنستغرام. الصق الرابط، شاهد المعاينة واحفظ بجودة عالية. Instagram photo downloader.",
+        "meta_description_audio": "مُحمّل صوت إنستغرام لتنزيل MP3 من الريلز والفيديوهات.",
         "meta_keywords": "تحميل انستغرام, تنزيل ريلز, تحميل فيديو انستغram, تنزيل صور انستغram",
         "status": "المنشورات العامة فقط",
         "language_label": "اللغة",
         "tab_video": "فيديو",
         "tab_reels": "ريلز",
         "tab_photo": "صور",
+        "tab_audio": "صوت",
         "kicker": "حمّل كل محتوى إنستغرام هنا",
         "headline_video": "أداة تنزيل فيديو إنستغرام",
         "headline_reels": "أداة تنزيل ريلز إنستغرام",
         "headline_photo": "أداة تنزيل صور إنستغرام",
+        "headline_audio": "أداة تنزيل صوت إنستغرام",
         "sub": "الصق رابط منشور عام أو ريلز. الحسابات الخاصة ستعرض تنبيهًا.",
         "placeholder": "الصق رابط منشور أو ريلز إنستغram",
         "paste": "لصق",
@@ -226,6 +243,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "بحث",
         "results": "النتائج",
         "download": "تنزيل",
+        "error_audio_unavailable": "تنزيل الصوت غير متاح الآن.",
+        "download_mp3": "تنزيل MP3",
         "modal_private_title": "حساب خاص",
         "modal_private_body": "هذا الحساب خاص. لا يمكن تنزيل الوسائط.",
         "modal_mismatch_title": "نوع غير صحيح",
@@ -244,20 +263,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার - Free & Easy",
         "title_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার - Free & Easy",
         "title_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার - Free & Easy",
+        "title_audio": "ইনস্টাগ্রাম অডিও ডাউনলোডার - Free & Easy",
         "meta_description": "পাবলিক পোস্ট থেকে ইনস্টাগ্রাম ভিডিও, রিল এবং ছবি ডাউনলোড করুন। লিংক পেস্ট করে প্রিভিউ দেখুন।",
         "meta_description_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার। লিংক পেস্ট করুন, প্রিভিউ দেখুন এবং অরিজিনাল কোয়ালিটিতে সেভ করুন। Instagram video downloader.",
         "meta_description_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার। লিংক পেস্ট করে সাথে সাথে ডাউনলোড করুন। Instagram reels downloader.",
         "meta_description_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার। লিংক পেস্ট করে প্রিভিউ দেখুন এবং উচ্চমানের ছবি সেভ করুন। Instagram photo downloader.",
+        "meta_description_audio": "ইনস্টাগ্রাম অডিও ডাউনলোডার। রিলস ও ভিডিও থেকে MP3 অডিও ডাউনলোড করুন।",
         "meta_keywords": "instagram downloader, ইনস্টাগ্রাম ডাউনলোডার, রিল ডাউনলোড, ভিডিও ডাউনলোড",
         "status": "শুধু পাবলিক পোস্ট",
         "language_label": "ভাষা",
         "tab_video": "ভিডিও",
         "tab_reels": "রিলস",
         "tab_photo": "ফটো",
+        "tab_audio": "অডিও",
         "kicker": "সব ইনস্টাগ্রাম কনটেন্ট এখানে ডাউনলোড করুন",
         "headline_video": "ইনস্টাগ্রাম ভিডিও ডাউনলোডার",
         "headline_reels": "ইনস্টাগ্রাম রিলস ডাউনলোডার",
         "headline_photo": "ইনস্টাগ্রাম ফটো ডাউনলোডার",
+        "headline_audio": "ইনস্টাগ্রাম অডিও ডাউনলোডার",
         "sub": "পাবলিক পোস্ট বা রিল লিংক পেস্ট করুন। প্রাইভেট অ্যাকাউন্টে সতর্কতা দেখাবে।",
         "placeholder": "ইনস্টাগ্রাম পোস্ট বা রিল লিংক পেস্ট করুন",
         "paste": "পেস্ট",
@@ -265,6 +288,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "সার্চ",
         "results": "ফলাফল",
         "download": "ডাউনলোড",
+        "error_audio_unavailable": "অডিও ডাউনলোড এখন উপলব্ধ নয়।",
+        "download_mp3": "MP3 ডাউনলোড",
         "modal_private_title": "প্রাইভেট অ্যাকাউন্ট",
         "modal_private_body": "এই অ্যাকাউন্টটি প্রাইভেট। মিডিয়া ডাউনলোড করা যাবে না।",
         "modal_mismatch_title": "ভুল মিডিয়া টাইপ",
@@ -283,20 +308,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Instagram 视频下载器 - Free & Easy",
         "title_reels": "Instagram Reels 下载器 - Free & Easy",
         "title_photo": "Instagram 照片下载器 - Free & Easy",
+        "title_audio": "Instagram 音频下载器 - Free & Easy",
         "meta_description": "从公开帖子下载 Instagram 视频、Reels 和照片。粘贴链接即可预览并下载。",
         "meta_description_video": "Instagram 视频下载器。粘贴链接、预览并保存原画质。 Instagram video downloader.",
         "meta_description_reels": "Instagram Reels 下载器。粘贴链接即可立即下载。 Instagram reels downloader.",
         "meta_description_photo": "Instagram 照片下载器。粘贴链接、预览并保存高质量图片。 Instagram photo downloader.",
+        "meta_description_audio": "Instagram 音频下载器。可从 Reels 和视频中下载 MP3 音频。",
         "meta_keywords": "instagram 下载, reels 下载, instagram 视频下载, instagram 图片下载",
         "status": "仅限公开帖子",
         "language_label": "语言",
         "tab_video": "视频",
         "tab_reels": "Reels",
         "tab_photo": "照片",
+        "tab_audio": "音频",
         "kicker": "在这里下载所有 Instagram 内容",
         "headline_video": "Instagram 视频下载器",
         "headline_reels": "Instagram Reels 下载器",
         "headline_photo": "Instagram 照片下载器",
+        "headline_audio": "Instagram 音频下载器",
         "sub": "粘贴公开帖子或 Reels 链接。私密账号会显示提示。",
         "placeholder": "粘贴 Instagram 帖子或 Reels 链接",
         "paste": "粘贴",
@@ -304,6 +333,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "搜索",
         "results": "结果",
         "download": "下载",
+        "error_audio_unavailable": "音频下载暂不可用。",
+        "download_mp3": "下载 MP3",
         "modal_private_title": "私密账号",
         "modal_private_body": "该账号为私密账号，无法下载媒体。",
         "modal_mismatch_title": "类型不匹配",
@@ -322,20 +353,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Téléchargeur vidéo Instagram - Free & Easy",
         "title_reels": "Téléchargeur Reels Instagram - Free & Easy",
         "title_photo": "Téléchargeur photo Instagram - Free & Easy",
+        "title_audio": "Téléchargeur audio Instagram - Free & Easy",
         "meta_description": "Téléchargez vidéos, reels et photos Instagram depuis des posts publics. Collez le lien pour prévisualiser.",
         "meta_description_video": "Téléchargeur vidéo Instagram. Collez le lien, prévisualisez et enregistrez en qualité d'origine. Instagram video downloader.",
         "meta_description_reels": "Téléchargeur Reels Instagram. Collez le lien et téléchargez instantanément. Instagram reels downloader.",
         "meta_description_photo": "Téléchargeur photo Instagram. Collez le lien, prévisualisez et enregistrez en haute qualité. Instagram photo downloader.",
+        "meta_description_audio": "Téléchargeur audio Instagram. Téléchargez des MP3 depuis les Reels et vidéos.",
         "meta_keywords": "instagram downloader, telecharger instagram, reels instagram, video instagram",
         "status": "Publications publiques uniquement",
         "language_label": "Langue",
         "tab_video": "Vidéo",
         "tab_reels": "Reels",
         "tab_photo": "Photo",
+        "tab_audio": "Audio",
         "kicker": "Téléchargez tout le contenu Instagram ici",
         "headline_video": "Téléchargeur vidéo Instagram",
         "headline_reels": "Téléchargeur Reels Instagram",
         "headline_photo": "Téléchargeur photo Instagram",
+        "headline_audio": "Téléchargeur audio Instagram",
         "sub": "Collez un lien de post ou reel public. Les comptes privés afficheront une alerte.",
         "placeholder": "Collez un lien de post ou reel Instagram",
         "paste": "Coller",
@@ -343,6 +378,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "Rechercher",
         "results": "Résultats",
         "download": "Télécharger",
+        "error_audio_unavailable": "Le téléchargement audio n'est pas disponible pour le moment.",
+        "download_mp3": "Télécharger MP3",
         "modal_private_title": "Compte privé",
         "modal_private_body": "Ce compte est privé. Impossible de télécharger.",
         "modal_mismatch_title": "Type incorrect",
@@ -361,20 +398,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Instagram Video-Downloader - Free & Easy",
         "title_reels": "Instagram Reels Downloader - Free & Easy",
         "title_photo": "Instagram Foto-Downloader - Free & Easy",
+        "title_audio": "Instagram Audio-Downloader - Free & Easy",
         "meta_description": "Lade Instagram Videos, Reels und Fotos aus öffentlichen Posts. Link einfügen und Vorschau sehen.",
         "meta_description_video": "Instagram Video-Downloader. Link einfügen, Vorschau ansehen und in Originalqualität speichern. Instagram video downloader.",
         "meta_description_reels": "Instagram Reels Downloader. Link einfügen und sofort herunterladen. Instagram reels downloader.",
         "meta_description_photo": "Instagram Foto-Downloader. Link einfügen, Vorschau ansehen und in hoher Qualität speichern. Instagram photo downloader.",
+        "meta_description_audio": "Instagram Audio-Downloader. MP3 aus Reels und Videos herunterladen.",
         "meta_keywords": "instagram downloader, instagram video downloader, reels downloader, instagram foto",
         "status": "Nur öffentliche Beiträge",
         "language_label": "Sprache",
         "tab_video": "Video",
         "tab_reels": "Reels",
         "tab_photo": "Foto",
+        "tab_audio": "Audio",
         "kicker": "Alle Instagram-Inhalte hier herunterladen",
         "headline_video": "Instagram Video Downloader",
         "headline_reels": "Instagram Reels Downloader",
         "headline_photo": "Instagram Foto Downloader",
+        "headline_audio": "Instagram Audio Downloader",
         "sub": "Füge einen öffentlichen Post- oder Reel-Link ein. Private Konten zeigen eine Warnung.",
         "placeholder": "Instagram Post- oder Reel-Link einfügen",
         "paste": "Einfügen",
@@ -382,6 +423,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "Suchen",
         "results": "Ergebnisse",
         "download": "Download",
+        "download_mp3": "MP3 herunterladen",
         "modal_private_title": "Privates Konto",
         "modal_private_body": "Dieses Konto ist privat. Medien können nicht heruntergeladen werden.",
         "modal_mismatch_title": "Falscher Medientyp",
@@ -400,20 +442,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Instagram वीडियो डाउनलोडर - Free & Easy",
         "title_reels": "Instagram रील्स डाउनलोडर - Free & Easy",
         "title_photo": "Instagram फोटो डाउनलोडर - Free & Easy",
+        "title_audio": "Instagram ऑडियो डाउनलोडर - Free & Easy",
         "meta_description": "पब्लिक पोस्ट से Instagram वीडियो, रील और फोटो डाउनलोड करें। लिंक पेस्ट करें और प्रिव्यू देखें।",
         "meta_description_video": "Instagram वीडियो डाउनलोडर। लिंक पेस्ट करें, प्रिव्यू देखें और ओरिजिनल क्वालिटी में सेव करें। Instagram video downloader.",
         "meta_description_reels": "Instagram रील्स डाउनलोडर। लिंक पेस्ट करें और तुरंत डाउनलोड करें। Instagram reels downloader.",
         "meta_description_photo": "Instagram फोटो डाउनलोडर। लिंक पेस्ट करें, प्रिव्यू देखें और हाई क्वालिटी में सेव करें। Instagram photo downloader.",
+        "meta_description_audio": "Instagram ऑडियो डाउनलोडर। रील्स और वीडियो से MP3 ऑडियो डाउनलोड करें।",
         "meta_keywords": "instagram downloader, instagram video downloader, reels downloader, फोटो डाउनलोड",
         "status": "केवल सार्वजनिक पोस्ट",
         "language_label": "भाषा",
         "tab_video": "वीडियो",
         "tab_reels": "रील्स",
         "tab_photo": "फोटो",
+        "tab_audio": "ऑडियो",
         "kicker": "यहाँ सभी Instagram कंटेंट डाउनलोड करें",
         "headline_video": "Instagram वीडियो डाउनलोडर",
         "headline_reels": "Instagram रील्स डाउनलोडर",
         "headline_photo": "Instagram फोटो डाउनलोडर",
+        "headline_audio": "Instagram ऑडियो डाउनलोडर",
         "sub": "पब्लिक पोस्ट या रील लिंक पेस्ट करें। प्राइवेट अकाउंट पर चेतावनी दिखेगी।",
         "placeholder": "Instagram पोस्ट या रील लिंक पेस्ट करें",
         "paste": "पेस्ट",
@@ -421,6 +467,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "सर्च",
         "results": "रिज़ल्ट्स",
         "download": "डाउनलोड",
+        "error_audio_unavailable": "ऑडियो डाउनलोड अभी उपलब्ध नहीं है।",
+        "download_mp3": "MP3 डाउनलोड करें",
         "modal_private_title": "प्राइवेट अकाउंट",
         "modal_private_body": "यह अकाउंट प्राइवेट है। मीडिया डाउनलोड नहीं हो सकता।",
         "modal_mismatch_title": "गलत मीडिया प्रकार",
@@ -439,20 +487,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Downloader de vídeo do Instagram - Free & Easy",
         "title_reels": "Downloader de Reels do Instagram - Free & Easy",
         "title_photo": "Downloader de fotos do Instagram - Free & Easy",
+        "title_audio": "Downloader de áudio do Instagram - Free & Easy",
         "meta_description": "Baixe vídeos, reels e fotos do Instagram de posts públicos. Cole o link e veja a prévia.",
         "meta_description_video": "Downloader de vídeo do Instagram. Cole o link, pré-visualize e salve em qualidade original. Instagram video downloader.",
         "meta_description_reels": "Downloader de Reels do Instagram. Cole o link e faça o download instantâneo. Instagram reels downloader.",
         "meta_description_photo": "Downloader de fotos do Instagram. Cole o link, pré-visualize e salve em alta qualidade. Instagram photo downloader.",
+        "meta_description_audio": "Downloader de áudio do Instagram. Baixe MP3 de Reels e vídeos.",
         "meta_keywords": "instagram downloader, baixar video instagram, baixar reels, baixar fotos instagram",
         "status": "Somente posts públicos",
         "language_label": "Idioma",
         "tab_video": "Vídeo",
         "tab_reels": "Reels",
         "tab_photo": "Foto",
+        "tab_audio": "Áudio",
         "kicker": "Baixe todo o conteúdo do Instagram aqui",
         "headline_video": "Downloader de vídeos do Instagram",
         "headline_reels": "Downloader de Reels do Instagram",
         "headline_photo": "Downloader de fotos do Instagram",
+        "headline_audio": "Downloader de áudio do Instagram",
         "sub": "Cole um link de post ou reels público. Contas privadas mostrarão um alerta.",
         "placeholder": "Cole o link do post ou reels do Instagram",
         "paste": "Colar",
@@ -460,6 +512,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "Buscar",
         "results": "Resultados",
         "download": "Baixar",
+        "error_audio_unavailable": "O download de áudio não está disponível no momento.",
+        "download_mp3": "Baixar MP3",
         "modal_private_title": "Conta privada",
         "modal_private_body": "Esta conta é privada. Não é possível baixar.",
         "modal_mismatch_title": "Tipo incorreto",
@@ -478,20 +532,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Загрузчик видео Instagram - Free & Easy",
         "title_reels": "Загрузчик Reels Instagram - Free & Easy",
         "title_photo": "Загрузчик фото Instagram - Free & Easy",
+        "title_audio": "Загрузчик аудио Instagram - Free & Easy",
         "meta_description": "Скачивайте видео, reels и фото Instagram из публичных постов. Вставьте ссылку для просмотра.",
         "meta_description_video": "Загрузчик видео Instagram. Вставьте ссылку, посмотрите предпросмотр и сохраните в оригинальном качестве. Instagram video downloader.",
         "meta_description_reels": "Загрузчик Reels Instagram. Вставьте ссылку и скачайте сразу. Instagram reels downloader.",
         "meta_description_photo": "Загрузчик фото Instagram. Вставьте ссылку, посмотрите предпросмотр и сохраните в высоком качестве. Instagram photo downloader.",
+        "meta_description_audio": "Загрузчик аудио Instagram. Скачайте MP3 из Reels и видео.",
         "meta_keywords": "instagram downloader, скачать instagram, reels instagram, скачать фото",
         "status": "Только публичные посты",
         "language_label": "Язык",
         "tab_video": "Видео",
         "tab_reels": "Reels",
         "tab_photo": "Фото",
+        "tab_audio": "Аудио",
         "kicker": "Скачивайте весь контент Instagram здесь",
         "headline_video": "Загрузчик видео Instagram",
         "headline_reels": "Загрузчик Reels Instagram",
         "headline_photo": "Загрузчик фото Instagram",
+        "headline_audio": "Загрузчик аудио Instagram",
         "sub": "Вставьте ссылку на публичный пост или reels. Приватные аккаунты покажут предупреждение.",
         "placeholder": "Вставьте ссылку на пост или reels Instagram",
         "paste": "Вставить",
@@ -499,6 +557,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "Поиск",
         "results": "Результаты",
         "download": "Скачать",
+        "error_audio_unavailable": "Загрузка аудио сейчас недоступна.",
+        "download_mp3": "Скачать MP3",
         "modal_private_title": "Приватный аккаунт",
         "modal_private_body": "Этот аккаунт приватный. Скачивание невозможно.",
         "modal_mismatch_title": "Неверный тип",
@@ -517,20 +577,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "title_video": "Descargador de videos de Instagram - Free & Easy",
         "title_reels": "Descargador de Reels de Instagram - Free & Easy",
         "title_photo": "Descargador de fotos de Instagram - Free & Easy",
+        "title_audio": "Descargador de audio de Instagram - Free & Easy",
         "meta_description": "Descarga videos, reels y fotos de Instagram desde publicaciones públicas. Pega el enlace y previsualiza.",
         "meta_description_video": "Descargador de videos de Instagram. Pega el enlace, previsualiza y guarda en calidad original. Instagram video downloader.",
         "meta_description_reels": "Descargador de Reels de Instagram. Pega el enlace y descarga al instante. Instagram reels downloader.",
         "meta_description_photo": "Descargador de fotos de Instagram. Pega el enlace, previsualiza y guarda en alta calidad. Instagram photo downloader.",
+        "meta_description_audio": "Descargador de audio de Instagram. Descarga MP3 de Reels y videos.",
         "meta_keywords": "instagram downloader, descargar instagram, reels instagram, descargar fotos",
         "status": "Solo publicaciones públicas",
         "language_label": "Idioma",
         "tab_video": "Video",
         "tab_reels": "Reels",
         "tab_photo": "Foto",
+        "tab_audio": "Audio",
         "kicker": "Descarga todo el contenido de Instagram aquí",
         "headline_video": "Descargador de videos de Instagram",
         "headline_reels": "Descargador de Reels de Instagram",
         "headline_photo": "Descargador de fotos de Instagram",
+        "headline_audio": "Descargador de audio de Instagram",
         "sub": "Pega un enlace de publicación o reel público. Las cuentas privadas mostrarán una alerta.",
         "placeholder": "Pega el enlace de publicación o reel de Instagram",
         "paste": "Pegar",
@@ -538,6 +602,8 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "search": "Buscar",
         "results": "Resultados",
         "download": "Descargar",
+        "error_audio_unavailable": "La descarga de audio no está disponible en este momento.",
+        "download_mp3": "Descargar MP3",
         "modal_private_title": "Cuenta privada",
         "modal_private_body": "Esta cuenta es privada. No se puede descargar.",
         "modal_mismatch_title": "Tipo incorrecto",
@@ -561,11 +627,13 @@ MEDIA_SLUGS = {
     "video": "video-download",
     "reels": "reels-download",
     "photo": "photo-download",
+    "audio": "audio-download",
 }
 MEDIA_ENDPOINTS = {
     "video": "video_download",
     "reels": "reels_download",
     "photo": "photo_download",
+    "audio": "audio_download",
 }
 
 
@@ -772,7 +840,7 @@ def extract_items(post: "instaloader.Post", media_type: str) -> List[Dict[str, s
             is_video = node.is_video
             if media_type == "photo" and is_video:
                 continue
-            if media_type in {"video", "reels"} and not is_video:
+            if media_type in {"video", "reels", "audio"} and not is_video:
                 continue
             url = node.video_url if is_video else node.display_url
             if not url:
@@ -787,13 +855,28 @@ def extract_items(post: "instaloader.Post", media_type: str) -> List[Dict[str, s
             return []
         if media_type == "photo" and is_video:
             return []
-        if media_type in {"video", "reels"} and not is_video:
+        if media_type in {"video", "reels", "audio"} and not is_video:
             return []
         ext = ".mp4" if is_video else ".jpg"
         filename = safe_filename(f"{post.shortcode}{ext}")
         items.append({"type": "video" if is_video else "photo", "url": url, "name": filename})
 
     return items
+
+
+def decorate_audio_items(items: List[Dict[str, str]], t: Dict[str, str]) -> List[Dict[str, str]]:
+    decorated: List[Dict[str, str]] = []
+    label = t.get("download_mp3", "Download MP3")
+    for item in items:
+        name = item.get("name", "instagram_audio.mp3")
+        base = Path(name).stem or "instagram_audio"
+        audio_name = safe_filename(f"{base}.mp3")
+        audio_url = url_for("download_audio", url=item["url"], name=audio_name)
+        updated = dict(item)
+        updated["download_url"] = audio_url
+        updated["download_label"] = label
+        decorated.append(updated)
+    return decorated
 
 
 def is_allowed_media_url(url: str) -> bool:
@@ -910,6 +993,15 @@ def process_download(lang: str, media_type: str):
     media_type = normalize_media_type(media_type)
     page_slug = MEDIA_SLUGS[media_type]
 
+    if media_type == "audio" and not FFMPEG_AVAILABLE:
+        return render_index(
+            lang,
+            selected_type=media_type,
+            page_slug=page_slug,
+            media_url="",
+            error=t.get("error_audio_unavailable", "Audio download is not available right now."),
+        )
+
     inc_stat("total_requests")
     media_url = (request.form.get("media_url") or "").strip()
     parsed = parse_media_url(media_url)
@@ -944,6 +1036,8 @@ def process_download(lang: str, media_type: str):
             if media_type == "photo"
             else cached.get("video_items", [])
         )
+        if media_type == "audio":
+            cached_items = decorate_audio_items(cached_items, t)
         if not cached_items:
             mismatch = t["modal_mismatch_photo"] if media_type == "photo" else t["modal_mismatch_video"]
             return render_index(
@@ -1020,6 +1114,8 @@ def process_download(lang: str, media_type: str):
             )
 
         items = photo_items if media_type == "photo" else video_items
+        if media_type == "audio":
+            items = decorate_audio_items(items, t)
         if not items:
             mismatch = t["modal_mismatch_photo"] if media_type == "photo" else t["modal_mismatch_video"]
             return render_index(
@@ -1109,6 +1205,11 @@ def photo_download(lang: str):
     return media_page(lang, "photo")
 
 
+@app.route("/<lang>/audio-download", methods=["GET", "POST"])
+def audio_download(lang: str):
+    return media_page(lang, "audio")
+
+
 @app.route("/<lang>/download", methods=["POST"])
 def download(lang: str):
     media_type = normalize_media_type(request.form.get("media_type") or "video")
@@ -1159,6 +1260,63 @@ def download_file():
         stream_with_context(resp.iter_content(chunk_size=8192)),
         headers=headers,
         content_type=content_type,
+    )
+
+
+@app.route("/download-audio")
+def download_audio():
+    url = request.args.get("url", "")
+    filename = safe_filename(request.args.get("name", "instagram_audio.mp3"))
+    if not filename.lower().endswith(".mp3"):
+        filename = f"{filename}.mp3"
+    if not is_allowed_media_url(url):
+        abort(400)
+    if not FFMPEG_AVAILABLE:
+        return Response("Audio download is not available right now.", status=503)
+
+    tmp_dir = tempfile.mkdtemp(prefix="audio_")
+    input_path = Path(tmp_dir) / "input.mp4"
+    output_path = Path(tmp_dir) / "audio.mp3"
+
+    @after_this_request
+    def cleanup(response):
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+        return response
+
+    resp = requests.get(url, stream=True, timeout=30)
+    if resp.status_code != 200:
+        abort(404)
+    with open(input_path, "wb") as handle:
+        for chunk in resp.iter_content(chunk_size=1024 * 1024):
+            if chunk:
+                handle.write(chunk)
+
+    try:
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-i",
+                str(input_path),
+                "-vn",
+                "-acodec",
+                "libmp3lame",
+                "-q:a",
+                "2",
+                str(output_path),
+            ],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return Response("Audio conversion failed.", status=500)
+
+    return send_from_directory(
+        output_path.parent,
+        output_path.name,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="audio/mpeg",
     )
 
 
