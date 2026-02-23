@@ -23,6 +23,7 @@ from flask import (
     redirect,
     render_template,
     request,
+    send_from_directory,
     stream_with_context,
     url_for,
 )
@@ -354,7 +355,7 @@ STRINGS: Dict[str, Dict[str, str]] = {
         "footer_privacy": "Politique de confidentialité",
     },
     "de": {
-        "title": "m",
+        "title": "Instagram Medien-Downloader",
         "home_title": "Instagram Downloader: Reels, Videos & Fotos einfach herunterladen",
         "home_description": "Mit unserem Tool FastDl App kannst du Instagram Reels, Videos und Fotos in 4K kostenlos und ohne Anmeldung herunterladen.",
         "title_video": "Instagram Video-Downloader - Free & Easy",
@@ -1226,38 +1227,7 @@ def privacy(lang: str):
     )
 @app.route("/sitemap.xml")
 def sitemap():
-    base = base_url()
-    urls: List[Tuple[str, str]] = []
-
-    for lang in LANG_ORDER:
-        urls.append((f"{base}/{lang}", "1.0" if lang == DEFAULT_LANG else "0.8"))
-        urls.append((f"{base}/{lang}/{MEDIA_SLUGS['video']}", "0.8"))
-        urls.append((f"{base}/{lang}/{MEDIA_SLUGS['reels']}", "0.8"))
-        urls.append((f"{base}/{lang}/{MEDIA_SLUGS['photo']}", "0.8"))
-        
-    urls.append((f"{base}/{DEFAULT_LANG}/about", "0.3"))
-    urls.append((f"{base}/{DEFAULT_LANG}/contact", "0.3"))
-    urls.append((f"{base}/{DEFAULT_LANG}/privacy", "0.3"))
-
-    lastmod = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
-    lastmod = f"{lastmod[:-2]}:{lastmod[-2:]}"
-
-    xml_lines = [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" '
-        'xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" '
-        'xsi:schemaLocation="https://www.sitemaps.org/schemas/sitemap/0.9 '
-        'https://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">',
-    ]
-    for url, priority in urls:
-        xml_lines.append("  <url>")
-        xml_lines.append(f"    <loc>{url}</loc>")
-        xml_lines.append(f"    <lastmod>{lastmod}</lastmod>")
-        xml_lines.append(f"    <priority>{priority}</priority>")
-        xml_lines.append("  </url>")
-    xml_lines.append("</urlset>")
-
-    return Response("\n".join(xml_lines), mimetype="application/xml")
+    return send_from_directory("static", "sitemap.xml", mimetype="application/xml")
 
 @app.route("/ads.txt")
 def ads_txt():
