@@ -243,6 +243,24 @@ body {
   border-radius: 50%;
 }
 
+.icon-audio {
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  position: relative;
+}
+
+.icon-audio::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 10px;
+  left: 6px;
+  top: 2px;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(-20deg);
+}
+
 .content {
   display: flex;
   justify-content: center;
